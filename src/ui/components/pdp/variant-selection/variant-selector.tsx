@@ -55,6 +55,40 @@ export function VariantSelector({
 	const colorOptions = options.filter((opt) => opt.colorHex);
 	const textOptions = options.filter((opt) => !opt.colorHex);
 
+	const normalizedSlug = (attributeSlug ?? "").toLowerCase();
+	const normalizedLabel = (label ?? "").toLowerCase();
+	const isGummySize =
+		normalizedSlug === "gummy-size" ||
+		normalizedLabel === "gummy size" ||
+		(normalizedSlug === "size" && normalizedLabel.includes("gummy"));
+
+	const normalizeOptionForDisplay = (option: (typeof options)[number]) => {
+		if (!isGummySize) return option;
+		// For Gummy Size, hide all pricing/discount UI from the option card.
+		return {
+			...option,
+			primaryLabel: option.name,
+			secondaryLabel: undefined,
+			sellingPriceAmount: undefined,
+			costPriceAmount: undefined,
+			currency: undefined,
+			percentOff: undefined,
+			discountPercent: undefined,
+		};
+	};
+
+	const isCardGrid =
+		["size", "pack", "bundle", "quantity", "serving", "servings"].includes(
+			attributeSlug?.toLowerCase?.() ?? "",
+		) ||
+		label.toLowerCase().includes("size") ||
+		label.toLowerCase().includes("pack");
+
+	const isGummyBundle =
+		normalizedSlug === "gummy-bundle" ||
+		normalizedLabel === "gummy bundle" ||
+		(normalizedSlug.includes("bundle") && normalizedLabel.includes("gummy"));
+
 	const labelId = `variant-label-${attributeSlug}`;
 
 	return (
@@ -92,13 +126,26 @@ export function VariantSelector({
 
 			{/* Text/Size buttons row */}
 			{textOptions.length > 0 && (
-				<div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-4">
+				<div
+					role="group"
+					aria-labelledby={labelId}
+					className={
+						isCardGrid
+							? isGummyBundle
+								? "grid grid-cols-1 gap-3 md:grid-cols-3"
+								: isGummySize
+									? "grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4"
+									: "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+							: "flex flex-wrap gap-4"
+					}
+				>
 					{textOptions.map((option) => {
-						const Renderer = getRendererForOption(option);
+						const normalizedOption = normalizeOptionForDisplay(option);
+						const Renderer = getRendererForOption(normalizedOption);
 						return (
 							<Renderer
 								key={option.id}
-								option={option}
+								option={normalizedOption}
 								isSelected={selectedId === option.id}
 								onSelect={handleSelect}
 								isPending={isPending}

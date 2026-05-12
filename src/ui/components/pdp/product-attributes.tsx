@@ -1,14 +1,13 @@
 "use client";
 
-import { Shirt, Leaf, Droplets, Ruler, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
 	Accordion,
 	AccordionItemWithContext,
 	AccordionTrigger,
 	AccordionContent,
 } from "@/ui/components/ui/accordion";
-import { Badge } from "@/ui/components/ui/badge";
-import { type ReactNode } from "react";
 
 interface Attribute {
 	name: string;
@@ -16,79 +15,57 @@ interface Attribute {
 }
 
 interface ProductAttributesProps {
-	/**
-	 * Description as an array of HTML strings (from EditorJS via edjsHTML parser)
-	 * Already sanitized with xss on the server
-	 */
-	descriptionHtml?: string[] | null;
 	attributes?: Attribute[];
 	careInstructions?: string | null;
+	className?: string;
 }
 
-// Map attribute names to icons
-const attributeIcons: Record<string, ReactNode> = {
-	Material: <Shirt className="h-4 w-4" />,
-	"Made with Recycled Fibers": <Leaf className="h-4 w-4" />,
-	Waterproof: <Droplets className="h-4 w-4" />,
-	Fit: <Ruler className="h-4 w-4" />,
-	"Key Features": <Sparkles className="h-4 w-4" />,
-};
+function extractKeyBenefits(attributes: Attribute[]): string[] {
+	const benefitsAttribute = attributes.find((attr) =>
+		["benefits", "key benefits", "key features"].includes(attr.name.trim().toLowerCase()),
+	);
 
-function formatValue(value: string | boolean | string[]): ReactNode {
-	if (typeof value === "boolean") return value ? "Yes" : "No";
-	if (Array.isArray(value)) {
-		return (
-			<div className="flex flex-wrap justify-end gap-1">
-				{value.map((v) => (
-					<Badge key={v} variant="secondary" className="font-normal">
-						{v}
-					</Badge>
-				))}
-			</div>
-		);
+	if (!benefitsAttribute) return [];
+
+	if (Array.isArray(benefitsAttribute.value)) {
+		return benefitsAttribute.value.filter(Boolean).slice(0, 4);
 	}
-	return value;
+
+	if (typeof benefitsAttribute.value === "string") {
+		return benefitsAttribute.value
+			.split(/[\n,;|]+/)
+			.map((item) => item.trim())
+			.filter(Boolean)
+			.slice(0, 4);
+	}
+
+	return [];
 }
 
-export function ProductAttributes({
-	descriptionHtml,
-	attributes = [],
-	careInstructions,
-}: ProductAttributesProps) {
-	// Filter out variant attributes that are shown elsewhere (Size, Color)
-	const displayAttributes = attributes.filter((attr) => !["Size", "Color"].includes(attr.name));
+export function ProductAttributes({ attributes = [], careInstructions, className }: ProductAttributesProps) {
+	const keyBenefits = extractKeyBenefits(attributes);
+
+	if (keyBenefits.length === 0 && !careInstructions) {
+		return null;
+	}
+
+	const defaultOpen = keyBenefits.length > 0 ? ["details"] : ["care"];
 
 	return (
-		<Accordion type="multiple" defaultValue={["description"]} className="w-full">
-			{descriptionHtml && descriptionHtml.length > 0 && (
-				<AccordionItemWithContext value="description" className="border-border">
-					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
-						Description
-					</AccordionTrigger>
-					<AccordionContent>
-						<div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-foreground prose-strong:text-foreground">
-							{descriptionHtml.map((html) => (
-								<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
-							))}
-						</div>
-					</AccordionContent>
-				</AccordionItemWithContext>
-			)}
-
-			{displayAttributes.length > 0 && (
+		<Accordion type="multiple" defaultValue={defaultOpen} className={cn("w-full", className)}>
+			{keyBenefits.length > 0 && (
 				<AccordionItemWithContext value="details" className="border-border">
 					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
 						Product Details
 					</AccordionTrigger>
 					<AccordionContent>
-						<div className="grid gap-3">
-							{displayAttributes.map((attr) => (
-								<div key={attr.name} className="flex items-start justify-between gap-4 text-sm">
-									<span className="flex items-center gap-2 text-muted-foreground">
-										{attributeIcons[attr.name]}
-										{attr.name}
-									</span>
-									<span className="text-right font-medium">{formatValue(attr.value)}</span>
+						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+							{keyBenefits.map((benefit) => (
+								<div key={benefit} className="bg-secondary/40 rounded-lg border border-border p-3 text-sm">
+									<p className="flex items-start gap-2 font-medium text-foreground">
+										<CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+										<span>{benefit}</span>
+									</p>
 								</div>
 							))}
 						</div>
@@ -106,16 +83,6 @@ export function ProductAttributes({
 					</AccordionContent>
 				</AccordionItemWithContext>
 			)}
-
-			<AccordionItemWithContext value="shipping" className="border-border">
-				<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
-					Shipping & Returns
-				</AccordionTrigger>
-				<AccordionContent className="leading-relaxed text-muted-foreground">
-					<p className="mb-2">Free shipping on orders over €100. Standard delivery 3-5 business days.</p>
-					<p>Free returns within 30 days of purchase. Items must be unworn with tags attached.</p>
-				</AccordionContent>
-			</AccordionItemWithContext>
 		</Accordion>
 	);
 }

@@ -5,7 +5,10 @@ import { executePublicGraphQL } from "@/lib/graphql";
 import { getPaginatedListVariables } from "@/lib/utils";
 import { CategoryHero, transformToProductCard } from "@/ui/components/plp";
 import { buildSortVariables, buildFilterVariables } from "@/ui/components/plp/filter-utils";
-import { resolveCategorySlugsToIds } from "@/ui/components/plp/filter-utils.server";
+import {
+	fetchCategoriesForChannel,
+	resolveCategorySlugsToIds,
+} from "@/ui/components/plp/filter-utils.server";
 import { ProductsPageClient } from "./products-client";
 
 export const metadata = {
@@ -71,7 +74,10 @@ async function ProductsContent({
 
 	// Parse category slugs from URL and resolve to IDs for server-side filtering
 	const categorySlugs = searchParams.categories?.split(",").filter(Boolean) || [];
-	const categoryMap = await resolveCategorySlugsToIds(categorySlugs);
+	const [categoryMap, catalogCategoryOptions] = await Promise.all([
+		resolveCategorySlugsToIds(categorySlugs),
+		fetchCategoriesForChannel(params.channel),
+	]);
 	const categoryIds = Array.from(categoryMap.values()).map((c) => c.id);
 
 	const filter = buildFilterVariables({
@@ -110,6 +116,7 @@ async function ProductsContent({
 			pageInfo={products.pageInfo}
 			totalCount={products.totalCount ?? productCards.length}
 			resolvedCategories={resolvedCategories}
+			catalogCategoryOptions={catalogCategoryOptions}
 		/>
 	);
 }

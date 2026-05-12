@@ -294,7 +294,12 @@ export function FilterBar({
 										<ChevronDown className="ml-1.5 h-4 w-4 opacity-50" />
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent align="start" className="w-56">
+								<DropdownMenuContent
+									align="start"
+									side="bottom"
+									avoidCollisions={false}
+									className="max-h-[min(22rem,70vh)] w-56 overflow-y-auto"
+								>
 									<DropdownMenuLabel>Category</DropdownMenuLabel>
 									<DropdownMenuSeparator />
 									{categoryOptions.map((category) => (
@@ -328,7 +333,7 @@ export function FilterBar({
 										<ChevronDown className="ml-1.5 h-4 w-4 opacity-50" />
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent align="start" className="w-56">
+								<DropdownMenuContent align="start" side="bottom" avoidCollisions={false} className="w-56">
 									<DropdownMenuLabel>Color</DropdownMenuLabel>
 									<DropdownMenuSeparator />
 									{colorOptions.map((color) => (
@@ -369,7 +374,7 @@ export function FilterBar({
 										<ChevronDown className="ml-1.5 h-4 w-4 opacity-50" />
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent align="start" className="w-48">
+								<DropdownMenuContent align="start" side="bottom" avoidCollisions={false} className="w-48">
 									<DropdownMenuLabel>Size</DropdownMenuLabel>
 									<DropdownMenuSeparator />
 									{sizeOptions.map((size) => (
@@ -404,7 +409,7 @@ export function FilterBar({
 										<ChevronDown className="ml-1.5 h-4 w-4 opacity-50" />
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent align="start" className="w-48">
+								<DropdownMenuContent align="start" side="bottom" avoidCollisions={false} className="w-48">
 									<DropdownMenuLabel>Price Range</DropdownMenuLabel>
 									<DropdownMenuSeparator />
 									<DropdownMenuRadioGroup
@@ -435,7 +440,7 @@ export function FilterBar({
 									<ChevronDown className="ml-1.5 h-4 w-4 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="w-48">
+							<DropdownMenuContent align="end" side="bottom" avoidCollisions={false} className="w-48">
 								<DropdownMenuRadioGroup
 									value={sortValue}
 									onValueChange={(v) => onSortChange(v as SortOption)}

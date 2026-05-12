@@ -1,0 +1,21 @@
+# All categories for the PLP category filter (not derived from the current page of products).
+# Paginate with `after` until `hasNextPage` is false so child categories (e.g. "Gummies") are not cut off at `first`.
+# Product counts are scoped to the channel.
+query CategoriesForFilter($first: Int = 100, $after: String, $channel: String!) {
+	categories(first: $first, after: $after) {
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		edges {
+			node {
+				id
+				slug
+				name
+				products(channel: $channel) {
+					totalCount
+				}
+			}
+		}
+	}
+}

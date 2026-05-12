@@ -17,6 +17,7 @@ export {
 	buildSortVariables,
 	// Client-side filter helpers
 	extractCategoryOptions,
+	mergeCategoryFilterOptions,
 	extractColorOptions,
 	extractSizeOptions,
 	filterProducts,

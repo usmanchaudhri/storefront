@@ -6,10 +6,12 @@ import { CheckoutAddLineDocument, type ProductDetailsQuery } from "@/gql/graphql
 import { executeAuthenticatedGraphQL } from "@/lib/graphql";
 import * as Checkout from "@/lib/checkout";
 
+import { extractPdpPackageSectionConfig } from "@/config/pdp-layout";
 import { AddToCart } from "./add-to-cart";
 import { VariantSelectionSection } from "./variant-selection";
 import { StickyBar } from "./sticky-bar";
 import { Badge } from "@/ui/components/ui/badge";
+import { PurchaseFlowStep } from "./purchase-flow-step";
 
 type Product = NonNullable<ProductDetailsQuery["product"]>;
 
@@ -29,6 +31,7 @@ interface VariantSectionDynamicProps {
 export async function VariantSectionDynamic({ product, channel, searchParams }: VariantSectionDynamicProps) {
 	const { variant: variantParam } = await searchParams;
 	const variants = product.variants || [];
+	const packageSection = extractPdpPackageSectionConfig(product);
 
 	// Auto-select variant: use URL param, or auto-select if only one variant exists
 	const selectedVariantID = variantParam || (variants.length === 1 ? variants[0].id : undefined);
@@ -58,24 +61,24 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 	// Calculate discount/sale information
 	const currentPrice = selectedVariant?.pricing?.price?.gross?.amount;
 	const undiscountedPrice = selectedVariant?.pricing?.priceUndiscounted?.gross?.amount;
-	const { isOnSale, discountPercent } = getDiscountInfo(currentPrice, undiscountedPrice);
+	const { isOnSale } = getDiscountInfo(currentPrice, undiscountedPrice);
 
-	const compareAtPrice =
-		isOnSale && selectedVariant?.pricing?.priceUndiscounted?.gross
-			? formatMoney(
-					selectedVariant.pricing.priceUndiscounted.gross.amount,
-					selectedVariant.pricing.priceUndiscounted.gross.currency,
-				)
-			: null;
+	const showVariantStep = variants.length > 1;
+	const addToCartFlowStepStart = showVariantStep ? 2 : 1;
 
 	// Server action for adding to cart
-	async function addToCart() {
+	async function addToCart(formData: FormData) {
 		"use server";
 
 		if (!selectedVariantID) {
 			// Silently return - button should be disabled if no variant selected
 			return;
 		}
+
+		const requestedQuantity = Number(formData.get("quantity"));
+		const quantity = Number.isFinite(requestedQuantity)
+			? Math.min(99, Math.max(1, Math.floor(requestedQuantity)))
+			: 1;
 
 		try {
 			const checkout = await Checkout.findOrCreate({
@@ -95,6 +98,7 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 				variables: {
 					id: checkout.id,
 					productVariantId: decodeURIComponent(selectedVariantID),
+					quantity,
 				},
 				cache: "no-cache",
 			});
@@ -113,45 +117,75 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 	}
 
 	return (
-		<>
-			{/* Category + Sale/Stock badges row - order:1 so it appears ABOVE the h1 */}
-			<div className="order-1 flex items-center gap-2">
-				{product.category && <span className="text-sm text-muted-foreground">{product.category.name}</span>}
-				{isOnSale && (
-					<Badge variant="destructive" className="text-xs">
-						Sale
-					</Badge>
-				)}
-				{!isAvailable && (
-					<Badge variant="secondary" className="text-xs">
-						Out of stock
-					</Badge>
-				)}
+		<form action={addToCart} className="mt-4 w-full">
+			<div className="ring-border/50 overflow-hidden rounded-2xl border border-border bg-card shadow-lg ring-1">
+				<div className="from-primary/[0.07] to-muted/25 relative flex flex-col gap-4 border-b border-border bg-gradient-to-br via-card px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
+					<div className="relative min-w-0">
+						<p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Your order</p>
+						<h2 className="mt-1.5 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+							Choose options & add to bag
+						</h2>
+						<p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+							Select your size, pick a bundle with built-in savings, then add to bag—all in one place.
+						</p>
+					</div>
+					<div className="relative flex shrink-0 flex-wrap items-center gap-2">
+						{isOnSale && (
+							<Badge variant="destructive" className="text-xs font-semibold">
+								Sale
+							</Badge>
+						)}
+						{!isAvailable && (
+							<Badge variant="secondary" className="text-xs font-semibold">
+								Out of stock
+							</Badge>
+						)}
+					</div>
+				</div>
+
+				<div className="divide-y divide-border">
+					{showVariantStep ? (
+						<div className="px-5 py-5 sm:px-6 sm:py-6">
+							<PurchaseFlowStep
+								step={1}
+								title="Choose your size"
+								description="Pick the option that matches your serving—for example small vs large when both are offered."
+							/>
+							<div className="mt-5">
+								<VariantSelectionSection
+									className="space-y-5 py-0"
+									variants={variants}
+									selectedVariantId={selectedVariantID}
+									productSlug={product.slug}
+									channel={channel}
+								/>
+							</div>
+						</div>
+					) : null}
+
+					<AddToCart
+						basePriceAmount={selectedVariant?.pricing?.price?.gross?.amount}
+						currency={selectedVariant?.pricing?.price?.gross?.currency}
+						fallbackPriceLabel={price}
+						disabled={isAddToCartDisabled}
+						disabledReason={disabledReason}
+						packageSectionTitle={packageSection.sectionTitle}
+						packageUnitSingular={packageSection.unitSingular}
+						packageUnitPlural={packageSection.unitPlural}
+						packageSelectionMode={packageSection.mode}
+						packageTiers={packageSection.packageTiers}
+						// Bundles/package tiers are handled via Saleor promotions/variants, not PDP UI.
+						// Keep quantity=1 behavior by forcing the package section off.
+						showPackageSection={false}
+						flowStepStart={addToCartFlowStepStart}
+					/>
+				</div>
 			</div>
 
-			{/* Rest of variant section - order:3 so it appears BELOW the h1 */}
-			<form action={addToCart} className="order-3 mt-4 space-y-6">
-				{/* Variant Selectors */}
-				<VariantSelectionSection
-					variants={variants}
-					selectedVariantId={selectedVariantID}
-					productSlug={product.slug}
-					channel={channel}
-				/>
-
-				{/* Add to Cart */}
-				<AddToCart
-					price={price}
-					compareAtPrice={compareAtPrice}
-					discountPercent={discountPercent}
-					disabled={isAddToCartDisabled}
-					disabledReason={disabledReason}
-				/>
-
-				{/* Sticky Add to Cart Bar (Mobile) */}
+			<div className="mt-4">
 				<StickyBar productName={product.name} price={price} show={!isAddToCartDisabled} />
-			</form>
-		</>
+			</div>
+		</form>
 	);
 }
 
@@ -163,28 +197,33 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
  */
 export function VariantSectionSkeleton() {
 	return (
-		<>
-			{/* Category skeleton - order:1, delayed visibility */}
-			<div className="order-1 h-4 w-20 animate-pulse animate-skeleton-delayed rounded bg-muted opacity-0" />
-
-			{/* Variant section skeleton - order:3, delayed visibility */}
-			<div className="order-3 mt-4 animate-pulse animate-skeleton-delayed space-y-6 opacity-0">
-				{/* Variant selector skeleton */}
-				<div className="space-y-4">
-					<div className="h-4 w-16 rounded bg-muted" />
-					<div className="flex gap-2">
-						<div className="h-10 w-16 rounded bg-muted" />
-						<div className="h-10 w-16 rounded bg-muted" />
-						<div className="h-10 w-16 rounded bg-muted" />
+		<div className="mt-4 w-full animate-pulse animate-skeleton-delayed opacity-0">
+			<div className="bg-muted/30 overflow-hidden rounded-2xl border border-border">
+				<div className="bg-muted/50 h-28 sm:h-24" />
+				<div className="divide-y divide-border">
+					<div className="space-y-4 p-5 sm:p-6">
+						<div className="flex gap-3">
+							<div className="h-9 w-9 rounded-full bg-muted" />
+							<div className="flex-1 space-y-2 pt-1">
+								<div className="h-4 w-40 rounded bg-muted" />
+								<div className="h-3 w-full max-w-md rounded bg-muted" />
+							</div>
+						</div>
+						<div className="flex gap-2 pt-2">
+							<div className="h-11 w-24 rounded-lg bg-muted" />
+							<div className="h-11 w-24 rounded-lg bg-muted" />
+						</div>
 					</div>
+					<div className="p-5 sm:p-6">
+						<div className="grid grid-cols-3 gap-3">
+							<div className="h-24 rounded-xl bg-muted" />
+							<div className="h-24 rounded-xl bg-muted" />
+							<div className="h-24 rounded-xl bg-muted" />
+						</div>
+					</div>
+					<div className="bg-muted/40 h-24" />
 				</div>
-
-				{/* Price skeleton */}
-				<div className="h-8 w-24 rounded bg-muted" />
-
-				{/* Add to cart button skeleton */}
-				<div className="h-12 w-full rounded bg-muted" />
 			</div>
-		</>
+		</div>
 	);
 }

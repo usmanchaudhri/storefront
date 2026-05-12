@@ -1,4 +1,13 @@
 /** @type {import('next').NextConfig} */
+
+// `/_next/image` fetches the upstream URL on the server. Next.js blocks hostnames that
+// resolve to loopback/private IPs unless `dangerouslyAllowLocalIP` is true — otherwise
+// it returns the same 400 body as a failed `remotePatterns` match ("url" parameter is not allowed).
+const saleorApiUrl = process.env.NEXT_PUBLIC_SALEOR_API_URL ?? "";
+const allowLocalIpForImages =
+	process.env.IMAGES_DANGEROUSLY_ALLOW_LOCAL_IP === "true" ||
+	/\b(localhost|127\.0\.0\.1|\[::1\])\b/i.test(saleorApiUrl);
+
 const config = {
 	// Cache Components (Partial Prerendering)
 	// Enables mixing static, cached, and dynamic content in a single route.
@@ -13,19 +22,27 @@ const config = {
 		// (max 3 concurrent requests + 200ms delay between requests)
 	},
 	images: {
+		dangerouslyAllowLocalIP: allowLocalIpForImages,
+		qualities: [75, 100],
+		// next/image only proxies URLs that match a pattern (protocol + hostname + optional port/path).
+		// Wildcard hostname "*" is not supported — without explicit localhost rules, `/_next/image`
+		// returns: "url" parameter is not allowed (e.g. http://localhost:8001/media/...).
 		remotePatterns: [
 			{
-				// Saleor Cloud CDN
+				protocol: "https",
 				hostname: "*.saleor.cloud",
+				pathname: "/**",
 			},
 			{
-				// Saleor Media (common pattern)
+				protocol: "https",
 				hostname: "*.media.saleor.cloud",
+				pathname: "/**",
 			},
-			{
-				// Allow all hostnames in development (restrict in production)
-				hostname: "*",
-			},
+			// Local Saleor (docker-compose often maps API to host :8001; dev may use :8000)
+			{ protocol: "http", hostname: "localhost", port: "8000", pathname: "/**" },
+			{ protocol: "http", hostname: "localhost", port: "8001", pathname: "/**" },
+			{ protocol: "http", hostname: "127.0.0.1", port: "8000", pathname: "/**" },
+			{ protocol: "http", hostname: "127.0.0.1", port: "8001", pathname: "/**" },
 		],
 	},
 	typedRoutes: false,

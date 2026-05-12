@@ -8,6 +8,7 @@ import {
 	extractColorOptions,
 	extractSizeOptions,
 	extractCategoryOptions,
+	mergeCategoryFilterOptions,
 	STATIC_PRICE_RANGES_WITH_COUNT,
 	filterProducts,
 	buildActiveFilters,
@@ -21,6 +22,11 @@ interface UseProductFiltersOptions {
 	resolvedCategories?: Array<{ slug: string; id: string; name: string }>;
 	/** Whether to include category filter (only for /products page) */
 	enableCategoryFilter?: boolean;
+	/**
+	 * Full category list from Saleor (e.g. /products page). When set, drives the filter
+	 * instead of deriving options only from the current page of products.
+	 */
+	catalogCategoryOptions?: CategoryOption[];
 }
 
 interface UseProductFiltersResult {
@@ -64,6 +70,7 @@ export function useProductFilters({
 	products,
 	resolvedCategories = [],
 	enableCategoryFilter = false,
+	catalogCategoryOptions,
 }: UseProductFiltersOptions): UseProductFiltersResult {
 	const router = useRouter();
 	const pathname = usePathname();
@@ -187,8 +194,17 @@ export function useProductFilters({
 		[updateFilters],
 	);
 
-	// Extract filter options from products
-	const categoryOptions = useMemo(() => extractCategoryOptions(products), [products]);
+	// Category filter: full catalog from API (paginated on server) merged with categories on this page
+	const categoryOptions = useMemo(() => {
+		const fromProducts = extractCategoryOptions(products);
+		if (!enableCategoryFilter) {
+			return fromProducts;
+		}
+		if (catalogCategoryOptions && catalogCategoryOptions.length > 0) {
+			return mergeCategoryFilterOptions(catalogCategoryOptions, fromProducts);
+		}
+		return fromProducts;
+	}, [enableCategoryFilter, catalogCategoryOptions, products]);
 
 	const handleRemoveFilter = useCallback(
 		(key: string, value: string) => {

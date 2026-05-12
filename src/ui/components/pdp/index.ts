@@ -1,3 +1,4 @@
+export { PurchaseFlowStep } from "./purchase-flow-step";
 export { ProductGallery } from "./product-gallery";
 export { ProductAttributes } from "./product-attributes";
 export { AddToCart } from "./add-to-cart";

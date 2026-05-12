@@ -4,23 +4,21 @@ import { NavLinks } from "./nav/components/nav-links";
 import { CartNavItem } from "./nav/components/cart-nav-item";
 import { UserMenuContainer } from "./nav/components/user-menu/user-menu-container";
 import { MobileMenu } from "./nav/components/mobile-menu";
-import { SearchBar } from "./nav/components/search-bar";
-
-function SearchBarSkeleton() {
-	return <div className="h-10 w-full max-w-md animate-pulse rounded-lg bg-secondary" />;
-}
 
 function NavLinksSkeleton() {
 	return (
 		<>
 			<li className="inline-flex">
-				<span className="h-4 w-8 animate-pulse rounded bg-muted" />
+				<span className="h-9 w-12 animate-pulse rounded-lg bg-muted" />
 			</li>
 			<li className="inline-flex">
-				<span className="h-4 w-16 animate-pulse rounded bg-muted" />
+				<span className="h-9 w-16 animate-pulse rounded-lg bg-muted" />
 			</li>
 			<li className="inline-flex">
-				<span className="h-4 w-12 animate-pulse rounded bg-muted" />
+				<span className="h-9 w-14 animate-pulse rounded-lg bg-muted" />
+			</li>
+			<li className="inline-flex">
+				<span className="h-9 w-16 animate-pulse rounded-lg bg-muted" />
 			</li>
 		</>
 	);
@@ -28,28 +26,22 @@ function NavLinksSkeleton() {
 
 export async function Header({ channel }: { channel: string }) {
 	return (
-		<header className="sticky top-0 z-40 border-b border-border bg-background">
+		<header className="bg-background/95 supports-[backdrop-filter]:bg-background/90 sticky top-0 z-40 border-b border-border backdrop-blur">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<div className="flex h-16 items-center justify-between gap-4">
-					{/* Logo - no Suspense needed (simple server component) */}
-					<Logo />
-
-					{/* Search bar - Suspense for server action */}
-					<div className="hidden flex-1 justify-center md:flex">
-						<Suspense fallback={<SearchBarSkeleton />}>
-							<SearchBar channel={channel} />
-						</Suspense>
+				<div className="flex h-16 items-center gap-3 sm:gap-4 lg:h-[4.25rem] lg:gap-6">
+					<div className="flex shrink-0 items-center">
+						<Logo />
 					</div>
 
-					{/* Navigation - Suspense for cached data + client active state */}
-					<nav className="hidden items-center gap-6 lg:flex">
-						<Suspense fallback={<NavLinksSkeleton />}>
-							<NavLinks channel={channel} />
-						</Suspense>
+					<nav className="hidden min-w-0 flex-1 lg:block" aria-label="Main">
+						<ul className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-0.5 gap-y-1 sm:gap-x-1">
+							<Suspense fallback={<NavLinksSkeleton />}>
+								<NavLinks channel={channel} />
+							</Suspense>
+						</ul>
 					</nav>
 
-					{/* Actions */}
-					<div className="flex items-center gap-1">
+					<div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
 						<Suspense fallback={<div className="h-10 w-10" />}>
 							<UserMenuContainer />
 						</Suspense>
@@ -58,9 +50,6 @@ export async function Header({ channel }: { channel: string }) {
 						</Suspense>
 						<Suspense>
 							<MobileMenu>
-								<Suspense fallback={<SearchBarSkeleton />}>
-									<SearchBar channel={channel} />
-								</Suspense>
 								<Suspense fallback={<NavLinksSkeleton />}>
 									<NavLinks channel={channel} />
 								</Suspense>

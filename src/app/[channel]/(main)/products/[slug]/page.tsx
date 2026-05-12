@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
+import Image from "next/image";
 import { ErrorBoundary } from "react-error-boundary";
 import edjsHTML from "editorjs-html";
 import xss from "xss";
@@ -8,7 +9,13 @@ import xss from "xss";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { ProductDetailsDocument, type ProductDetailsQuery } from "@/gql/graphql";
 import { buildPageMetadata, buildProductJsonLd } from "@/lib/seo";
+import { stripShippingReturnsCtaFromHtml } from "@/lib/strip-pdp-shipping-returns-cta";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
+import {
+	getPdpBottomBannerAttributeSlugs,
+	getPdpPackageConfigAttributeSlugs,
+	type PdpBottomBanner,
+} from "@/config/pdp-layout";
 import { Breadcrumbs } from "@/ui/components/breadcrumbs";
 import {
 	ProductGallery,
@@ -57,7 +64,7 @@ export async function generateMetadata(props: {
 	}
 
 	const description = product.seoDescription || product.name;
-	const ogImage = product.media?.[0]?.url || product.thumbnail?.url;
+	const ogImage = product.media?.[0]?.mainUrl || product.thumbnail?.url;
 	const priceAmount = product.pricing?.priceRange?.start?.gross?.amount;
 	const priceCurrency = product.pricing?.priceRange?.start?.gross?.currency;
 
@@ -124,6 +131,7 @@ async function ProductContent({
 	const images = getGalleryImages(product, selectedVariant);
 	const productAttributes = extractProductAttributes(product);
 	const careInstructions = extractCareInstructions(product);
+	const bottomBanner = extractPdpBottomBanner(product);
 
 	const breadcrumbs = [
 		{ label: "Home", href: `/${params.channel}` },
@@ -169,36 +177,59 @@ async function ProductContent({
 					<Breadcrumbs items={breadcrumbs} />
 				</div>
 
-				<div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
-					<div className="lg:sticky lg:top-24 lg:self-start">
+				<div className="grid gap-8 lg:grid-cols-[minmax(0,720px)_minmax(0,1fr)] lg:gap-10 xl:gap-12">
+					<div className="lg:sticky lg:top-24 lg:max-w-[720px] lg:self-start xl:max-w-[760px]">
 						<ProductGallery images={images} productName={product.name} />
 					</div>
 
 					<div className="flex flex-col gap-3">
-						<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight lg:text-4xl">
-							{product.name}
-						</h1>
+						<div className="order-2 flex flex-col gap-1.5">
+							<h1 className="text-balance text-3xl font-semibold tracking-tight lg:text-4xl">
+								{product.name}
+							</h1>
+							{descriptionHtml && descriptionHtml.length > 0 && (
+								<div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-foreground prose-strong:text-foreground [&_p:first-child]:mt-0">
+									{descriptionHtml.map((html) => (
+										<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
+									))}
+								</div>
+							)}
+						</div>
 
-						<ErrorBoundary FallbackComponent={VariantSectionError}>
-							<Suspense fallback={<VariantSectionSkeleton />}>
-								<VariantSectionDynamic
-									product={product}
-									channel={params.channel}
-									searchParams={searchParamsPromise}
-								/>
-							</Suspense>
-						</ErrorBoundary>
+						<ProductAttributes
+							className="order-4"
+							attributes={productAttributes}
+							careInstructions={careInstructions}
+						/>
 
-						<div className="order-4 mt-6">
-							<ProductAttributes
-								descriptionHtml={descriptionHtml}
-								attributes={productAttributes}
-								careInstructions={careInstructions}
-							/>
+						<div className="order-5">
+							<ErrorBoundary FallbackComponent={VariantSectionError}>
+								<Suspense fallback={<VariantSectionSkeleton />}>
+									<VariantSectionDynamic
+										product={product}
+										channel={params.channel}
+										searchParams={searchParamsPromise}
+									/>
+								</Suspense>
+							</ErrorBoundary>
 						</div>
 					</div>
 				</div>
 			</main>
+
+			{bottomBanner && (
+				<section className="w-full pb-10 pt-2 sm:pb-12 lg:pb-16">
+					<Image
+						src={bottomBanner.url}
+						alt={bottomBanner.alt}
+						width={1536}
+						height={864}
+						className="h-auto w-full object-cover"
+						sizes="100vw"
+						priority={false}
+					/>
+				</section>
+			)}
 		</div>
 	);
 }
@@ -238,20 +269,25 @@ function parseDescription(description: string | null | undefined): string[] | nu
 
 	try {
 		const parsed = parser.parse(JSON.parse(description));
-		return parsed.map((html: string) => xss(html));
+		return parsed.map((html: string) => stripShippingReturnsCtaFromHtml(xss(html))).filter(Boolean);
 	} catch {
-		return [xss(`<p>${description}</p>`)];
+		return [stripShippingReturnsCtaFromHtml(xss(`<p>${description}</p>`))].filter(Boolean);
 	}
 }
 
 function extractProductAttributes(product: NonNullable<ProductDetailsQuery["product"]>) {
 	const variantAttributeSlugs = ["size", "color", "colour", "variant"];
 	const internalAttributeSlugs = ["care-instructions", "care"];
+	const layoutAttributeSlugs = new Set([
+		...getPdpBottomBannerAttributeSlugs(),
+		...getPdpPackageConfigAttributeSlugs(),
+	]);
 
 	return (product.attributes || [])
 		.filter((attr) => attr.attribute.name)
 		.filter((attr) => !variantAttributeSlugs.includes((attr.attribute.slug ?? "").toLowerCase()))
 		.filter((attr) => !internalAttributeSlugs.includes((attr.attribute.slug ?? "").toLowerCase()))
+		.filter((attr) => !layoutAttributeSlugs.has((attr.attribute.slug ?? "").toLowerCase()))
 		.map((attr) => ({
 			name: attr.attribute.name!,
 			value:
@@ -287,18 +323,20 @@ type Variant = NonNullable<Product["variants"]>[number];
 function getGalleryImages(
 	product: Product,
 	selectedVariant: Variant | null | undefined,
-): { url: string; alt: string | null | undefined }[] {
+): { url: string; thumbnailUrl?: string; alt: string | null | undefined }[] {
 	if (selectedVariant?.media && selectedVariant.media.length > 0) {
 		const variantImages = selectedVariant.media
 			.filter((m) => m.type === "IMAGE")
-			.map((m) => ({ url: m.url, alt: m.alt }));
+			.map((m) => ({ url: m.mainUrl, thumbnailUrl: m.thumbnailUrl, alt: m.alt }));
 		if (variantImages.length > 0) {
 			return variantImages;
 		}
 	}
 
 	if (product.media && product.media.length > 0) {
-		return product.media.filter((m) => m.type === "IMAGE").map((m) => ({ url: m.url, alt: m.alt }));
+		return product.media
+			.filter((m) => m.type === "IMAGE")
+			.map((m) => ({ url: m.mainUrl, thumbnailUrl: m.thumbnailUrl, alt: m.alt }));
 	}
 
 	if (product.thumbnail) {
@@ -306,4 +344,36 @@ function getGalleryImages(
 	}
 
 	return [];
+}
+
+function extractPdpBottomBanner(
+	product: NonNullable<ProductDetailsQuery["product"]>,
+): PdpBottomBanner | null {
+	const slugs = getPdpBottomBannerAttributeSlugs();
+	for (const slug of slugs) {
+		const attr = (product.attributes || []).find((a) => (a.attribute.slug ?? "").toLowerCase() === slug);
+		const first = attr?.values?.[0];
+		if (!first) continue;
+
+		const fileUrl = first.file?.url;
+		const raw = [first.value?.trim(), first.name?.trim()].find((s) => s && s.length > 0);
+		const textUrl = raw && isLikelyImageUrl(raw) ? raw : null;
+
+		const url = fileUrl || textUrl;
+		if (url) {
+			return {
+				url,
+				alt: `${product.name} — details banner`,
+			};
+		}
+	}
+
+	return null;
+}
+
+function isLikelyImageUrl(s: string): boolean {
+	if (/^https?:\/\//i.test(s)) return true;
+	// protocol-relative or absolute path (pair with same-origin / configured media host if needed)
+	if (s.startsWith("//")) return true;
+	return false;
 }

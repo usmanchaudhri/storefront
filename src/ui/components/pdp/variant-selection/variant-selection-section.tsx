@@ -14,6 +14,7 @@ import {
 	getUnavailableAttributeInfo,
 	type SaleorVariant,
 } from "./utils";
+import { cn } from "@/lib/utils";
 import { VariantAttributeBadges, extractOptionalAttributes } from "./optional-attributes";
 
 /**
@@ -52,6 +53,7 @@ export function VariantSelectionSection({
 	productSlug,
 	channel,
 	children,
+	className,
 }: VariantSelectionSectionProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -159,10 +161,12 @@ export function VariantSelectionSection({
 		return null;
 	}
 
+	const sectionClass = cn("space-y-6 py-2", className);
+
 	// Fallback: variants without structured attributes use name-based selector
 	if (attributeGroups.length === 0) {
 		return (
-			<div className="space-y-6 py-2">
+			<div className={sectionClass}>
 				<VariantNameSelector
 					variants={variants}
 					selectedVariantId={optimisticVariantId}
@@ -174,7 +178,7 @@ export function VariantSelectionSection({
 	}
 
 	return (
-		<div className="space-y-6 py-2">
+		<div className={sectionClass}>
 			{attributeGroups.map((group) => {
 				const options = getOptionsForAttribute(
 					variants as SaleorVariant[],

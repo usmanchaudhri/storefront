@@ -24,7 +24,8 @@ fragment VariantDetails on ProductVariant {
 		}
 	}
 	media {
-		url(size: 1024, format: WEBP)
+		mainUrl: url(size: 800, format: WEBP)
+		thumbnailUrl: url(size: 400, format: WEBP)
 		alt
 		type
 	}

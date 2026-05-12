@@ -25,6 +25,21 @@ export interface VariantOption {
 	hasDiscount?: boolean;
 	/** Maximum discount percentage for variants with this option (e.g., 20 for 20% off) */
 	discountPercent?: number;
+	/**
+	 * Pricing for the concrete variant that would be selected if the user picks this option
+	 * with the current other selections (best-effort for partial selections).
+	 *
+	 * `sellingPriceAmount` → Saleor `pricing.price.gross`; `costPriceAmount` → `pricing.priceUndiscounted.gross` when present.
+	 */
+	sellingPriceAmount?: number;
+	costPriceAmount?: number;
+	currency?: string;
+	/** Percent off between cost and selling price (rounded) */
+	percentOff?: number;
+	/** Primary label override used by card-style renderers (e.g. "1 Bottle"). */
+	primaryLabel?: string;
+	/** Secondary label shown under primary label (e.g. "30 Gummies"). */
+	secondaryLabel?: string;
 	/** Additional metadata from Saleor attributes */
 	metadata?: Record<string, unknown>;
 }
@@ -131,4 +146,6 @@ export interface VariantSelectionSectionProps {
 	renderers?: Partial<RendererRegistry>;
 	/** Optional: Override the entire section rendering */
 	children?: React.ReactNode;
+	/** Merged onto the section root (for layout wrappers, e.g. purchase card). */
+	className?: string;
 }

@@ -34,6 +34,58 @@ export type SaleorVariant = {
 	} | null;
 };
 
+function getVariantPriceSummary(variant: SaleorVariant | undefined): {
+	sellingPriceAmount?: number;
+	costPriceAmount?: number;
+	currency?: string;
+	percentOff?: number;
+} {
+	const price = variant?.pricing?.price?.gross;
+	if (!price) return {};
+	const cost = variant?.pricing?.priceUndiscounted?.gross;
+
+	const sellingPriceAmount = price.amount;
+	const currency = price.currency;
+	const costPriceAmount = cost?.amount;
+
+	const hasDiscount =
+		typeof costPriceAmount === "number" &&
+		Number.isFinite(costPriceAmount) &&
+		costPriceAmount > 0 &&
+		costPriceAmount > sellingPriceAmount;
+
+	const percentOff = hasDiscount ? Math.round((1 - sellingPriceAmount / costPriceAmount) * 100) : undefined;
+
+	const hasUndiscounted =
+		typeof costPriceAmount === "number" && Number.isFinite(costPriceAmount) && costPriceAmount > 0;
+
+	return {
+		sellingPriceAmount,
+		// Maps to Saleor `pricing.priceUndiscounted.gross` for compare-at display when > selling.
+		costPriceAmount: hasUndiscounted ? costPriceAmount : undefined,
+		currency,
+		percentOff,
+	};
+}
+
+function variantMatchesSelectionsPartial(
+	variant: SaleorVariant,
+	selections: Record<string, string>,
+): boolean {
+	const entries = Object.entries(selections).filter(([, v]) => v);
+	for (const [attrSlug, selectedValue] of entries) {
+		const attr = variant.selectionAttributes.find(
+			(a) => (a.attribute.slug ?? "").toLowerCase() === attrSlug.toLowerCase(),
+		);
+		if (!attr) return false;
+		const hasValue = attr.values.some(
+			(v) => (v.name ?? "").toLowerCase().replace(/\s+/g, "-") === selectedValue.toLowerCase(),
+		);
+		if (!hasValue) return false;
+	}
+	return true;
+}
+
 // ============================================================================
 // Discount Helpers (using shared pricing utilities)
 // ============================================================================
@@ -147,6 +199,28 @@ export function groupVariantsByAttributes(variants: SaleorVariant[]): AttributeG
 
 	// Sort: color attributes first, then size, then others
 	groups.sort((a, b) => {
+		const aSlug = (a.slug ?? "").toLowerCase();
+		const bSlug = (b.slug ?? "").toLowerCase();
+		const aName = (a.name ?? "").toLowerCase();
+		const bName = (b.name ?? "").toLowerCase();
+
+		// Custom: Gummy Size must render before Gummy Bundle.
+		const isGummySize = (s: string, n: string) => s.includes("gummy-size") || n.includes("gummy size");
+		const isGummyBundle = (s: string, n: string) =>
+			s.includes("gummy-bundle") ||
+			n.includes("gummy bundle") ||
+			(s.includes("bundle") && n.includes("gummy"));
+
+		const aIsGummySize = isGummySize(aSlug, aName);
+		const bIsGummySize = isGummySize(bSlug, bName);
+		if (aIsGummySize && !bIsGummySize) return -1;
+		if (!aIsGummySize && bIsGummySize) return 1;
+
+		const aIsGummyBundle = isGummyBundle(aSlug, aName);
+		const bIsGummyBundle = isGummyBundle(bSlug, bName);
+		if (aIsGummyBundle && !bIsGummyBundle) return 1;
+		if (!aIsGummyBundle && bIsGummyBundle) return -1;
+
 		const aIsColor = isColorAttribute(a.slug);
 		const bIsColor = isColorAttribute(b.slug);
 		const aIsSize = isSizeAttribute(a.slug);
@@ -287,12 +361,25 @@ export function getOptionsForAttribute(
 			});
 		}
 
+		// Price summary for the specific variant this option would select (best-effort).
+		const projectedSelections = { ...currentSelections, [targetAttributeSlug]: option.id };
+		const exactVariantId = findMatchingVariant(variants, projectedSelections);
+		const candidateVariant =
+			(exactVariantId ? variants.find((v) => v.id === exactVariantId) : undefined) ??
+			// If not all attributes selected yet, pick the best matching in-stock variant.
+			variants
+				.filter((v) => variantMatchesSelectionsPartial(v, projectedSelections))
+				.sort((a, b) => (b.quantityAvailable ?? 0) - (a.quantityAvailable ?? 0))[0];
+
+		const priceSummary = getVariantPriceSummary(candidateVariant);
+
 		return {
 			...option,
 			available,
 			hasDiscount,
 			discountPercent: maxPercent > 0 ? maxPercent : undefined,
 			existsWithCurrentSelection,
+			...priceSummary,
 		};
 	});
 }

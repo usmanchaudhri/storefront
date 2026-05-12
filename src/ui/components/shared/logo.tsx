@@ -1,61 +1,52 @@
+import Image from "next/image";
+import { brandConfig } from "@/config/brand";
+import { cn } from "@/lib/utils";
+
 /**
  * Shared Logo Component
  *
  * Single source of truth for the storefront logo.
- * Uses external SVG files for better caching and smaller bundle size.
+ * Raster wordmark: /public/kayapure-logo.png
  *
- * - /public/logo.svg: dark logo for light backgrounds
- * - /public/logo-dark.svg: light logo for dark backgrounds
+ * Black-on-white source asset: CSS `invert` adapts the mark for
+ * light header (default), dark header (dark:invert), and dark footer
+ * (inverted prop). Footer uses `invert dark:invert-0` for correct
+ * contrast in both color schemes.
  *
  * @example
- * <Logo className="h-7 w-auto" />                    // Header (auto light/dark)
- * <Logo className="h-7 w-auto" inverted />          // Footer (inverted for dark bg)
+ * <Logo className="h-7 w-auto" />
+ * <Logo className="h-7 w-auto" inverted />
  */
+
+const LOGO_SRC = "/kayapure-logo.png" as const;
+const LOGO_WIDTH = 1024;
+const LOGO_HEIGHT = 231;
+const ASPECT = `${LOGO_WIDTH} / ${LOGO_HEIGHT}` as const;
 
 interface LogoProps {
 	className?: string;
-	/** Accessible label for the logo */
+	/** Accessible label for the logo (defaults to brand) */
 	ariaLabel?: string;
-	/** Invert colors (for dark backgrounds like footer) */
+	/** Invert for dark backgrounds (e.g. dark footer) */
 	inverted?: boolean;
 }
 
-/**
- * Paper + Saleor combined logo (100x23, aspect ratio ~4.35:1)
- * Automatically switches between light/dark mode versions.
- *
- * Uses explicit width/height + aspect-ratio to prevent CLS while
- * allowing flexible sizing via className.
- */
-export const Logo = ({ className, ariaLabel = "Paper by Saleor", inverted = false }: LogoProps) => {
-	// When inverted, swap the light/dark mode logic
-	const lightModeLogo = inverted ? "/logo-dark.svg" : "/logo.svg";
-	const darkModeLogo = inverted ? "/logo.svg" : "/logo-dark.svg";
-
-	// Base styles: preserve aspect ratio to prevent CLS
-	// Height classes (e.g., h-7) will work correctly with w-auto
-	const baseStyles = "aspect-[100/23]";
-
+export const Logo = ({ className, ariaLabel = brandConfig.logoAriaLabel, inverted = false }: LogoProps) => {
 	return (
-		<>
-			{/* Light mode */}
-			{/* eslint-disable-next-line @next/next/no-img-element */}
-			<img
-				src={lightModeLogo}
-				alt={ariaLabel}
-				width={100}
-				height={23}
-				className={`dark:hidden ${baseStyles} ${className ?? ""}`}
-			/>
-			{/* Dark mode */}
-			{/* eslint-disable-next-line @next/next/no-img-element */}
-			<img
-				src={darkModeLogo}
-				alt={ariaLabel}
-				width={100}
-				height={23}
-				className={`hidden dark:block ${baseStyles} ${className ?? ""}`}
-			/>
-		</>
+		<Image
+			src={LOGO_SRC}
+			alt={ariaLabel}
+			width={LOGO_WIDTH}
+			height={LOGO_HEIGHT}
+			quality={100}
+			priority={false}
+			sizes="(max-width: 768px) 40vw, 200px"
+			className={cn(
+				"min-w-0 object-contain object-left",
+				inverted ? "invert dark:invert-0" : "dark:invert",
+				className,
+			)}
+			style={{ aspectRatio: ASPECT }}
+		/>
 	);
 };

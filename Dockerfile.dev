@@ -1,0 +1,24 @@
+# Development server in Docker (no static prerender — avoids needing Saleor during `docker build`).
+# Production image: use root Dockerfile only when the API is reachable at build time (see comment in that file).
+
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm i --frozen-lockfile --prefer-offline
+
+COPY . .
+
+# Checkout codegen output is gitignored; generate from vendored Saleor schema.
+ENV USE_LOCAL_SCHEMA_FILE=1
+ENV NEXT_PUBLIC_SALEOR_API_URL=http://127.0.0.1/graphql/
+RUN pnpm run generate:all
+
+EXPOSE 3000
+CMD ["pnpm", "dev", "--hostname", "0.0.0.0", "--port", "3000", "--webpack"]

@@ -32,8 +32,22 @@ export const brandConfig = {
 	/** Homepage meta description */
 	description: "Starter pack for building performant e-commerce experiences with Saleor.",
 
+	/**
+	 * Homepage hero banner (above featured products).
+	 * Optional background: set `NEXT_PUBLIC_HOME_HERO_IMAGE_URL` to a `/public/...` path
+	 * or an allowed `next/image` host (e.g. Saleor media).
+	 */
+	homeHero: {
+		eyebrow: "New season",
+		title: "Pure routines. Real results.",
+		subtitle: "Explore curated gummies, shots, and drops — crafted for clarity, focus, and everyday balance.",
+		ctaLabel: "Shop all",
+		/** App-relative path; channel is prefixed at render time */
+		ctaHref: "/products",
+	},
+
 	/** Logo aria-label for accessibility */
-	logoAriaLabel: "Store",
+	logoAriaLabel: "KayaPure",
 
 	/** Title template - %s will be replaced with page title */
 	titleTemplate: "%s | Saleor Store",

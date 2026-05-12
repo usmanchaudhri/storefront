@@ -1,7 +1,13 @@
 "use client";
 
 import { Suspense } from "react";
-import { FilterBar, ProductGrid, useProductFilters, type ProductCardData } from "@/ui/components/plp";
+import {
+	FilterBar,
+	ProductGrid,
+	useProductFilters,
+	type ProductCardData,
+	type CategoryOption,
+} from "@/ui/components/plp";
 import { Pagination } from "@/ui/components/pagination";
 
 interface ProductsPageClientProps {
@@ -15,6 +21,8 @@ interface ProductsPageClientProps {
 	totalCount?: number;
 	/** Categories resolved from URL slugs (server-side) for active filter display */
 	resolvedCategories?: Array<{ slug: string; id: string; name: string }>;
+	/** Full category list from Saleor for the category filter */
+	catalogCategoryOptions?: CategoryOption[];
 }
 
 function PaginationSkeleton() {
@@ -26,7 +34,12 @@ function PaginationSkeleton() {
 	);
 }
 
-export function ProductsPageClient({ products, pageInfo, resolvedCategories = [] }: ProductsPageClientProps) {
+export function ProductsPageClient({
+	products,
+	pageInfo,
+	resolvedCategories = [],
+	catalogCategoryOptions,
+}: ProductsPageClientProps) {
 	const {
 		filteredProducts,
 		categoryOptions,
@@ -50,6 +63,7 @@ export function ProductsPageClient({ products, pageInfo, resolvedCategories = []
 		products,
 		resolvedCategories,
 		enableCategoryFilter: true,
+		catalogCategoryOptions,
 	});
 
 	return (

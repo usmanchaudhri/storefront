@@ -118,6 +118,27 @@ export function extractCategoryOptions(products: ProductCardData[]): CategoryOpt
 }
 
 /**
+ * Merge API category list with categories inferred from the current product page.
+ * Catalog wins on slug collision (correct totalCount from Saleor); page-only categories
+ * are included if missing from the paginated catalog response.
+ */
+export function mergeCategoryFilterOptions(
+	catalog: CategoryOption[],
+	fromProducts: CategoryOption[],
+): CategoryOption[] {
+	const map = new Map<string, CategoryOption>();
+	for (const c of catalog) {
+		map.set(c.slug, c);
+	}
+	for (const c of fromProducts) {
+		if (!map.has(c.slug)) {
+			map.set(c.slug, c);
+		}
+	}
+	return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
  * Extract unique color options from products.
  * Selected colors are always included (with count 0) so users can deselect them.
  */

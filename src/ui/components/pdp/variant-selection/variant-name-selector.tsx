@@ -2,6 +2,23 @@
 
 import { cn, formatMoney } from "@/lib/utils";
 
+function parseBottleGummiesLabels(name: string): { primary: string; secondary?: string } {
+	const s = name.trim();
+	const bottleMatch = s.match(/(\d+)\s*bottles?\b/i) ?? s.match(/\b(\d+)\b/);
+	const gummiesMatch = s.match(/(\d+)\s*gumm(?:y|ies)\b/i);
+
+	const bottles = bottleMatch ? Number.parseInt(bottleMatch[1]!, 10) : NaN;
+	const primary =
+		Number.isFinite(bottles) && bottles > 0 ? `${bottles} ${bottles === 1 ? "Bottle" : "Bottles"}` : s;
+
+	const secondaryFromGummies = gummiesMatch ? `${gummiesMatch[1]} Gummies` : undefined;
+	if (secondaryFromGummies) return { primary, secondary: secondaryFromGummies };
+
+	// Fallback: keep a clear second line by using the remaining text.
+	const remainder = bottleMatch ? s.replace(bottleMatch[0]!, "").trim() : "";
+	return remainder ? { primary, secondary: remainder } : { primary };
+}
+
 /**
  * Fallback selector for variants that have no structured attributes.
  *
@@ -45,30 +62,30 @@ export function VariantNameSelector({
 	variants,
 	selectedVariantId,
 	onSelect,
-	label = "Variant",
+	label = "",
 	isPending,
 }: VariantNameSelectorProps) {
-	// Check if prices differ between variants (show price if so)
-	const prices = variants
-		.map((v) => v.pricing?.price?.gross?.amount)
-		.filter((p): p is number => p !== undefined && p !== null);
-	const showPrices = prices.length > 1 && new Set(prices).size > 1;
-
 	const selectedVariant = variants.find((v) => v.id === selectedVariantId);
 
 	return (
 		<div className="space-y-3">
-			<div className="flex items-center gap-2">
-				<span className="text-sm font-medium">{label}</span>
-				{selectedVariant && <span className="text-sm text-muted-foreground">{selectedVariant.name}</span>}
-			</div>
+			{label ? (
+				<div className="flex items-center gap-2">
+					<span className="text-sm font-medium">{label}</span>
+					{selectedVariant && (
+						<span className="text-sm text-muted-foreground">
+							{parseBottleGummiesLabels(selectedVariant.name).primary}
+						</span>
+					)}
+				</div>
+			) : null}
 
 			<div
 				role="group"
 				aria-label={label}
 				aria-busy={isPending}
 				className={cn(
-					"flex flex-wrap gap-3 transition-opacity duration-150",
+					"grid grid-cols-1 gap-3 transition-opacity duration-150 sm:grid-cols-2 lg:grid-cols-3",
 					isPending && "pointer-events-none opacity-60",
 				)}
 				style={{ transitionDelay: isPending ? "100ms" : "0ms" }}
@@ -78,55 +95,111 @@ export function VariantNameSelector({
 					const isOutOfStock = (variant.quantityAvailable ?? 0) <= 0;
 					const price = variant.pricing?.price?.gross;
 					const undiscountedPrice = variant.pricing?.priceUndiscounted?.gross;
-					const hasDiscount = price && undiscountedPrice && undiscountedPrice.amount > price.amount;
+					const showSellingPrice = !!price?.currency && typeof price.amount === "number";
+					const showWasPrice =
+						showSellingPrice &&
+						undiscountedPrice &&
+						typeof undiscountedPrice.amount === "number" &&
+						undiscountedPrice.amount > price!.amount;
+					const hasDiscount = !!(price && undiscountedPrice && undiscountedPrice.amount > price.amount);
 					const discountPercent = hasDiscount
-						? Math.round((1 - price.amount / undiscountedPrice.amount) * 100)
+						? Math.round((1 - price!.amount / undiscountedPrice!.amount) * 100)
 						: null;
+					const { primary, secondary } = parseBottleGummiesLabels(variant.name);
+					const isMostPopular = /\b2\s*Bottle/i.test(primary);
+					const isBottleBundleCard = /\bBottle/i.test(primary);
 
 					// Build accessible label
 					const accessibleParts = [
-						variant.name,
+						primary,
+						secondary,
 						isOutOfStock && "out of stock",
-						showPrices && price && formatMoney(price.amount, price.currency),
+						showSellingPrice && formatMoney(price!.amount, price!.currency),
+						showWasPrice && `was ${formatMoney(undiscountedPrice!.amount, price!.currency)}`,
 						discountPercent && `${discountPercent}% off`,
 					].filter(Boolean);
 
 					return (
 						<div key={variant.id} className="relative">
+							{isMostPopular ? (
+								<span className="pointer-events-none absolute -top-2.5 left-2 z-10 max-w-[calc(100%-1rem)] truncate rounded-full bg-teal-600 px-2 py-1 text-[11px] font-bold uppercase leading-tight tracking-wide text-white sm:left-3 sm:px-2.5 sm:py-0.5 sm:text-[10px]">
+									Most Popular
+								</span>
+							) : /\b3\s*Bottle/i.test(primary) ? (
+								<span className="pointer-events-none absolute -top-2.5 left-2 z-10 max-w-[calc(100%-1rem)] truncate rounded-full bg-foreground px-2 py-1 text-[11px] font-bold uppercase leading-tight tracking-wide text-background sm:left-3 sm:px-2.5 sm:py-0.5 sm:text-[10px]">
+									Best Value
+								</span>
+							) : null}
 							<button
 								type="button"
 								onClick={() => onSelect(variant.id)}
 								disabled={isOutOfStock}
 								aria-disabled={isOutOfStock}
 								className={cn(
-									"h-12 min-w-[4.5rem] rounded-lg border px-4 text-sm font-medium transition-all",
+									"relative flex w-full flex-col justify-between rounded-xl border-2 text-left transition-colors",
+									/\bBottle/i.test(primary) ? "min-h-[104px] p-2.5" : "min-h-[124px] p-4",
 									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 									isSelected
-										? "border-foreground bg-foreground text-background"
-										: "border-border bg-background text-foreground hover:border-foreground",
+										? "border-teal-600 bg-teal-500/10 text-foreground"
+										: "bg-muted/15 hover:bg-muted/30 border-border text-foreground hover:border-teal-600/30",
 									isOutOfStock && "cursor-not-allowed text-muted-foreground line-through opacity-60",
 								)}
 								title={isOutOfStock ? `${variant.name} - Out of stock` : undefined}
 								aria-label={accessibleParts.join(", ")}
 								aria-pressed={isSelected}
 							>
-								<span className="flex items-center gap-2">
-									{variant.name}
-									{showPrices && price && (
-										<span className={cn("text-xs", isSelected ? "opacity-80" : "text-muted-foreground")}>
-											{formatMoney(price.amount, price.currency)}
-										</span>
+								<div
+									className={cn(
+										"flex flex-1 flex-col justify-between",
+										/\bBottle/i.test(primary) ? "gap-1.5" : "gap-3",
 									)}
-								</span>
-							</button>
-							{discountPercent && !isOutOfStock && (
-								<span
-									className="pointer-events-none absolute -bottom-2 -right-1 rounded-full border border-destructive bg-background px-1.5 py-0.5 text-[10px] font-semibold text-destructive"
-									aria-hidden="true"
 								>
-									-{discountPercent}%
-								</span>
-							)}
+									<div>
+										<p
+											className={cn(
+												"font-semibold leading-snug text-foreground",
+												isBottleBundleCard ? "text-[15px] sm:text-sm" : "text-base sm:text-sm",
+											)}
+										>
+											{primary}
+										</p>
+										{secondary ? (
+											<p className="mt-1 text-sm font-medium leading-snug text-muted-foreground sm:text-xs">
+												{secondary}
+											</p>
+										) : null}
+									</div>
+									{showSellingPrice ? (
+										<div className="flex flex-col gap-1.5">
+											<div className="flex flex-wrap items-end gap-x-2 gap-y-0.5">
+												<span
+													className={cn(
+														"font-bold tabular-nums text-foreground",
+														isBottleBundleCard ? "text-lg" : "text-xl sm:text-2xl",
+													)}
+												>
+													{formatMoney(price!.amount, price!.currency)}
+												</span>
+												{showWasPrice ? (
+													<span
+														className={cn(
+															"font-medium tabular-nums text-muted-foreground line-through",
+															isBottleBundleCard ? "text-sm sm:text-[13px]" : "text-base sm:text-sm",
+														)}
+													>
+														{formatMoney(undiscountedPrice!.amount, price!.currency)}
+													</span>
+												) : null}
+											</div>
+											{discountPercent ? (
+												<span className="bg-primary/12 inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-primary sm:py-0.5 sm:text-xs">
+													Save {discountPercent}%
+												</span>
+											) : null}
+										</div>
+									) : null}
+								</div>
+							</button>
 						</div>
 					);
 				})}

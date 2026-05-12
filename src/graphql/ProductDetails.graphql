@@ -6,12 +6,13 @@ query ProductDetails($slug: String!, $channel: String!) {
 		description
 		seoTitle
 		seoDescription
-		thumbnail(size: 1024, format: WEBP) {
+		thumbnail(size: 800, format: WEBP) {
 			url
 			alt
 		}
 		media {
-			url(size: 1024, format: WEBP)
+			mainUrl: url(size: 800, format: WEBP)
+			thumbnailUrl: url(size: 400, format: WEBP)
 			alt
 			type
 		}
@@ -23,6 +24,10 @@ query ProductDetails($slug: String!, $channel: String!) {
 		attributes {
 			values {
 				name
+				value
+				file {
+					url
+				}
 			}
 			attribute {
 				name

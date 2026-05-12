@@ -59,13 +59,13 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 		<article className="group">
 			<Link href={product.href} className="block">
 				{/* Image Container */}
-				<div className="relative mb-4 aspect-[3/4] overflow-hidden rounded-xl bg-secondary">
+				<div className="relative mb-3 aspect-[3/4] overflow-hidden rounded-xl bg-secondary sm:mb-4">
 					{/* Primary Image */}
 					<Image
 						src={product.image}
 						alt={product.imageAlt || product.name}
 						fill
-						sizes="(max-width: 1024px) 50vw, 33vw"
+						sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 33vw"
 						className={cn(
 							"object-cover transition-all duration-500 ease-out md:group-hover:scale-105",
 							product.hoverImage && "md:group-hover:opacity-0",
@@ -79,7 +79,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 							src={product.hoverImage}
 							alt={`${product.name} - alternate view`}
 							fill
-							sizes="(max-width: 1024px) 50vw, 33vw"
+							sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 33vw"
 							className="object-cover opacity-0 transition-all duration-500 ease-out md:group-hover:scale-105 md:group-hover:opacity-100"
 						/>
 					)}
@@ -88,7 +88,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 					{product.badge && (
 						<Badge
 							variant={product.badge === "Sale" ? "destructive" : "default"}
-							className="absolute left-3 top-3"
+							className="absolute left-2 top-2 px-2 py-1 text-xs sm:left-3 sm:top-3 sm:px-2.5 sm:py-0.5"
 						>
 							{product.badge}
 						</Badge>
@@ -105,39 +105,51 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 					)}
 				</div>
 
-				{/* Product Info */}
-				<div className="space-y-1.5">
-					{product.brand && <p className="text-xs tracking-wide text-muted-foreground">{product.brand}</p>}
-					<h3 className="line-clamp-2 font-medium leading-snug underline-offset-2 md:group-hover:underline">
+				{/* Product Info — slightly larger type on small screens for readability */}
+				<div className="space-y-2">
+					{product.brand && (
+						<p className="text-sm leading-normal tracking-wide text-muted-foreground">{product.brand}</p>
+					)}
+					<h3 className="line-clamp-2 text-base font-medium leading-snug text-foreground underline-offset-2 sm:text-[1.0625rem] md:group-hover:underline">
 						{product.name}
 					</h3>
 
 					{/* Color Swatches */}
 					{product.colors && product.colors.length > 1 && (
-						<div className="flex items-center gap-1.5 pt-1">
+						<div className="flex items-center gap-2 pt-0.5 sm:gap-1.5 sm:pt-1">
 							{product.colors.slice(0, 4).map((color) => (
 								<span
 									key={color.name}
-									className="h-4 w-4 rounded-full border border-border"
+									className="h-5 w-5 shrink-0 rounded-full border border-border sm:h-4 sm:w-4"
 									style={{ backgroundColor: color.hex }}
 									title={color.name}
 								/>
 							))}
 							{product.colors.length > 4 && (
-								<span className="ml-0.5 text-xs text-muted-foreground">+{product.colors.length - 4}</span>
+								<span className="ml-0.5 text-sm text-muted-foreground sm:text-xs">
+									+{product.colors.length - 4}
+								</span>
 							)}
 						</div>
 					)}
 
 					{/* Price */}
-					<div className="flex items-center gap-2 pt-0.5">
-						<span className="font-semibold">{formatPrice(product.price, product.currency)}</span>
-						{product.compareAtPrice && (
-							<span className="text-sm text-muted-foreground line-through">
+					{product.compareAtPrice ? (
+						<div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-1">
+							<span className="text-base font-semibold tabular-nums text-foreground sm:text-lg">
+								{formatPrice(product.price, product.currency)}
+							</span>
+							<span className="text-sm font-medium tabular-nums text-muted-foreground line-through sm:text-base">
 								{formatPrice(product.compareAtPrice, product.currency)}
 							</span>
-						)}
-					</div>
+						</div>
+					) : (
+						<div className="pt-1">
+							<span className="text-base font-semibold tabular-nums text-foreground sm:text-lg">
+								{formatPrice(product.price, product.currency)}
+							</span>
+						</div>
+					)}
 				</div>
 			</Link>
 		</article>

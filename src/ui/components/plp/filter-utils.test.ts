@@ -9,6 +9,7 @@ import {
 	buildFilterVariables,
 	buildSortVariables,
 	extractCategoryOptions,
+	mergeCategoryFilterOptions,
 	extractColorOptions,
 	extractSizeOptions,
 	filterProducts,
@@ -153,6 +154,26 @@ describe("extractCategoryOptions", () => {
 			slug: "t-shirts",
 			count: 2,
 		});
+	});
+});
+
+// =============================================================================
+// mergeCategoryFilterOptions
+// =============================================================================
+describe("mergeCategoryFilterOptions", () => {
+	it("prefers catalog entries when slug overlaps", () => {
+		const catalog = [{ id: "1", name: "Gummies", slug: "gummies", count: 5 }];
+		const fromProducts = [{ id: "1", name: "Gummies", slug: "gummies", count: 1 }];
+		const result = mergeCategoryFilterOptions(catalog, fromProducts);
+		expect(result).toHaveLength(1);
+		expect(result[0].count).toBe(5);
+	});
+
+	it("adds page-only categories not present in catalog", () => {
+		const catalog = [{ id: "1", name: "A", slug: "a", count: 0 }];
+		const fromProducts = [{ id: "2", name: "Gummies", slug: "gummies", count: 2 }];
+		const result = mergeCategoryFilterOptions(catalog, fromProducts);
+		expect(result.map((c) => c.slug).sort()).toEqual(["a", "gummies"]);
 	});
 });
 
