@@ -8,7 +8,10 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 loadEnvConfig(process.cwd());
 
-const schemaUrl = process.env.NEXT_PUBLIC_SALEOR_API_URL;
+const useLocalSchema =
+	process.env.USE_LOCAL_SCHEMA_FILE === "1" || process.env.GITHUB_ACTION === "generate-schema-from-file";
+
+const schemaUrl = useLocalSchema ? "schema.graphql" : process.env.NEXT_PUBLIC_SALEOR_API_URL;
 
 if (!schemaUrl) {
 	console.error("Missing NEXT_PUBLIC_SALEOR_API_URL environment variable");

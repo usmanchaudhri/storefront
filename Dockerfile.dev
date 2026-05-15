@@ -15,9 +15,8 @@ RUN pnpm i --frozen-lockfile --prefer-offline
 
 COPY . .
 
-# Checkout codegen output is gitignored; generate from vendored Saleor schema.
+# Generate types from vendored schema.graphql (no live Saleor API during docker build).
 ENV USE_LOCAL_SCHEMA_FILE=1
-ENV NEXT_PUBLIC_SALEOR_API_URL=http://127.0.0.1/graphql/
 RUN pnpm run generate:all
 
 EXPOSE 3000
