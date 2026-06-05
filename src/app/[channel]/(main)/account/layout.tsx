@@ -10,15 +10,28 @@ export const metadata = {
 	title: "My Account",
 };
 
-export default function AccountLayout({ children }: { children: ReactNode }) {
+export default function AccountLayout({
+	children,
+	params,
+}: {
+	children: ReactNode;
+	params: Promise<{ channel: string }>;
+}) {
 	return (
 		<Suspense fallback={<AccountSkeleton />}>
-			<AccountShell>{children}</AccountShell>
+			<AccountShell params={params}>{children}</AccountShell>
 		</Suspense>
 	);
 }
 
-async function AccountShell({ children }: { children: ReactNode }) {
+async function AccountShell({
+	children,
+	params,
+}: {
+	children: ReactNode;
+	params: Promise<{ channel: string }>;
+}) {
+	const { channel } = await params;
 	let hasCookies = false;
 	try {
 		const cookieStore = await cookies();
@@ -42,7 +55,7 @@ async function AccountShell({ children }: { children: ReactNode }) {
 			<div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
 				<div className="flex flex-col gap-8 md:flex-row">
 					<aside className="shrink-0 md:min-h-[60vh] md:w-52">
-						<AccountNav />
+						<AccountNav channel={channel} />
 					</aside>
 					<div className="min-w-0 flex-1">{children}</div>
 				</div>

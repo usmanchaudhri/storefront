@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { LayoutGrid, Receipt, MapPin, Settings, ArrowLeft } from "lucide-react";
 import { LinkWithChannel } from "@/ui/atoms/link-with-channel";
@@ -21,10 +21,9 @@ const navItems: ReadonlyArray<{
 	{ href: accountRoutes.settings, label: "Settings", icon: Settings },
 ];
 
-export function AccountNav() {
+export function AccountNav({ channel }: { channel: string }) {
 	const user = useAccountUser();
 	const pathname = usePathname();
-	const { channel } = useParams<{ channel: string }>();
 
 	const channelPrefix = `/${channel}`;
 
@@ -43,6 +42,7 @@ export function AccountNav() {
 		<div className="flex flex-col">
 			<LinkWithChannel
 				href="/"
+				channel={channel}
 				className="mb-8 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
 			>
 				<span className="text-base leading-none">&lsaquo;</span>
@@ -76,6 +76,7 @@ export function AccountNav() {
 						<LinkWithChannel
 							key={href}
 							href={href}
+							channel={channel}
 							className={cn(
 								"flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors",
 								"whitespace-nowrap",

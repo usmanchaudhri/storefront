@@ -1,15 +1,10 @@
 {
-	"name": "Paper",
-	"short_name": "Paper",
+	"name": "KayaPure",
+	"short_name": "KayaPure",
 	"icons": [
 		{
-			"src": "/android-chrome-192x192.png",
-			"sizes": "192x192",
-			"type": "image/png"
-		},
-		{
-			"src": "/android-chrome-512x512.png",
-			"sizes": "512x512",
+			"src": "/kayapure-logo.png",
+			"sizes": "1024x231",
 			"type": "image/png"
 		}
 	],

@@ -6,9 +6,10 @@ import { PaymentStatus } from "@/ui/components/payment-status";
 
 type Props = {
 	order: OrderDetailsFragment;
+	channel: string;
 };
 
-export const OrderListItem = ({ order }: Props) => {
+export const OrderListItem = ({ order, channel }: Props) => {
 	return (
 		<li className="bg-white">
 			<div className="flex flex-col gap-2 border bg-neutral-200/20 px-6 py-4 md:grid md:grid-cols-4 md:gap-8">
@@ -33,6 +34,7 @@ export const OrderListItem = ({ order }: Props) => {
 				<div className="flex flex-col md:col-span-1 md:flex-row md:items-center lg:col-span-2">
 					<LinkWithChannel
 						href={`/account/orders/${order.number}`}
+						channel={channel}
 						className="flex items-center justify-center rounded border border-neutral-200 bg-white px-4 py-2 text-sm hover:bg-neutral-50 focus:bg-neutral-50 md:ml-auto"
 					>
 						View Order
@@ -80,6 +82,7 @@ export const OrderListItem = ({ order }: Props) => {
 																productSlug: product.slug,
 																variantId: item.variant.id,
 															})}
+															channel={channel}
 															className="font-medium text-neutral-900"
 														>
 															{product.name}

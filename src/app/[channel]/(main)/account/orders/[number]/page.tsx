@@ -10,11 +10,11 @@ import { OrderStatusBadge } from "@/ui/components/account/order-status-badge";
 import { type AddressDetailsFragment } from "@/gql/graphql";
 
 type Props = {
-	params: Promise<{ number: string }>;
+	params: Promise<{ number: string; channel: string }>;
 };
 
 export default async function OrderDetailPage({ params }: Props) {
-	const { number } = await params;
+	const { number, channel } = await params;
 
 	// Saleor's `me.orders` doesn't support filtering by number (UserOrdersArgs
 	// only has pagination args). We fetch a page and find client-side. This covers
@@ -80,6 +80,7 @@ export default async function OrderDetailPage({ params }: Props) {
 										<div className="min-w-0 flex-1">
 											<LinkWithChannel
 												href={`/products/${product.slug}`}
+												channel={channel}
 												className="text-sm font-medium hover:underline"
 											>
 												{product.name}
@@ -154,6 +155,7 @@ export default async function OrderDetailPage({ params }: Props) {
 
 					<LinkWithChannel
 						href="/contact"
+						channel={channel}
 						className="hover:bg-secondary/50 block w-full rounded-xl border px-5 py-3 text-center text-sm font-medium transition-colors"
 					>
 						Need Help?

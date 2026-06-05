@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
 import edjsHTML from "editorjs-html";
@@ -7,7 +8,11 @@ import { executePublicGraphQL } from "@/lib/graphql";
 
 const parser = edjsHTML();
 
-export const generateMetadata = async (props: { params: Promise<{ slug: string }> }): Promise<Metadata> => {
+type PageProps = {
+	params: Promise<{ slug: string; channel: string }>;
+};
+
+export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
 	const params = await props.params;
 	const result = await executePublicGraphQL(PageGetBySlugDocument, {
 		variables: { slug: params.slug },
@@ -22,8 +27,16 @@ export const generateMetadata = async (props: { params: Promise<{ slug: string }
 	};
 };
 
-export default async function Page(props: { params: Promise<{ slug: string }> }) {
-	const params = await props.params;
+export default function Page(props: PageProps) {
+	return (
+		<Suspense fallback={<PageSkeleton />}>
+			<CmsPageContent params={props.params} />
+		</Suspense>
+	);
+}
+
+async function CmsPageContent({ params: paramsPromise }: { params: PageProps["params"] }) {
+	const params = await paramsPromise;
 	const result = await executePublicGraphQL(PageGetBySlugDocument, {
 		variables: { slug: params.slug },
 		revalidate: 60,
@@ -34,9 +47,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	}
 
 	const page = result.data.page;
-
 	const { title, content } = page;
-
 	const contentHtml = content ? parser.parse(JSON.parse(content)) : null;
 
 	return (
@@ -49,6 +60,19 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 					))}
 				</div>
 			)}
+		</div>
+	);
+}
+
+function PageSkeleton() {
+	return (
+		<div className="mx-auto max-w-7xl animate-pulse p-8 pb-16">
+			<div className="h-9 w-64 rounded bg-muted" />
+			<div className="mt-8 space-y-3">
+				<div className="h-4 w-full rounded bg-muted" />
+				<div className="h-4 w-full rounded bg-muted" />
+				<div className="h-4 w-3/4 rounded bg-muted" />
+			</div>
 		</div>
 	);
 }

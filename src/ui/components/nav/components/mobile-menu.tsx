@@ -22,9 +22,10 @@ export const useMobileMenuClose = () => {
 
 type Props = {
 	children: ReactNode;
+	channel: string;
 };
 
-export const MobileMenu = ({ children }: Props) => {
+export const MobileMenu = ({ children, channel }: Props) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const close = () => setIsOpen(false);
@@ -43,7 +44,7 @@ export const MobileMenu = ({ children }: Props) => {
 			<SheetContent side="left" className="flex w-full flex-col p-0 sm:max-w-sm">
 				<SheetTitle className="sr-only">Navigation menu</SheetTitle>
 				<SheetHeader className="justify-between border-b border-border px-4 py-4">
-					<Logo />
+					<Logo channel={channel} />
 					<SheetCloseButton className="static" />
 				</SheetHeader>
 				<nav className="flex-1 overflow-y-auto">

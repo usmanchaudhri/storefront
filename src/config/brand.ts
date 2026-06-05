@@ -72,8 +72,8 @@ export function formatPageTitle(title: string): string {
 
 /**
  * Get copyright text with specified year.
- * Use CopyrightText component for dynamic year in Server Components.
+ * CopyrightText uses NEXT_PUBLIC_COPYRIGHT_YEAR (set at Docker build time).
  */
-export function getCopyrightText(year: number = new Date().getFullYear()): string {
+export function getCopyrightText(year: number): string {
 	return `© ${year} ${brandConfig.copyrightHolder}. All rights reserved.`;
 }

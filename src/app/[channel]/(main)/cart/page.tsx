@@ -39,6 +39,7 @@ async function CartContent({ params: paramsPromise }: { params: Promise<{ channe
 				</p>
 				<LinkWithChannel
 					href="/products"
+					channel={params.channel}
 					className="inline-block max-w-full rounded border border-transparent bg-neutral-900 px-6 py-3 text-center font-medium text-neutral-50 hover:bg-neutral-800 aria-disabled:cursor-not-allowed aria-disabled:bg-neutral-500 sm:px-16"
 				>
 					Explore products
@@ -75,6 +76,7 @@ async function CartContent({ params: paramsPromise }: { params: Promise<{ channe
 											productSlug: item.variant.product.slug,
 											variantId: item.variant.id,
 										})}
+										channel={params.channel}
 									>
 										<h2 className="font-medium text-neutral-700">{item.variant?.product?.name}</h2>
 									</LinkWithChannel>

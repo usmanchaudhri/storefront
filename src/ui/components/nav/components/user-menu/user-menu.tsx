@@ -11,9 +11,10 @@ import { LinkWithChannel } from "@/ui/atoms/link-with-channel";
 
 type Props = {
 	user: UserDetailsFragment;
+	channel: string;
 };
 
-export function UserMenu({ user }: Props) {
+export function UserMenu({ user, channel }: Props) {
 	return (
 		<Menu as="div" className="relative">
 			<Menu.Button className="focus:outline-hidden relative flex rounded-full bg-neutral-200 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-800">
@@ -36,6 +37,7 @@ export function UserMenu({ user }: Props) {
 							{({ active }) => (
 								<LinkWithChannel
 									href="/account"
+									channel={channel}
 									className={clsx(
 										active && "bg-neutral-100",
 										"block px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700",
@@ -49,6 +51,7 @@ export function UserMenu({ user }: Props) {
 							{({ active }) => (
 								<LinkWithChannel
 									href="/account/orders"
+									channel={channel}
 									className={clsx(
 										active && "bg-neutral-100",
 										"block px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700",

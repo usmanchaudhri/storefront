@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import { Footer } from "@/ui/components/footer";
 import { Header } from "@/ui/components/header";
 import { CartProvider, CartDrawerWrapper } from "@/ui/components/cart";
@@ -9,20 +9,51 @@ export const metadata = {
 	description: brandConfig.description,
 };
 
-export default async function RootLayout(props: {
-	children: ReactNode;
-	params: Promise<{ channel: string }>;
-}) {
-	const channel = (await props.params).channel;
-
+export default function RootLayout(props: { children: ReactNode; params: Promise<{ channel: string }> }) {
 	return (
 		<CartProvider>
+			<Suspense fallback={<MainLayoutSkeleton />}>
+				<MainLayout params={props.params}>{props.children}</MainLayout>
+			</Suspense>
+		</CartProvider>
+	);
+}
+
+async function MainLayout({
+	params,
+	children,
+}: {
+	params: Promise<{ channel: string }>;
+	children: ReactNode;
+}) {
+	const { channel } = await params;
+
+	return (
+		<>
 			<Header channel={channel} />
 			<div className="flex min-h-[calc(100dvh-64px)] flex-col">
-				<main className="flex-1">{props.children}</main>
-				<Footer channel={channel} />
+				<main className="flex-1">
+					<Suspense fallback={null}>{children}</Suspense>
+				</main>
+				<Suspense fallback={<footer className="h-16 bg-foreground" aria-hidden="true" />}>
+					<Footer channel={channel} />
+				</Suspense>
 			</div>
-			<CartDrawerWrapper channel={channel} />
-		</CartProvider>
+			<Suspense fallback={null}>
+				<CartDrawerWrapper channel={channel} />
+			</Suspense>
+		</>
+	);
+}
+
+function MainLayoutSkeleton() {
+	return (
+		<>
+			<header className="bg-background/95 sticky top-0 z-40 h-16 border-b border-border" aria-hidden="true" />
+			<div className="flex min-h-[calc(100dvh-64px)] flex-col">
+				<main className="flex-1" />
+				<footer className="h-16 bg-foreground" aria-hidden="true" />
+			</div>
+		</>
 	);
 }

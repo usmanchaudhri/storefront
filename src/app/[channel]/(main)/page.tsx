@@ -84,5 +84,5 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 async function FeaturedProducts({ channel }: { channel: string }) {
 	const products = await getFeaturedProducts(channel);
 
-	return <ProductList products={products} />;
+	return <ProductList products={products} channel={channel} />;
 }

@@ -7,7 +7,8 @@ import { AccountAddressCard } from "@/ui/components/account/address-card";
 import { accountRoutes } from "@/ui/components/account/routes";
 import { getCurrentUser } from "./get-current-user";
 
-export default async function AccountOverviewPage() {
+export default async function AccountOverviewPage({ params }: { params: Promise<{ channel: string }> }) {
+	const { channel } = await params;
 	const [user, ordersResult] = await Promise.all([
 		getCurrentUser(),
 		executeAuthenticatedGraphQL(CurrentUserOrdersPaginatedDocument, {
@@ -36,6 +37,7 @@ export default async function AccountOverviewPage() {
 					{orders.length > 0 && (
 						<LinkWithChannel
 							href={accountRoutes.orders}
+							channel={channel}
 							className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
 						>
 							View all
@@ -51,7 +53,7 @@ export default async function AccountOverviewPage() {
 				) : (
 					<div className="space-y-2">
 						{orders.map(({ node: order }) => (
-							<OrderRow key={order.id} order={order} />
+							<OrderRow key={order.id} order={order} channel={channel} />
 						))}
 					</div>
 				)}
@@ -62,6 +64,7 @@ export default async function AccountOverviewPage() {
 					<h2 className="text-lg font-semibold">Default Address</h2>
 					<LinkWithChannel
 						href={accountRoutes.addresses}
+						channel={channel}
 						className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
 					>
 						Manage

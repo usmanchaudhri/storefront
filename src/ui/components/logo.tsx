@@ -3,11 +3,16 @@ import { Logo as SharedLogo } from "./shared/logo";
 
 /**
  * Site logo with link to homepage.
- * Always renders as a link - no client-side pathname detection needed.
  */
-export const Logo = () => {
+export const Logo = ({ channel }: { channel: string }) => {
 	return (
-		<LinkWithChannel href="/" prefetch={false} className="flex shrink-0 items-center" aria-label="Homepage">
+		<LinkWithChannel
+			href="/"
+			channel={channel}
+			prefetch={false}
+			className="flex shrink-0 items-center"
+			aria-label="Homepage"
+		>
 			<SharedLogo className="h-7 w-auto" />
 		</LinkWithChannel>
 	);

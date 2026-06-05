@@ -30,7 +30,7 @@ export async function Header({ channel }: { channel: string }) {
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex h-16 items-center gap-3 sm:gap-4 lg:h-[4.25rem] lg:gap-6">
 					<div className="flex shrink-0 items-center">
-						<Logo />
+						<Logo channel={channel} />
 					</div>
 
 					<nav className="hidden min-w-0 flex-1 lg:block" aria-label="Main">
@@ -43,13 +43,13 @@ export async function Header({ channel }: { channel: string }) {
 
 					<div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
 						<Suspense fallback={<div className="h-10 w-10" />}>
-							<UserMenuContainer />
+							<UserMenuContainer channel={channel} />
 						</Suspense>
 						<Suspense fallback={<div className="h-10 w-10" />}>
 							<CartNavItem channel={channel} />
 						</Suspense>
 						<Suspense>
-							<MobileMenu>
+							<MobileMenu channel={channel}>
 								<Suspense fallback={<NavLinksSkeleton />}>
 									<NavLinks channel={channel} />
 								</Suspense>

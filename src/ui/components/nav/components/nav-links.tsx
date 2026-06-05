@@ -22,13 +22,15 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 		console.warn(`[NavLinks] Failed to fetch navigation for ${channel}:`, result.error.message);
 		return (
 			<>
-				<NavLink href="/products">All</NavLink>
+				<NavLink href="/products" channel={channel}>
+					All
+				</NavLink>
 				{headerPrimaryCategoryNav.map((cat) => (
-					<NavLink key={cat.slug} href={`/categories/${cat.slug}`}>
+					<NavLink key={cat.slug} href={`/categories/${cat.slug}`} channel={channel}>
 						{cat.name}
 					</NavLink>
 				))}
-				<NavShopByCategory />
+				<NavShopByCategory channel={channel} />
 			</>
 		);
 	}
@@ -50,34 +52,40 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 
 	return (
 		<>
-			<NavLink href="/products">All</NavLink>
+			<NavLink href="/products" channel={channel}>
+				All
+			</NavLink>
 			{headerPrimaryCategoryNav.map((cat) => (
-				<NavLink key={cat.slug} href={`/categories/${resolvePrimaryCategorySlug(cat.name, cat.slug)}`}>
+				<NavLink
+					key={cat.slug}
+					href={`/categories/${resolvePrimaryCategorySlug(cat.name, cat.slug)}`}
+					channel={channel}
+				>
 					{cat.name}
 				</NavLink>
 			))}
-			<NavShopByCategory />
+			<NavShopByCategory channel={channel} />
 			{result.data.menu?.items?.map((item) => {
 				if (item.category) {
 					if (shouldOmitNavbarCategory(item.category.slug, resolvedPrimarySlugs)) {
 						return null;
 					}
 					return (
-						<NavLink key={item.id} href={`/categories/${item.category.slug}`}>
+						<NavLink key={item.id} href={`/categories/${item.category.slug}`} channel={channel}>
 							{item.category.name}
 						</NavLink>
 					);
 				}
 				if (item.collection) {
 					return (
-						<NavLink key={item.id} href={`/collections/${item.collection.slug}`}>
+						<NavLink key={item.id} href={`/collections/${item.collection.slug}`} channel={channel}>
 							{item.collection.name}
 						</NavLink>
 					);
 				}
 				if (item.page) {
 					return (
-						<NavLink key={item.id} href={`/pages/${item.page.slug}`}>
+						<NavLink key={item.id} href={`/pages/${item.page.slug}`} channel={channel}>
 							{item.page.title}
 						</NavLink>
 					);

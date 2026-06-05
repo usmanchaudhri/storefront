@@ -8,6 +8,21 @@ const allowLocalIpForImages =
 	process.env.IMAGES_DANGEROUSLY_ALLOW_LOCAL_IP === "true" ||
 	/\b(localhost|127\.0\.0\.1|\[::1\])\b/i.test(saleorApiUrl);
 
+/** Hostname from NEXT_PUBLIC_SALEOR_API_URL for product/thumbnail images (e.g. api.kayapure.com). */
+const saleorImageRemotePattern = (() => {
+	try {
+		const { protocol, hostname } = new URL(saleorApiUrl);
+		if (!hostname) return null;
+		return {
+			protocol: protocol.replace(":", ""),
+			hostname,
+			pathname: "/**",
+		};
+	} catch {
+		return null;
+	}
+})();
+
 const config = {
 	// Cache Components (Partial Prerendering)
 	// Enables mixing static, cached, and dynamic content in a single route.
@@ -38,6 +53,17 @@ const config = {
 				hostname: "*.media.saleor.cloud",
 				pathname: "/**",
 			},
+			{
+				protocol: "https",
+				hostname: "*.amazonaws.com",
+				pathname: "/**",
+			},
+			{
+				protocol: "https",
+				hostname: "media.kayapure.com",
+				pathname: "/**",
+			},
+			...(saleorImageRemotePattern ? [saleorImageRemotePattern] : []),
 			// Local Saleor (docker-compose often maps API to host :8001; dev may use :8000)
 			{ protocol: "http", hostname: "localhost", port: "8000", pathname: "/**" },
 			{ protocol: "http", hostname: "localhost", port: "8001", pathname: "/**" },

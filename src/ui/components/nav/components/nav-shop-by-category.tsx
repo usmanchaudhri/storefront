@@ -24,7 +24,7 @@ const itemClass = cn(
 	"focus:bg-teal-500/12 focus:text-foreground",
 );
 
-export function NavShopByCategory() {
+export function NavShopByCategory({ channel }: { channel: string }) {
 	return (
 		<li className="inline-flex w-full md:w-auto">
 			<DropdownMenu>
@@ -40,6 +40,7 @@ export function NavShopByCategory() {
 						<DropdownMenuItem key={item.slug} asChild className="p-0 focus:bg-transparent">
 							<LinkWithChannel
 								href={`/categories/${item.slug}`}
+								channel={channel}
 								prefetch={false}
 								className={cn(itemClass, "hover:bg-teal-500/12 block w-full text-foreground")}
 							>

@@ -29,15 +29,28 @@ ARG NEXT_PUBLIC_SALEOR_API_URL
 ENV NEXT_PUBLIC_SALEOR_API_URL=${NEXT_PUBLIC_SALEOR_API_URL}
 ARG NEXT_PUBLIC_STOREFRONT_URL
 ENV NEXT_PUBLIC_STOREFRONT_URL=${NEXT_PUBLIC_STOREFRONT_URL}
-ARG NEXT_PUBLIC_DEFAULT_CHANNEL
+# Required for Next.js Cache Components: [channel] generateStaticParams must return ≥1 channel.
+ARG NEXT_PUBLIC_DEFAULT_CHANNEL=default-channel
 ENV NEXT_PUBLIC_DEFAULT_CHANNEL=${NEXT_PUBLIC_DEFAULT_CHANNEL}
+ARG NEXT_PUBLIC_COPYRIGHT_YEAR=2026
+ENV NEXT_PUBLIC_COPYRIGHT_YEAR=${NEXT_PUBLIC_COPYRIGHT_YEAR}
 
 # Get PNPM version from package.json
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-RUN pnpm build
+# Codegen during prebuild must not call the live API (often unreachable in CI/Docker).
+# NEXT_PUBLIC_SALEOR_API_URL is still baked into the Next.js app for runtime/browser/SSR.
+ENV USE_LOCAL_SCHEMA_FILE=1
+
+# Optional: docker build --build-arg BUILD_DEBUG_PRERENDER=1 ...
+ARG BUILD_DEBUG_PRERENDER=0
+RUN if [ "$BUILD_DEBUG_PRERENDER" = "1" ]; then \
+      pnpm run generate:all && pnpm exec next build --debug-prerender; \
+    else \
+      pnpm build; \
+    fi
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -51,15 +64,20 @@ ARG NEXT_PUBLIC_SALEOR_API_URL
 ENV NEXT_PUBLIC_SALEOR_API_URL=${NEXT_PUBLIC_SALEOR_API_URL}
 ARG NEXT_PUBLIC_STOREFRONT_URL
 ENV NEXT_PUBLIC_STOREFRONT_URL=${NEXT_PUBLIC_STOREFRONT_URL}
+ARG NEXT_PUBLIC_DEFAULT_CHANNEL=default-channel
+ENV NEXT_PUBLIC_DEFAULT_CHANNEL=${NEXT_PUBLIC_DEFAULT_CHANNEL}
+ARG NEXT_PUBLIC_COPYRIGHT_YEAR=2026
+ENV NEXT_PUBLIC_COPYRIGHT_YEAR=${NEXT_PUBLIC_COPYRIGHT_YEAR}
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# COPY --from=builder /app/public ./public
-
 # Set the correct permission for prerender cache
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
+
+# Static assets (logo, manifest, etc.) — required for standalone output
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

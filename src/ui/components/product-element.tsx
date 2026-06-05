@@ -6,12 +6,16 @@ import { formatMoneyRange } from "@/lib/utils";
 
 export function ProductElement({
 	product,
+	channel,
 	loading,
 	priority,
-}: { product: ProductListItemFragment } & { loading: "eager" | "lazy"; priority?: boolean }) {
+}: { product: ProductListItemFragment; channel: string } & {
+	loading: "eager" | "lazy";
+	priority?: boolean;
+}) {
 	return (
 		<li data-testid="ProductElement">
-			<LinkWithChannel href={`/products/${product.slug}`} key={product.id} prefetch={false}>
+			<LinkWithChannel href={`/products/${product.slug}`} channel={channel} key={product.id} prefetch={false}>
 				<div>
 					{product?.thumbnail?.url && (
 						<ProductImageWrapper

@@ -8,9 +8,10 @@ import { accountRoutes } from "./routes";
 
 type Props = {
 	order: OrderDetailsFragment;
+	channel: string;
 };
 
-export function OrderRow({ order }: Props) {
+export function OrderRow({ order, channel }: Props) {
 	const thumbnails = order.lines
 		.filter((l) => l.variant?.product.thumbnail)
 		.map((l) => l.variant!.product.thumbnail!)
@@ -24,6 +25,7 @@ export function OrderRow({ order }: Props) {
 	return (
 		<LinkWithChannel
 			href={accountRoutes.orderDetail(order.number)}
+			channel={channel}
 			className="hover:bg-secondary/30 flex items-center gap-4 rounded-lg border px-5 py-4 transition-colors"
 		>
 			<div className="flex -space-x-3">

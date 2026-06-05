@@ -9,10 +9,12 @@ const ORDERS_PER_PAGE = 10;
 
 type Props = {
 	searchParams: Promise<{ after?: string }>;
+	params: Promise<{ channel: string }>;
 };
 
-export default async function AccountOrdersPage({ searchParams }: Props) {
+export default async function AccountOrdersPage({ searchParams, params }: Props) {
 	const { after } = await searchParams;
+	const { channel } = await params;
 
 	const result = await executeAuthenticatedGraphQL(CurrentUserOrdersPaginatedDocument, {
 		variables: {
@@ -48,13 +50,13 @@ export default async function AccountOrdersPage({ searchParams }: Props) {
 				<>
 					<div className="space-y-2">
 						{orders.map(({ node: order }) => (
-							<OrderRow key={order.id} order={order} />
+							<OrderRow key={order.id} order={order} channel={channel} />
 						))}
 					</div>
 
 					{pageInfo?.hasNextPage && pageInfo.endCursor && (
 						<div className="flex justify-center pt-2">
-							<LinkWithChannel href={`${accountRoutes.orders}?after=${pageInfo.endCursor}`}>
+							<LinkWithChannel href={`${accountRoutes.orders}?after=${pageInfo.endCursor}`} channel={channel}>
 								<Button variant="outline-solid">Load more orders</Button>
 							</LinkWithChannel>
 						</div>

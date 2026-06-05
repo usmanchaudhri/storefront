@@ -85,6 +85,7 @@ export async function Footer({ channel }: { channel: string }) {
 											<li key={child.id}>
 												<LinkWithChannel
 													href={`/categories/${child.category.slug}`}
+													channel={channel}
 													prefetch={false}
 													className="text-sm text-neutral-400 transition-colors hover:text-neutral-200"
 												>
@@ -98,6 +99,7 @@ export async function Footer({ channel }: { channel: string }) {
 											<li key={child.id}>
 												<LinkWithChannel
 													href={`/collections/${child.collection.slug}`}
+													channel={channel}
 													prefetch={false}
 													className="text-sm text-neutral-400 transition-colors hover:text-neutral-200"
 												>
@@ -111,6 +113,7 @@ export async function Footer({ channel }: { channel: string }) {
 											<li key={child.id}>
 												<LinkWithChannel
 													href={`/pages/${child.page.slug}`}
+													channel={channel}
 													prefetch={false}
 													className="text-sm text-neutral-400 transition-colors hover:text-neutral-200"
 												>
