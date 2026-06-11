@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import { ProductListByCollectionDocument, ProductOrderField, OrderDirection } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
+import { HomeEnergyFocusSection } from "@/ui/components/home/home-energy-focus-section";
 import { HomeHero } from "@/ui/components/home/home-hero";
+import { HomeSignatureProductBanner } from "@/ui/components/home/home-signature-product-banner";
 import { ProductList } from "@/ui/components/product-list";
 
 export const metadata = {
@@ -50,6 +52,8 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 	return (
 		<>
 			<HomeHero channel={channel} />
+			<HomeEnergyFocusSection />
+			<HomeSignatureProductBanner channel={channel} />
 			<section className="mx-auto max-w-7xl p-8 pb-16">
 				<h2 className="sr-only">Product list</h2>
 				<Suspense

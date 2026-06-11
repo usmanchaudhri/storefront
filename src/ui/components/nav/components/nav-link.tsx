@@ -28,7 +28,7 @@ export function NavLink({
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 					isActive
 						? "bg-teal-500/15 text-foreground shadow-sm"
-						: "hover:bg-teal-500/18 text-muted-foreground hover:text-foreground",
+						: "hover:bg-teal-500/18 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-400",
 				)}
 			>
 				{children}

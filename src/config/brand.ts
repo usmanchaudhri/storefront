@@ -18,13 +18,13 @@ export const brandConfig = {
 	siteName: "Saleor Store",
 
 	/** Legal entity name for copyright notices */
-	copyrightHolder: "Saleor Demo Store",
+	copyrightHolder: "KayaPure",
 
 	/** Organization name for structured data (JSON-LD) */
-	organizationName: "Saleor Store",
+	organizationName: "Kaya Pure",
 
 	/** Default brand name for products without a brand */
-	defaultBrand: "Saleor Store",
+	defaultBrand: "Kaya Pure",
 
 	/** Tagline/description for the store */
 	tagline: "Premium products with exceptional quality. Discover our curated collection.",
@@ -50,7 +50,7 @@ export const brandConfig = {
 	logoAriaLabel: "KayaPure",
 
 	/** Title template - %s will be replaced with page title */
-	titleTemplate: "%s | Saleor Store",
+	titleTemplate: "%s | Kaya Pure",
 
 	/** Social media handles */
 	social: {

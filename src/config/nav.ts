@@ -1,31 +1,86 @@
+/** Header navigation links after “Shop All” (Saleor CMS pages: `/pages/{slug}`). */
+export const headerContentNav = [
+	{ name: "About us", href: "/pages/about-us" },
+	{ name: "Ingredients", href: "/pages/ingredients" },
+	{ name: "Reviews", href: "/pages/reviews" },
+	{ name: "FAQs", href: "/pages/faqs" },
+] as const;
+
+/** Product links inside the “Shop All” mega menu (PDP: `/products/{slug}`). */
+export type ShopAllProductNavItem = {
+	name: string;
+	/** Saleor product slug */
+	slug: string;
+};
+
+/** Thumbnail metadata keyed by product slug (from Saleor). */
+export type ShopAllProductThumbnailMap = Readonly<Record<string, { url: string; alt: string }>>;
+
+/** Column in the Shop All mega menu — category + featured products. */
+export type ShopAllCategoryColumn = {
+	name: string;
+	/** Saleor category slug → `/categories/{slug}` */
+	slug: string;
+	tagline: string;
+	products: readonly ShopAllProductNavItem[];
+};
+
 /**
- * Header navigation: primary category links (after "All").
- * Saleor "navbar" items for these slugs are skipped to avoid duplicates.
+ * Shop All mega menu hierarchy (Gummies / Shots / Drops).
+ * Align slugs with Saleor products and categories.
  */
-export const headerPrimaryCategoryNav = [
-	{ name: "Gummies", slug: "gummies" },
-	{ name: "Shots", slug: "shots" },
-	{ name: "Drops", slug: "drops" },
+export const headerShopAllMegaNav: readonly ShopAllCategoryColumn[] = [
+	{
+		name: "Gummies",
+		slug: "gummies",
+		tagline: "Chewable daily rituals",
+		products: [
+			{ name: "Energy Boost Pro", slug: "7-in-1-shilajit-gummies" },
+			{ name: "Plain Shilajit Gummies", slug: "plain-shilajit-gummies" },
+			{ name: "Elderberry Shilajit Gummies", slug: "elderberry-shilajit-gummies" },
+			{ name: "Sea Moss & Elderberry Gummies", slug: "sea-moss-elderberry-gummies" },
+			{
+				name: "Magnesium Glycinate, Calcium & Zinc Gummies",
+				slug: "magnesium-glycinate-calcium-zinc-gummies",
+			},
+			{ name: "Apple Cider & Ashwagandha Gummies", slug: "apple-cider-ashwagandha-gummies" },
+		],
+	},
+	{
+		name: "Shots",
+		slug: "shots",
+		tagline: "Fast-acting wellness shots",
+		products: [
+			{ name: "Mango Complete Shot", slug: "mango-complete-shot" },
+			{ name: "Elderberry Complete Shot", slug: "elderberry-complete-shot" },
+			{ name: "Blueberry Complete Shot", slug: "blueberry-complete-shot" },
+		],
+	},
+	{
+		name: "Drops",
+		slug: "drops",
+		tagline: "Liquid adaptogen support",
+		products: [
+			{ name: "Shilajit Liquid Drops", slug: "shilajit-liquid-drops" },
+			{ name: "Shilajit GINKGO Drops", slug: "shilajit-ginkgo-drops" },
+			{ name: "Shilajit + L-Arginine", slug: "shilajit-l-arginine" },
+		],
+	},
 ] as const;
 
-/** “Shop by category” dropdown — links to `/categories/{slug}`; align slugs with Saleor categories. */
-export const headerShopByCategoryNav = [
-	{ name: "Energy", slug: "energy" },
-	{ name: "Weight loss", slug: "weight-loss" },
-	{ name: "Testosterone booster", slug: "testosterone-booster" },
-	{ name: "Sleep aid", slug: "sleep-aid" },
-] as const;
+/** Saleor category slugs used only in the Shop All mega menu — omit from navbar duplicates. */
+const shopAllCategorySlugs = new Set(headerShopAllMegaNav.map((column) => column.slug));
 
-const primarySlugs = new Set(headerPrimaryCategoryNav.map((c) => c.slug));
-const shopByCategorySlugs = new Set(headerShopByCategoryNav.map((c) => c.slug));
+/** Legacy shop-by-category slugs — omit if still present in Saleor navbar menu. */
+const legacyShopByCategorySlugs = new Set(["energy", "weight-loss", "testosterone-booster", "sleep-aid"]);
 
-/** Navbar menu category slugs to hide (replaced or shown above via {@link headerPrimaryCategoryNav}). */
+/** Navbar menu category slugs to hide (shown in Shop All or removed from header). */
 const headerNavMenuCategorySlugsToOmit = new Set([
 	"accessories",
 	"groceries",
 	"apparel",
-	...primarySlugs,
-	...shopByCategorySlugs,
+	...shopAllCategorySlugs,
+	...legacyShopByCategorySlugs,
 ]);
 
 export function shouldOmitNavbarCategory(

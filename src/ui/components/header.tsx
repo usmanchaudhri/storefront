@@ -34,7 +34,7 @@ export async function Header({ channel }: { channel: string }) {
 					</div>
 
 					<nav className="hidden min-w-0 flex-1 lg:block" aria-label="Main">
-						<ul className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-0.5 gap-y-1 sm:gap-x-1">
+						<ul className="flex w-full flex-wrap items-center justify-center gap-x-0.5 gap-y-1 sm:gap-x-1">
 							<Suspense fallback={<NavLinksSkeleton />}>
 								<NavLinks channel={channel} />
 							</Suspense>

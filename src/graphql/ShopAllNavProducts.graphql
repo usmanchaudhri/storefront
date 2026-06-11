@@ -1,0 +1,14 @@
+query ShopAllNavProducts($channel: String!, $slugs: [String!]!) {
+	products(first: 20, channel: $channel, filter: { slugs: $slugs }) {
+		edges {
+			node {
+				slug
+				name
+				thumbnail(size: 128, format: WEBP) {
+					url
+					alt
+				}
+			}
+		}
+	}
+}
