@@ -106,6 +106,8 @@ export interface VariantSelectorProps {
 	unavailableMessage?: string;
 	/** Whether a transition is in progress */
 	isPending?: boolean;
+	/** When false, hides the inline label (e.g. when wrapped in PurchaseFlowStep). */
+	showLabel?: boolean;
 }
 
 /**

@@ -7,6 +7,8 @@ import { VariantSelector } from "./variant-selector";
 import { VariantNameSelector } from "./variant-name-selector";
 import {
 	groupVariantsByAttributes,
+	getSelectableAttributeGroups,
+	getAttributeStepTitle,
 	findMatchingVariant,
 	getSelectionsFromVariant,
 	getOptionsForAttribute,
@@ -16,6 +18,8 @@ import {
 } from "./utils";
 import { cn } from "@/lib/utils";
 import { VariantAttributeBadges, extractOptionalAttributes } from "./optional-attributes";
+import { PurchaseFlowStep } from "../purchase-flow-step";
+import { normalizeVariantsForSelection, looksLikeKayapureGummyProduct } from "./gummy-variant-normalizer";
 
 /**
  * Main container for variant selection with multiple attributes.
@@ -59,7 +63,16 @@ export function VariantSelectionSection({
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
-	const attributeGroups = useMemo(() => groupVariantsByAttributes(variants as SaleorVariant[]), [variants]);
+	const selectionVariants = useMemo(
+		() => normalizeVariantsForSelection(variants as SaleorVariant[]),
+		[variants],
+	);
+
+	const attributeGroups = useMemo(() => groupVariantsByAttributes(selectionVariants), [selectionVariants]);
+	const selectableAttributeGroups = useMemo(
+		() => getSelectableAttributeGroups(selectionVariants),
+		[selectionVariants],
+	);
 
 	// Get current selections from URL params OR from selected variant
 	const currentSelections = useMemo(() => {
@@ -73,11 +86,11 @@ export function VariantSelectionSection({
 		}
 
 		if (Object.keys(selections).length === 0 && selectedVariantId) {
-			return getSelectionsFromVariant(variants as SaleorVariant[], selectedVariantId);
+			return getSelectionsFromVariant(selectionVariants, selectedVariantId);
 		}
 
 		return selections;
-	}, [attributeGroups, searchParams, selectedVariantId, variants]);
+	}, [attributeGroups, searchParams, selectedVariantId, selectionVariants]);
 
 	// Optimistic selections: immediately reflect user clicks while navigation is pending.
 	// Without this, selections only update after the server round-trip completes
@@ -89,20 +102,23 @@ export function VariantSelectionSection({
 
 	// Compute the matching variant from optimistic selections
 	const currentVariantId = useMemo(
-		() => findMatchingVariant(variants as SaleorVariant[], optimisticSelections),
-		[variants, optimisticSelections],
+		() => findMatchingVariant(selectionVariants, optimisticSelections),
+		[selectionVariants, optimisticSelections],
 	);
 
-	const optionalAttributes = useMemo(
-		() => extractOptionalAttributes(variants, currentVariantId),
-		[variants, currentVariantId],
-	);
+	const optionalAttributes = useMemo(() => {
+		const attrs = extractOptionalAttributes(variants, currentVariantId);
+		if (!looksLikeKayapureGummyProduct(variants as SaleorVariant[])) {
+			return attrs;
+		}
+		return attrs.filter((attr) => attr.slug !== "gummy-size" && attr.slug !== "bundle");
+	}, [variants, currentVariantId]);
 
 	// Handle selection change with smart adjustment + optimistic UI
 	const handleSelect = useCallback(
 		(attributeSlug: string, optionId: string) => {
 			const newSelections = getAdjustedSelections(
-				variants as SaleorVariant[],
+				selectionVariants,
 				optimisticSelections,
 				attributeSlug,
 				optionId,
@@ -113,7 +129,7 @@ export function VariantSelectionSection({
 				if (value) params.set(slug, value);
 			}
 
-			const matchingVariantId = findMatchingVariant(variants as SaleorVariant[], newSelections);
+			const matchingVariantId = findMatchingVariant(selectionVariants, newSelections);
 			if (matchingVariantId) {
 				params.set("variant", matchingVariantId);
 			}
@@ -123,13 +139,21 @@ export function VariantSelectionSection({
 				router.push(`/${channel}/products/${productSlug}?${params.toString()}`, { scroll: false });
 			});
 		},
-		[optimisticSelections, variants, channel, productSlug, router, startTransition, setOptimisticSelections],
+		[
+			optimisticSelections,
+			selectionVariants,
+			channel,
+			productSlug,
+			router,
+			startTransition,
+			setOptimisticSelections,
+		],
 	);
 
 	// Check if any attribute group is completely unavailable
 	const unavailableInfo = useMemo(
-		() => getUnavailableAttributeInfo(variants as SaleorVariant[], attributeGroups, optimisticSelections),
-		[variants, attributeGroups, optimisticSelections],
+		() => getUnavailableAttributeInfo(selectionVariants, attributeGroups, optimisticSelections),
+		[selectionVariants, attributeGroups, optimisticSelections],
 	);
 
 	useEffect(() => {
@@ -167,6 +191,7 @@ export function VariantSelectionSection({
 	if (attributeGroups.length === 0) {
 		return (
 			<div className={sectionClass}>
+				<PurchaseFlowStep step={1} title="Choose your option" />
 				<VariantNameSelector
 					variants={variants}
 					selectedVariantId={optimisticVariantId}
@@ -179,9 +204,9 @@ export function VariantSelectionSection({
 
 	return (
 		<div className={sectionClass}>
-			{attributeGroups.map((group) => {
+			{selectableAttributeGroups.map((group, index) => {
 				const options = getOptionsForAttribute(
-					variants as SaleorVariant[],
+					selectionVariants,
 					attributeGroups,
 					optimisticSelections,
 					group.slug,
@@ -193,16 +218,19 @@ export function VariantSelectionSection({
 					: undefined;
 
 				return (
-					<VariantSelector
-						key={group.slug}
-						label={group.name}
-						options={options}
-						selectedId={optimisticSelections[group.slug]}
-						attributeSlug={group.slug}
-						onSelect={handleSelect}
-						unavailableMessage={unavailableMessage}
-						isPending={isPending}
-					/>
+					<div key={group.slug} className="space-y-4">
+						<PurchaseFlowStep step={index + 1} title={getAttributeStepTitle(group.slug, group.name)} />
+						<VariantSelector
+							label={group.name}
+							options={options}
+							selectedId={optimisticSelections[group.slug]}
+							attributeSlug={group.slug}
+							onSelect={handleSelect}
+							unavailableMessage={unavailableMessage}
+							isPending={isPending}
+							showLabel={false}
+						/>
+					</div>
 				);
 			})}
 

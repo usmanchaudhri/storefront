@@ -247,6 +247,88 @@ export const singleAttributeVariants: SaleorVariant[] = [
 ];
 
 // =============================================================================
+// Gummy Product: Gummy Size + Gummy Bundle (Kayapure-style)
+// =============================================================================
+export const gummyVariants: SaleorVariant[] = [
+	{
+		id: "gummy-sm-1",
+		name: "1 Bottle SM",
+		quantityAvailable: 10,
+		selectionAttributes: [
+			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
+			{
+				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
+				values: [{ name: "1 Bottle SM", value: "1-bottle-sm" }],
+			},
+		],
+	},
+	{
+		id: "gummy-sm-2",
+		name: "2 Bottles SM",
+		quantityAvailable: 10,
+		selectionAttributes: [
+			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
+			{
+				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
+				values: [{ name: "2 Bottles SM", value: "2-bottles-sm" }],
+			},
+		],
+	},
+	{
+		id: "gummy-md-1",
+		name: "1 Bottle MD",
+		quantityAvailable: 10,
+		selectionAttributes: [
+			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "MD", value: "md" }] },
+			{
+				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
+				values: [{ name: "1 Bottle MD", value: "1-bottle-md" }],
+			},
+		],
+	},
+	{
+		id: "gummy-md-2",
+		name: "2 Bottles MD",
+		quantityAvailable: 10,
+		selectionAttributes: [
+			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "MD", value: "md" }] },
+			{
+				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
+				values: [{ name: "2 Bottles MD", value: "2-bottles-md" }],
+			},
+		],
+	},
+];
+
+/** Gummy product with only bundle attribute (single size in catalog). */
+export const gummyBundleOnlyVariants: SaleorVariant[] = [
+	{
+		id: "gummy-bundle-1",
+		name: "1 Bottle",
+		quantityAvailable: 10,
+		selectionAttributes: [
+			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
+			{
+				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
+				values: [{ name: "1 Bottle", value: "1-bottle" }],
+			},
+		],
+	},
+	{
+		id: "gummy-bundle-2",
+		name: "2 Bottles",
+		quantityAvailable: 10,
+		selectionAttributes: [
+			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
+			{
+				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
+				values: [{ name: "2 Bottles", value: "2-bottles" }],
+			},
+		],
+	},
+];
+
+// =============================================================================
 // Name-Only Variants: No structured attributes, only names
 // This is the fallback case when Saleor variants aren't properly configured
 // =============================================================================

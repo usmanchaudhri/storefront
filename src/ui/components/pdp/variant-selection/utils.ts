@@ -9,6 +9,7 @@ import type { VariantOption, AttributeGroup } from "./types";
 import { getColorHex, isColorAttribute, isSizeAttribute, COLOR_NAME_TO_HEX } from "@/lib/colors";
 import { getMaxDiscountInfo as getMaxDiscountInfoBase } from "@/lib/pricing";
 import { sortBySizeProperty } from "@/lib/sizes";
+import { normalizeVariantsForSelection } from "./gummy-variant-normalizer";
 
 // Re-export for backwards compatibility
 export { COLOR_NAME_TO_HEX };
@@ -102,6 +103,59 @@ function getMaxDiscountInfo(variants: SaleorVariant[]): { hasDiscount: boolean; 
 		hasDiscount: result.isOnSale,
 		maxPercent: result.discountPercent ?? 0,
 	};
+}
+
+// ============================================================================
+// Attribute group helpers
+// ============================================================================
+
+/** Attribute groups with more than one option — shown as interactive selectors. */
+export function getSelectableAttributeGroups(variants: SaleorVariant[]): AttributeGroup[] {
+	return groupVariantsByAttributes(variants).filter((group) => group.options.length > 1);
+}
+
+/** Number of purchase-flow steps used by variant selection (0 = hidden, 1 = name fallback or single attribute). */
+export function countVariantSelectionSteps(variants: SaleorVariant[]): number {
+	if (variants.length <= 1) return 0;
+
+	const normalizedVariants = normalizeVariantsForSelection(variants);
+	const selectableGroups = getSelectableAttributeGroups(normalizedVariants);
+	if (selectableGroups.length > 0) return selectableGroups.length;
+	return 1;
+}
+
+/** Purchase-flow step title for a variant attribute selector. */
+export function getAttributeStepTitle(slug: string, name: string): string {
+	const normalizedSlug = slug.toLowerCase();
+	const normalizedName = name.toLowerCase();
+
+	if (normalizedSlug.includes("gummy-size") || normalizedName.includes("gummy size")) {
+		return "Choose your size";
+	}
+	if (
+		normalizedSlug.includes("gummy-bundle") ||
+		normalizedName.includes("gummy bundle") ||
+		(normalizedSlug.includes("bundle") && normalizedName.includes("gummy"))
+	) {
+		return "Choose your bundle";
+	}
+	if (isSizeAttribute(slug) || normalizedName.includes("size")) {
+		return `Choose your ${normalizedName}`;
+	}
+	return `Choose ${normalizedName}`;
+}
+
+function withAutoSelectedSingleOptionAttributes(
+	variants: SaleorVariant[],
+	selections: Record<string, string>,
+): Record<string, string> {
+	const effectiveSelections = { ...selections };
+	for (const group of groupVariantsByAttributes(variants)) {
+		if (group.options.length === 1 && !effectiveSelections[group.slug]) {
+			effectiveSelections[group.slug] = group.options[0].id;
+		}
+	}
+	return effectiveSelections;
 }
 
 // ============================================================================
@@ -246,13 +300,15 @@ export function findMatchingVariant(
 	variants: SaleorVariant[],
 	selections: Record<string, string>,
 ): string | undefined {
-	const selectionEntries = Object.entries(selections).filter(([, value]) => value);
+	const effectiveSelections = withAutoSelectedSingleOptionAttributes(variants, selections);
+	const selectionEntries = Object.entries(effectiveSelections).filter(([, value]) => value);
 	if (selectionEntries.length === 0) return undefined;
 
-	// Get all attribute groups to verify all are selected
+	// Only interactive (multi-option) groups must be chosen by the user.
 	const attributeGroups = groupVariantsByAttributes(variants);
-	const allAttributesSelected = attributeGroups.every(
-		(group) => selections[group.slug] !== undefined && selections[group.slug] !== "",
+	const selectableGroups = attributeGroups.filter((group) => group.options.length > 1);
+	const allAttributesSelected = selectableGroups.every(
+		(group) => effectiveSelections[group.slug] !== undefined && effectiveSelections[group.slug] !== "",
 	);
 
 	if (!allAttributesSelected) return undefined;

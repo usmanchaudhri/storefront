@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
 	groupVariantsByAttributes,
+	getSelectableAttributeGroups,
+	countVariantSelectionSteps,
+	getAttributeStepTitle,
 	findMatchingVariant,
 	getAdjustedSelections,
 	getOptionsForAttribute,
@@ -12,6 +15,8 @@ import {
 	stockVariants,
 	discountedVariants,
 	singleAttributeVariants,
+	gummyVariants,
+	gummyBundleOnlyVariants,
 	nameOnlyVariants,
 	nameOnlyDifferentPrices,
 } from "./__fixtures__/variants";
@@ -162,6 +167,62 @@ describe("groupVariantsByAttributes", () => {
 
 		expect(groups[0]?.slug).toBe("color");
 		expect(groups[1]?.slug).toBe("size");
+	});
+
+	it("sorts gummy size before gummy bundle", () => {
+		const groups = groupVariantsByAttributes(gummyVariants);
+
+		expect(groups[0]?.slug).toBe("gummy-size");
+		expect(groups[1]?.slug).toBe("gummy-bundle");
+	});
+});
+
+describe("getSelectableAttributeGroups", () => {
+	it("returns both gummy attributes when each has multiple options", () => {
+		const groups = getSelectableAttributeGroups(gummyVariants);
+
+		expect(groups).toHaveLength(2);
+		expect(groups[0]?.slug).toBe("gummy-size");
+		expect(groups[1]?.slug).toBe("gummy-bundle");
+	});
+
+	it("hides single-option attributes and shows only bundle when size is fixed", () => {
+		const groups = getSelectableAttributeGroups(gummyBundleOnlyVariants);
+
+		expect(groups).toHaveLength(1);
+		expect(groups[0]?.slug).toBe("gummy-bundle");
+	});
+});
+
+describe("countVariantSelectionSteps", () => {
+	it("counts two steps for gummy size + bundle products", () => {
+		expect(countVariantSelectionSteps(gummyVariants)).toBe(2);
+	});
+
+	it("counts one step when only one attribute has multiple options", () => {
+		expect(countVariantSelectionSteps(gummyBundleOnlyVariants)).toBe(1);
+	});
+
+	it("counts one step for name-only fallback products", () => {
+		expect(countVariantSelectionSteps(nameOnlyVariants)).toBe(1);
+	});
+
+	it("returns zero for single-variant products", () => {
+		expect(countVariantSelectionSteps([gummyVariants[0]!])).toBe(0);
+	});
+});
+
+describe("getAttributeStepTitle", () => {
+	it("uses gummy-specific step titles", () => {
+		expect(getAttributeStepTitle("gummy-size", "Gummy Size")).toBe("Choose your size");
+		expect(getAttributeStepTitle("gummy-bundle", "Gummy Bundle")).toBe("Choose your bundle");
+	});
+});
+
+describe("findMatchingVariant with auto-selected single-option attributes", () => {
+	it("matches when only bundle is selected and size has one value", () => {
+		const result = findMatchingVariant(gummyBundleOnlyVariants, { "gummy-bundle": "1-bottle" });
+		expect(result).toBe("gummy-bundle-1");
 	});
 });
 

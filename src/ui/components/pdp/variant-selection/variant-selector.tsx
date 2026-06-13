@@ -2,6 +2,7 @@
 
 import type { VariantSelectorProps, OptionRenderer } from "./types";
 import { defaultRenderers } from "./renderers";
+import { getGummySizeOptionLabels } from "./gummy-size-display";
 
 /**
  * A single variant selector for one attribute (e.g., Color or Size).
@@ -21,6 +22,7 @@ export function VariantSelector({
 	renderer: explicitRenderer,
 	unavailableMessage,
 	isPending,
+	showLabel = true,
 }: VariantSelectorProps) {
 	const selectedOption = options.find((opt) => opt.id === selectedId);
 
@@ -64,11 +66,14 @@ export function VariantSelector({
 
 	const normalizeOptionForDisplay = (option: (typeof options)[number]) => {
 		if (!isGummySize) return option;
-		// For Gummy Size, hide all pricing/discount UI from the option card.
+
+		const sizeLabels = getGummySizeOptionLabels(option.name);
+
+		// For Gummy Size, hide pricing/discount UI from the option card.
 		return {
 			...option,
-			primaryLabel: option.name,
-			secondaryLabel: undefined,
+			primaryLabel: sizeLabels?.primaryLabel ?? option.name,
+			secondaryLabel: sizeLabels?.secondaryLabel,
 			sellingPriceAmount: undefined,
 			costPriceAmount: undefined,
 			currency: undefined,
@@ -93,18 +98,24 @@ export function VariantSelector({
 
 	return (
 		<div className="space-y-3">
-			<div className="flex items-center gap-2">
-				<span id={labelId} className="text-sm font-medium">
-					{label}
-				</span>
-				{unavailableMessage ? (
-					<span className="text-sm text-muted-foreground" role="status">
-						{unavailableMessage}
+			{showLabel ? (
+				<div className="flex items-center gap-2">
+					<span id={labelId} className="text-sm font-medium">
+						{label}
 					</span>
-				) : selectedOption ? (
-					<span className="text-sm text-muted-foreground">{selectedOption.name}</span>
-				) : null}
-			</div>
+					{unavailableMessage ? (
+						<span className="text-sm text-muted-foreground" role="status">
+							{unavailableMessage}
+						</span>
+					) : selectedOption ? (
+						<span className="text-sm text-muted-foreground">{selectedOption.name}</span>
+					) : null}
+				</div>
+			) : unavailableMessage ? (
+				<span className="text-sm text-muted-foreground" role="status">
+					{unavailableMessage}
+				</span>
+			) : null}
 
 			{/* Color swatches row */}
 			{colorOptions.length > 0 && (

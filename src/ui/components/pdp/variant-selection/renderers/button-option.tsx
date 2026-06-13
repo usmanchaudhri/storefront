@@ -45,8 +45,11 @@ export function ButtonOption({
 	const effectiveMinWidth = isBottleBundleCard ? "0px" : minWidth;
 
 	// Build accessible label with context
+	const displayName = option.primaryLabel
+		? [option.primaryLabel, option.secondaryLabel].filter(Boolean).join(", ")
+		: option.name;
 	const accessibleParts = [
-		labelPrefix ? `${labelPrefix} ${option.name}` : option.name,
+		labelPrefix ? `${labelPrefix} ${displayName}` : displayName,
 		isOutOfStock && "out of stock",
 		showPrice && formatMoney(option.sellingPriceAmount!, option.currency!),
 		showUndiscounted && `was ${formatMoney(option.costPriceAmount!, option.currency!)}`,

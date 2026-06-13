@@ -221,7 +221,7 @@ export function AddToCart({
 				</div>
 			)}
 
-			<div className="bg-muted/35 border-t border-border px-5 py-5 sm:px-6 sm:py-6">
+			<div>
 				<AddToCartButton disabled={disabled} disabledReason={disabledReason} totalLabel={ctaTotalLabel} />
 				<div className="border-border/70 bg-background/90 mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-xl border px-3 py-3 text-xs text-muted-foreground">
 					<span className="flex items-center gap-1.5">

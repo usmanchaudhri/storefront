@@ -54,6 +54,9 @@ export { ColorSwatchOption, ButtonOption, SizeButtonOption, TextOption, defaultR
 // Utilities (for custom implementations)
 export {
 	groupVariantsByAttributes,
+	getSelectableAttributeGroups,
+	countVariantSelectionSteps,
+	getAttributeStepTitle,
 	findMatchingVariant,
 	getSelectionsFromVariant,
 	getOptionsForAttribute,
