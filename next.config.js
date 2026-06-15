@@ -36,6 +36,8 @@ const config = {
 		// Note: API rate limiting is handled by RequestQueue in src/lib/graphql.ts
 		// (max 3 concurrent requests + 200ms delay between requests)
 	},
+
+	transpilePackages: ["@stripe/stripe-js"],
 	images: {
 		dangerouslyAllowLocalIP: allowLocalIpForImages,
 		qualities: [75, 100],

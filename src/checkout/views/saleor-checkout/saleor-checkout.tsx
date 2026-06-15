@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, type FC } from "react";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckoutHeader } from "./checkout-header";
 import { OrderSummary } from "./order-summary";
 import { InformationStep } from "./information-step";
 import { ShippingStep } from "./shipping-step";
-import { PaymentStep } from "./payment-step";
 import { ConfirmationStep } from "./confirmation-step";
 import { useCheckout } from "@/checkout/hooks/use-checkout";
 import { useUser } from "@/checkout/hooks/use-user";
@@ -16,6 +16,12 @@ import { PageNotFound } from "../page-not-found";
 import { CheckoutSkeleton } from "./checkout-skeleton";
 import { getCheckoutSteps, getCurrentStepFromParams, type CheckoutStepType } from "./flow";
 import { createQueryString } from "@/checkout/lib/utils/url";
+import { useCompleteCheckoutAfterStripeRedirect } from "@/checkout/components/payment/stripe/use-complete-checkout-after-stripe-redirect";
+
+const PaymentStep = dynamic(() => import("./payment-step").then((module) => module.PaymentStep), {
+	ssr: false,
+	loading: () => <CheckoutSkeleton />,
+});
 
 /**
  * Saleor checkout view with multi-step flow.
@@ -36,6 +42,9 @@ export const SaleorCheckout: FC = () => {
 
 	// Auto-attach logged-in user to checkout (runs once, persists across step changes)
 	useCustomerAttach();
+
+	// Complete checkout after Stripe 3DS redirect (runs on any step when checkout is loaded)
+	useCompleteCheckoutAfterStripeRedirect(checkout?.id ?? "");
 
 	// For digital products, skip shipping step (1 = info, 2 = payment, 3 = confirmation)
 	// For physical products, full flow (1 = info, 2 = shipping, 3 = payment, 4 = confirmation)

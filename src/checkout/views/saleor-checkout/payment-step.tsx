@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, type FC } from "react";
+import dynamic from "next/dynamic";
+import { ErrorBoundary } from "react-error-boundary";
 import { ChevronLeft, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/ui/components/ui/button";
@@ -27,6 +29,8 @@ import { getStepNumber } from "./flow";
 import {
 	PaymentMethodSelector,
 	BillingAddressSection,
+	stripeV2GatewayId,
+	usePaymentGatewaysInitialize,
 	type PaymentMethodType,
 	type CardData,
 	type BillingAddressData,
@@ -34,6 +38,16 @@ import {
 } from "@/checkout/components/payment";
 import { LoadingSpinner } from "@/checkout/ui-kit/loading-spinner";
 import { formatMoneyWithFallback } from "@/checkout/lib/utils/money";
+import {
+	getTransactionInitializeErrorMessage,
+	logTransactionInitializeFailure,
+} from "@/checkout/lib/transaction-initialize-errors";
+
+const StripeComponent = dynamic(
+	() =>
+		import("@/checkout/components/payment/stripe/stripe-component").then((module) => module.StripeComponent),
+	{ ssr: false },
+);
 
 interface PaymentStepProps {
 	checkout: CheckoutFragment;
@@ -123,7 +137,15 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 	// Check for available payment gateways
 	const availableGateways = checkout.availablePaymentGateways || [];
 	const hasDummyGateway = availableGateways.some((g) => g.id === dummyGatewayId);
+	const hasStripeGateway = availableGateways.some((g) => g.id === stripeV2GatewayId);
 	const hasRealGateway = availableGateways.some((g) => g.id !== dummyGatewayId);
+	const isStripeCheckout = hasStripeGateway;
+
+	const {
+		stripeConfig,
+		fetching: fetchingStripeConfig,
+		error: stripeInitError,
+	} = usePaymentGatewaysInitialize(checkout.id, availableGateways);
 
 	const shippingAddress = checkout.shippingAddress;
 
@@ -147,6 +169,104 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 	const total = checkout.totalPrice?.gross;
 	const totalStr = formatMoneyWithFallback(total);
 
+	const syncBillingAddress = useCallback(async (): Promise<boolean> => {
+		const needsBillingForm = !sameAsBilling || !hasShippingAddress;
+
+		if (needsBillingForm) {
+			let addressInput;
+
+			if (billingData.selectedAddressId && user?.addresses) {
+				const selectedAddress = user.addresses.find((addr) => addr.id === billingData.selectedAddressId);
+				if (selectedAddress) {
+					addressInput = getAddressInputData({
+						firstName: selectedAddress.firstName || "",
+						lastName: selectedAddress.lastName || "",
+						streetAddress1: selectedAddress.streetAddress1 || "",
+						streetAddress2: selectedAddress.streetAddress2 || "",
+						companyName: selectedAddress.companyName || "",
+						city: selectedAddress.city || "",
+						postalCode: selectedAddress.postalCode || "",
+						countryArea: selectedAddress.countryArea || "",
+						phone: selectedAddress.phone || "",
+						countryCode: selectedAddress.country?.code as CountryCode,
+					});
+				}
+			}
+
+			if (!addressInput) {
+				addressInput = getAddressInputData({
+					...billingData.formData,
+					countryCode: billingData.countryCode,
+				});
+			}
+
+			const result = await updateBillingAddress({
+				checkoutId: checkout.id,
+				billingAddress: addressInput,
+				languageCode: localeConfig.graphqlLanguageCode,
+			});
+
+			if (result.error) {
+				setErrors({ streetAddress1: "Failed to update billing address" });
+				return false;
+			}
+
+			const billingErrors = result.data?.checkoutBillingAddressUpdate?.errors;
+			if (billingErrors?.length) {
+				const errorMap: Record<string, string> = {};
+				billingErrors.forEach((err) => {
+					const field = err.field || "streetAddress1";
+					errorMap[field] = err.message || "Invalid value";
+				});
+				setErrors(errorMap);
+				const firstField = Object.keys(errorMap)[0];
+				const element = document.querySelector(`[name="${firstField}"]`) as HTMLElement;
+				element?.focus();
+				return false;
+			}
+		} else if (shippingAddress) {
+			const addressInput = getAddressInputData({
+				firstName: shippingAddress.firstName || "",
+				lastName: shippingAddress.lastName || "",
+				streetAddress1: shippingAddress.streetAddress1 || "",
+				streetAddress2: shippingAddress.streetAddress2 || "",
+				companyName: shippingAddress.companyName || "",
+				city: shippingAddress.city || "",
+				postalCode: shippingAddress.postalCode || "",
+				countryArea: shippingAddress.countryArea || "",
+				phone: shippingAddress.phone || "",
+				countryCode: shippingAddress.country?.code as CountryCode,
+			});
+
+			const result = await updateBillingAddress({
+				checkoutId: checkout.id,
+				billingAddress: addressInput,
+				languageCode: localeConfig.graphqlLanguageCode,
+			});
+
+			if (result.error) {
+				setErrors({ streetAddress1: "Failed to update billing address" });
+				return false;
+			}
+
+			const billingErrors = result.data?.checkoutBillingAddressUpdate?.errors;
+			if (billingErrors?.length) {
+				setErrors({ streetAddress1: billingErrors[0]?.message || "Failed to update billing address" });
+				return false;
+			}
+		}
+
+		return true;
+	}, [
+		billingData,
+		checkout.id,
+		hasShippingAddress,
+		sameAsBilling,
+		shippingAddress,
+		updateBillingAddress,
+		user?.addresses,
+	]);
+
 	const handleSubmit = useCallback(
 		async (event?: React.FormEvent) => {
 			if (event) {
@@ -155,83 +275,15 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 
 			setErrors({});
 
-			// Validate billing address if different from shipping (or for digital products)
-			const needsBillingForm = !sameAsBilling || !hasShippingAddress;
+			if (isStripeCheckout) {
+				return;
+			}
 
 			setIsProcessing(true);
 			try {
-				// Update billing address
-				if (needsBillingForm) {
-					let addressInput;
-
-					// Check if user selected a saved address
-					if (billingData.selectedAddressId && user?.addresses) {
-						const selectedAddress = user.addresses.find((addr) => addr.id === billingData.selectedAddressId);
-						if (selectedAddress) {
-							addressInput = getAddressInputData({
-								firstName: selectedAddress.firstName || "",
-								lastName: selectedAddress.lastName || "",
-								streetAddress1: selectedAddress.streetAddress1 || "",
-								streetAddress2: selectedAddress.streetAddress2 || "",
-								companyName: selectedAddress.companyName || "",
-								city: selectedAddress.city || "",
-								postalCode: selectedAddress.postalCode || "",
-								countryArea: selectedAddress.countryArea || "",
-								phone: selectedAddress.phone || "",
-								countryCode: selectedAddress.country?.code as CountryCode,
-							});
-						}
-					}
-
-					// If no saved address selected, use form data
-					if (!addressInput) {
-						addressInput = getAddressInputData({
-							...billingData.formData,
-							countryCode: billingData.countryCode,
-						});
-					}
-
-					const result = await updateBillingAddress({
-						checkoutId: checkout.id,
-						billingAddress: addressInput,
-						languageCode: localeConfig.graphqlLanguageCode,
-					});
-					if (result.error) {
-						setErrors({ streetAddress1: "Failed to update billing address" });
-						return;
-					}
-					const billingErrors = result.data?.checkoutBillingAddressUpdate?.errors;
-					if (billingErrors?.length) {
-						const errorMap: Record<string, string> = {};
-						billingErrors.forEach((err) => {
-							const field = err.field || "streetAddress1";
-							errorMap[field] = err.message || "Invalid value";
-						});
-						setErrors(errorMap);
-						const firstField = Object.keys(errorMap)[0];
-						const element = document.querySelector(`[name="${firstField}"]`) as HTMLElement;
-						element?.focus();
-						return;
-					}
-				} else if (shippingAddress) {
-					// Copy shipping address to billing
-					const addressInput = getAddressInputData({
-						firstName: shippingAddress.firstName || "",
-						lastName: shippingAddress.lastName || "",
-						streetAddress1: shippingAddress.streetAddress1 || "",
-						streetAddress2: shippingAddress.streetAddress2 || "",
-						companyName: shippingAddress.companyName || "",
-						city: shippingAddress.city || "",
-						postalCode: shippingAddress.postalCode || "",
-						countryArea: shippingAddress.countryArea || "",
-						phone: shippingAddress.phone || "",
-						countryCode: shippingAddress.country?.code as CountryCode,
-					});
-					await updateBillingAddress({
-						checkoutId: checkout.id,
-						billingAddress: addressInput,
-						languageCode: localeConfig.graphqlLanguageCode,
-					});
+				const billingReady = await syncBillingAddress();
+				if (!billingReady) {
+					return;
 				}
 
 				// Process payment using available gateway
@@ -257,10 +309,11 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 						return;
 					}
 
-					const transactionErrors = initResult.data?.transactionInitialize?.errors;
-					if (transactionErrors?.length) {
-						console.error("Transaction errors:", transactionErrors);
-						setErrors({ streetAddress1: transactionErrors[0].message || "Payment failed" });
+					const transactionData = initResult.data?.transactionInitialize;
+					const initializeError = getTransactionInitializeErrorMessage(transactionData);
+					if (initializeError) {
+						logTransactionInitializeFailure(transactionData, "PaymentStep");
+						setErrors({ payment: initializeError });
 						return;
 					}
 
@@ -316,15 +369,11 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 			}
 		},
 		[
-			sameAsBilling,
-			hasShippingAddress,
-			billingData,
-			user?.addresses,
-			shippingAddress,
+			syncBillingAddress,
 			checkout.id,
 			hasDummyGateway,
 			hasRealGateway,
-			updateBillingAddress,
+			isStripeCheckout,
 			transactionInitialize,
 			checkoutComplete,
 			onComplete,
@@ -345,12 +394,13 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 		: `Pay ${totalStr}`;
 
 	const isDisabled =
+		isStripeCheckout ||
 		isLoading ||
 		(!hasDummyGateway && !hasRealGateway) ||
 		(paymentMethod === "card" && !hasDummyGateway && !isCardValid);
 
-	return (
-		<form className="space-y-8" onSubmit={handleSubmit}>
+	const paymentContent = (
+		<>
 			{/* Summary Context */}
 			<CheckoutSummaryContext checkout={checkout} rows={summaryRows} onGoToStep={handleGoToStep} />
 
@@ -369,7 +419,7 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 			)}
 
 			{/* Test Mode Indicator */}
-			{hasDummyGateway && !hasRealGateway && (
+			{hasDummyGateway && !hasStripeGateway && (
 				<div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4">
 					<AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
 					<div>
@@ -381,15 +431,6 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 				</div>
 			)}
 
-			{/* Payment Method */}
-			<PaymentMethodSelector
-				value={paymentMethod}
-				onChange={setPaymentMethod}
-				cardData={cardData}
-				onCardDataChange={setCardData}
-			/>
-
-			{/* Billing Address */}
 			<BillingAddressSection
 				billingAddress={checkout.billingAddress}
 				shippingAddress={shippingAddress}
@@ -401,6 +442,57 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 				onSameAsShippingChange={setSameAsBilling}
 				initialSameAsShipping={sameAsBilling}
 			/>
+
+			{isStripeCheckout && (
+				<>
+					{fetchingStripeConfig && (
+						<div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+							<LoadingSpinner />
+							Loading payment form...
+						</div>
+					)}
+					{stripeInitError && (
+						<div className="border-destructive/50 bg-destructive/10 flex items-start gap-3 rounded-lg border p-4">
+							<AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
+							<div>
+								<p className="font-medium text-destructive">Payment setup failed</p>
+								<p className="text-destructive/80 text-sm">{stripeInitError}</p>
+							</div>
+						</div>
+					)}
+					{stripeConfig && !stripeInitError && (
+						<ErrorBoundary
+							fallback={
+								<div className="border-destructive/50 bg-destructive/10 flex items-start gap-3 rounded-lg border p-4">
+									<AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
+									<div>
+										<p className="font-medium text-destructive">Payment form failed to load</p>
+										<p className="text-destructive/80 text-sm">
+											Please refresh the page. If the problem persists, contact support.
+										</p>
+									</div>
+								</div>
+							}
+						>
+							<StripeComponent
+								checkout={checkout}
+								config={stripeConfig}
+								onBeforePayment={syncBillingAddress}
+								onError={(message) => setErrors(message ? { payment: message } : {})}
+							/>
+						</ErrorBoundary>
+					)}
+				</>
+			)}
+
+			{!isStripeCheckout && (
+				<PaymentMethodSelector
+					value={paymentMethod}
+					onChange={setPaymentMethod}
+					cardData={cardData}
+					onCardDataChange={setCardData}
+				/>
+			)}
 
 			{/* Payment/Checkout Error Display */}
 			{errors.payment && (
@@ -423,28 +515,42 @@ export const PaymentStep: FC<PaymentStepProps> = ({
 					<ChevronLeft className="h-4 w-4" />
 					{isShippingRequired ? "Return to shipping" : "Return to information"}
 				</button>
-				<Button type="submit" disabled={isDisabled} className="hidden h-12 min-w-[200px] px-8 md:flex">
-					{isLoading ? (
-						<span className="flex items-center gap-2">
-							<LoadingSpinner />
-							{buttonText}
-						</span>
-					) : (
-						buttonText
-					)}
-				</Button>
+				{!isStripeCheckout && (
+					<Button type="submit" disabled={isDisabled} className="hidden h-12 min-w-[200px] px-8 md:flex">
+						{isLoading ? (
+							<span className="flex items-center gap-2">
+								<LoadingSpinner />
+								{buttonText}
+							</span>
+						) : (
+							buttonText
+						)}
+					</Button>
+				)}
 			</div>
 
-			<MobileStickyAction
-				step={getStepNumber("PAYMENT", isShippingRequired)}
-				isShippingRequired={isShippingRequired}
-				type="submit"
-				onAction={handleSubmit}
-				isLoading={isLoading}
-				disabled={isDisabled}
-				total={totalStr}
-				loadingText={completeState.fetching ? "Creating order..." : "Processing payment..."}
-			/>
+			{!isStripeCheckout && (
+				<MobileStickyAction
+					step={getStepNumber("PAYMENT", isShippingRequired)}
+					isShippingRequired={isShippingRequired}
+					type="submit"
+					onAction={handleSubmit}
+					isLoading={isLoading}
+					disabled={isDisabled}
+					total={totalStr}
+					loadingText={completeState.fetching ? "Creating order..." : "Processing payment..."}
+				/>
+			)}
+		</>
+	);
+
+	if (isStripeCheckout) {
+		return <div className="space-y-8">{paymentContent}</div>;
+	}
+
+	return (
+		<form className="space-y-8" onSubmit={handleSubmit}>
+			{paymentContent}
 		</form>
 	);
 };

@@ -14,3 +14,5 @@ export {
 	type BillingAddressData,
 	type BillingAddressSectionProps,
 } from "./billing-address-section";
+
+export { stripeV2GatewayId, usePaymentGatewaysInitialize, type StripeGatewayConfig } from "./stripe";
