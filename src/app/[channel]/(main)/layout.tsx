@@ -2,6 +2,7 @@ import { type ReactNode, Suspense } from "react";
 import { Footer } from "@/ui/components/footer";
 import { Header } from "@/ui/components/header";
 import { CartProvider, CartDrawerWrapper } from "@/ui/components/cart";
+import { ChatAssistantShell } from "@/app/[channel]/(main)/chat/chat-assistant-shell";
 import { brandConfig } from "@/config/brand";
 
 export const metadata = {
@@ -42,6 +43,7 @@ async function MainLayout({
 			<Suspense fallback={null}>
 				<CartDrawerWrapper channel={channel} />
 			</Suspense>
+			<ChatAssistantShell />
 		</>
 	);
 }
