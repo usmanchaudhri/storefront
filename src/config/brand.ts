@@ -18,10 +18,10 @@ export const brandConfig = {
 	siteName: "Saleor Store",
 
 	/** Legal entity name for copyright notices */
-	copyrightHolder: "KayaPure",
+	copyrightHolder: "Kaya Pure",
 
 	/** Organization name for structured data (JSON-LD) */
-	organizationName: "Kaya Pure",
+	organizationName: "Kpure",
 
 	/** Default brand name for products without a brand */
 	defaultBrand: "Kaya Pure",

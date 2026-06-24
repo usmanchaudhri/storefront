@@ -43,7 +43,7 @@ async function MainLayout({
 			<Suspense fallback={null}>
 				<CartDrawerWrapper channel={channel} />
 			</Suspense>
-			<ChatAssistantShell />
+			<ChatAssistantShell channel={channel} />
 		</>
 	);
 }
