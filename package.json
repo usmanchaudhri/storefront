@@ -37,7 +37,7 @@
 		"graphql-tag": "2.12.6",
 		"lodash-es": "4.17.21",
 		"lucide-react": "0.358.0",
-		"next": "16.1.2",
+		"next": "16.2.9",
 		"react": "^19.1.2",
 		"react-dom": "^19.1.2",
 		"react-error-boundary": "4.0.13",
@@ -88,7 +88,14 @@
 			"micromatch": ">=4.0.8",
 			"@babel/runtime": ">=7.26.10",
 			"@babel/helpers": ">=7.26.10",
-			"brace-expansion@>=2": ">=2.0.2"
+			"brace-expansion@>=2": ">=2.0.3",
+			"tar": ">=7.5.16",
+			"minimatch@>=9": ">=9.0.7",
+			"glob@>=10": ">=10.5.0",
+			"cross-spawn": ">=7.0.5",
+			"diff": ">=5.2.2",
+			"@sigstore/core": ">=3.2.1",
+			"ip-address": ">=10.1.1"
 		}
 	},
 	"packageManager": "pnpm@10.28.1",
