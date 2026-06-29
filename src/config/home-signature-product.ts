@@ -7,7 +7,7 @@ export const homeSignatureProductBanner = {
 	problem: {
 		title: "Daily fatigue & low stamina",
 		description:
-			"You wake up tired, hit a wall by afternoon, and push through the day on willpower alone — not sustainable energy.",
+			"You wake up tired, hit a wall by afternoon, and push through on willpower — not steady, sustainable energy.",
 	},
 	solution: {
 		title: "One gummy. Seven ingredients.",

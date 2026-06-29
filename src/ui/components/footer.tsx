@@ -6,6 +6,7 @@ import { executePublicGraphQL } from "@/lib/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { footerProductSections } from "@/config/footer";
 import { CopyrightText } from "./copyright-text";
+import { FooterNewsletter } from "./footer-newsletter";
 import { Logo } from "./shared/logo";
 
 const footerLinkClass = "text-sm text-neutral-400 transition-colors hover:text-neutral-200";
@@ -35,6 +36,8 @@ export async function Footer({ channel }: { channel: string }) {
 		<footer className="bg-foreground text-background">
 			{/* Extra bottom padding on mobile to account for sticky add-to-cart bar */}
 			<div className="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 sm:pb-12 lg:px-8 lg:py-16">
+				<FooterNewsletter />
+
 				<div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-10">
 					{/* Brand */}
 					<div className="col-span-2 sm:col-span-3 lg:col-span-1">

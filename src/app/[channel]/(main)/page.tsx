@@ -5,6 +5,8 @@ import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { HomeEnergyFocusSection } from "@/ui/components/home/home-energy-focus-section";
 import { HomeHero } from "@/ui/components/home/home-hero";
 import { HomeSignatureProductBanner } from "@/ui/components/home/home-signature-product-banner";
+import { HomeFaq } from "@/ui/components/home/home-faq";
+import { HomeVideoGallery } from "@/ui/components/home/home-video-gallery";
 import { ProductList } from "@/ui/components/product-list";
 
 export const metadata = {
@@ -81,6 +83,8 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 					<FeaturedProducts channel={channel} />
 				</Suspense>
 			</section>
+			<HomeVideoGallery channel={channel} />
+			<HomeFaq />
 		</>
 	);
 }

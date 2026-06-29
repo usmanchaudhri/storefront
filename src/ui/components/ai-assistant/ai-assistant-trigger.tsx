@@ -16,7 +16,7 @@ export function AiAssistantTrigger({ onOpen, className }: AiAssistantTriggerProp
 			<Button
 				type="button"
 				size="lg"
-				className="h-14 rounded-full px-5 shadow-lg"
+				className="h-14 rounded-full bg-teal-600 px-5 text-white shadow-lg hover:bg-teal-700"
 				onClick={onOpen}
 				aria-haspopup="dialog"
 				aria-label="Open Ask Kpure assistant"
