@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/utils";
 import { localeConfig } from "@/config/locale";
 import { hasDiscount } from "@/lib/pricing";
+import { channelHref } from "@/lib/channel-path";
 
 interface CartLine {
 	id: string;
@@ -187,7 +188,7 @@ export function CartDrawer({ checkoutId, lines, totalPrice, channel }: CartDrawe
 								Looks like you haven&apos;t added anything to your bag yet.
 							</p>
 							<Link
-								href={`/${channel}/products`}
+								href={channelHref(channel, "/products")}
 								onClick={closeCart}
 								className="hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors"
 							>
@@ -208,7 +209,9 @@ export function CartDrawer({ checkoutId, lines, totalPrice, channel }: CartDrawe
 										<div className="flex gap-4">
 											{/* Product Image */}
 											<Link
-												href={`/${channel}/products/${line.variant.product.slug}?variant=${line.variant.id}`}
+												href={`${channelHref(channel, `/products/${line.variant.product.slug}`)}?variant=${
+													line.variant.id
+												}`}
 												onClick={closeCart}
 												className="group relative h-24 w-20 shrink-0 overflow-hidden rounded-lg bg-secondary"
 											>
@@ -227,7 +230,10 @@ export function CartDrawer({ checkoutId, lines, totalPrice, channel }: CartDrawe
 												<div className="flex items-start justify-between gap-2">
 													<div>
 														<Link
-															href={`/${channel}/products/${line.variant.product.slug}?variant=${line.variant.id}`}
+															href={`${channelHref(
+																channel,
+																`/products/${line.variant.product.slug}`,
+															)}?variant=${line.variant.id}`}
 															onClick={closeCart}
 															className="line-clamp-1 text-sm font-medium hover:underline"
 														>
@@ -345,7 +351,7 @@ export function CartDrawer({ checkoutId, lines, totalPrice, channel }: CartDrawe
 								<ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
 							</Link>
 							<Link
-								href={`/${channel}/products`}
+								href={channelHref(channel, "/products")}
 								onClick={closeCart}
 								className="inline-flex h-12 w-full items-center justify-center rounded-md border border-border bg-transparent text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
 							>

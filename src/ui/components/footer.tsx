@@ -5,6 +5,7 @@ import { ChannelsListDocument } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { footerProductSections } from "@/config/footer";
+import { channelHref } from "@/lib/channel-path";
 import { CopyrightText } from "./copyright-text";
 import { FooterNewsletter } from "./footer-newsletter";
 import { Logo } from "./shared/logo";
@@ -41,8 +42,8 @@ export async function Footer({ channel }: { channel: string }) {
 				<div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-10">
 					{/* Brand */}
 					<div className="col-span-2 sm:col-span-3 lg:col-span-1">
-						<Link href={`/${channel}`} prefetch={false} className="mb-4 inline-block">
-							<Logo className="h-7 w-auto" inverted />
+						<Link href={channelHref(channel, "/")} prefetch={false} className="mb-4 inline-block">
+							<Logo className="h-7 w-auto" variant="footer" />
 						</Link>
 						<p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-400">
 							Premium natural supplements crafted with scientifically-backed ingredients to unlock your

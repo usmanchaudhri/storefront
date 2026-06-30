@@ -7,6 +7,7 @@ import { useEffect, useId, useRef } from "react";
 
 import type { AiAssistantConfig } from "@/app/[channel]/(main)/chat/config";
 import { cn } from "@/lib/utils";
+import { channelHref } from "@/lib/channel-path";
 import { SearchResults } from "@/ui/components/search-results";
 
 import type { useAiAssist } from "./use-ai-assist";
@@ -84,9 +85,9 @@ export function AiAssistantOverlay({
 		submittedQuery && !searchLoading && !searchError && searchProducts.length === 0;
 	const viewAllHref =
 		submittedQuery && totalCount > searchProducts.length
-			? `/${channel}/search?query=${encodeURIComponent(submittedQuery)}`
+			? `${channelHref(channel, "/search")}?query=${encodeURIComponent(submittedQuery)}`
 			: submittedQuery && totalCount > 0
-				? `/${channel}/search?query=${encodeURIComponent(submittedQuery)}`
+				? `${channelHref(channel, "/search")}?query=${encodeURIComponent(submittedQuery)}`
 				: null;
 
 	return (
@@ -209,7 +210,7 @@ export function AiAssistantOverlay({
 									Try a different search term or browse all products.
 								</p>
 								<Link
-									href={`/${channel}/products`}
+									href={channelHref(channel, "/products")}
 									onClick={() => handleOpenChange(false)}
 									className="mt-4 inline-flex text-sm font-medium text-primary hover:underline"
 								>

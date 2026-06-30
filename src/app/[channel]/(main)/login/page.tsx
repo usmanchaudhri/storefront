@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { channelHref } from "@/lib/channel-path";
 import { LoginForm } from "@/ui/components/login-form";
 import { executeAuthenticatedGraphQL } from "@/lib/graphql";
 import { CurrentUserDocument } from "@/gql/graphql";
@@ -65,7 +66,7 @@ async function LoginContent({ params: paramsPromise }: { params: Promise<{ chann
 		});
 
 		if (result.ok && result.data.me) {
-			redirect(`/${channel}`);
+			redirect(channelHref(channel, "/"));
 		}
 	}
 

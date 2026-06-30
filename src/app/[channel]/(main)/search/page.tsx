@@ -6,6 +6,7 @@ import { SearchResults } from "@/ui/components/search-results";
 import { Pagination } from "@/ui/components/pagination";
 import { SearchSort } from "./search-sort";
 import { SearchIcon } from "lucide-react";
+import { channelHref } from "@/lib/channel-path";
 
 export const metadata = {
 	title: "Search products · Saleor Storefront example",
@@ -62,7 +63,7 @@ async function SearchContent({
 	}
 
 	if (Array.isArray(queryParam)) {
-		redirect(`/${params.channel}/search?query=${encodeURIComponent(query)}`);
+		redirect(`${channelHref(params.channel, "/search")}?query=${encodeURIComponent(query)}`);
 	}
 
 	// Parse pagination
@@ -164,13 +165,13 @@ function EmptyState({ query, channel }: { query: string; channel: string }) {
 			</p>
 			<div className="mt-8 flex flex-col gap-3 sm:flex-row">
 				<Link
-					href={`/${channel}/products`}
+					href={channelHref(channel, "/products")}
 					className="hover:bg-primary/90 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors"
 				>
 					Browse All Products
 				</Link>
 				<Link
-					href={`/${channel}`}
+					href={channelHref(channel, "/")}
 					className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
 				>
 					Go to Homepage

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { brandConfig } from "@/config/brand";
+import { channelHref } from "@/lib/channel-path";
 import { cn } from "@/lib/utils";
 
 function heroImageSrc(): string | null {
@@ -25,7 +26,7 @@ export function HomeHeroSkeleton() {
 export function HomeHero({ channel }: { channel: string }) {
 	const { eyebrow, title, subtitle, ctaLabel, ctaHref } = brandConfig.homeHero;
 	const path = ctaHref.startsWith("/") ? ctaHref : `/${ctaHref}`;
-	const ctaUrl = `/${encodeURIComponent(channel)}${path}`;
+	const ctaUrl = channelHref(channel, path);
 	const imgSrc = heroImageSrc();
 
 	return (

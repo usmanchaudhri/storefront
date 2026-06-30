@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { channelHref } from "@/lib/channel-path";
 
 export const ChannelSelect = ({
 	channels,
@@ -24,7 +25,7 @@ export const ChannelSelect = ({
 			)}
 			onChange={(e) => {
 				const newChannel = e.currentTarget.value;
-				return router.push(`/${newChannel}`);
+				return router.push(channelHref(newChannel, "/"));
 			}}
 			value={params.channel}
 		>

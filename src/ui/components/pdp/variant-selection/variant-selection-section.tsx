@@ -17,6 +17,7 @@ import {
 	type SaleorVariant,
 } from "./utils";
 import { cn } from "@/lib/utils";
+import { channelHref } from "@/lib/channel-path";
 import { VariantAttributeBadges, extractOptionalAttributes } from "./optional-attributes";
 import { PurchaseFlowStep } from "../purchase-flow-step";
 import { normalizeVariantsForSelection, looksLikeKayapureGummyProduct } from "./gummy-variant-normalizer";
@@ -136,7 +137,9 @@ export function VariantSelectionSection({
 
 			startTransition(() => {
 				setOptimisticSelections(newSelections);
-				router.push(`/${channel}/products/${productSlug}?${params.toString()}`, { scroll: false });
+				router.push(`${channelHref(channel, `/products/${productSlug}`)}?${params.toString()}`, {
+					scroll: false,
+				});
 			});
 		},
 		[
@@ -171,7 +174,9 @@ export function VariantSelectionSection({
 		(variantId: string) => {
 			startTransition(() => {
 				setOptimisticVariantId(variantId);
-				router.push(`/${channel}/products/${productSlug}?variant=${variantId}`, { scroll: false });
+				router.push(`${channelHref(channel, `/products/${productSlug}`)}?variant=${variantId}`, {
+					scroll: false,
+				});
 			});
 		},
 		[channel, productSlug, router, startTransition, setOptimisticVariantId],

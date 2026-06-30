@@ -9,6 +9,7 @@ import { parseEditorJSToText } from "@/lib/editorjs";
 import { CategoryHero, transformToProductCard } from "@/ui/components/plp";
 import { buildSortVariables, buildFilterVariables } from "@/ui/components/plp/filter-utils";
 import { CategoryPageClient } from "./client";
+import { channelHref } from "@/lib/channel-path";
 
 async function getCategoryData(slug: string, channel: string) {
 	"use cache";
@@ -80,8 +81,8 @@ async function CategoryContent({
 	const plainDescription = parseEditorJSToText(category.description);
 
 	const breadcrumbs = [
-		{ label: "Home", href: `/${params.channel}` },
-		{ label: category.name, href: `/${params.channel}/categories/${params.slug}` },
+		{ label: "Home", href: channelHref(params.channel, "/") },
+		{ label: category.name, href: channelHref(params.channel, `/categories/${params.slug}`) },
 	];
 
 	return (

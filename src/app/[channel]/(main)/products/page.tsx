@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductListPaginatedDocument } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { getPaginatedListVariables } from "@/lib/utils";
+import { channelHref } from "@/lib/channel-path";
 import { CategoryHero, transformToProductCard } from "@/ui/components/plp";
 import { buildSortVariables, buildFilterVariables } from "@/ui/components/plp/filter-utils";
 import {
@@ -37,8 +38,8 @@ export default async function Page(props: PageProps) {
 	const params = await props.params;
 
 	const breadcrumbs = [
-		{ label: "Home", href: `/${params.channel}` },
-		{ label: "Products", href: `/${params.channel}/products` },
+		{ label: "Home", href: channelHref(params.channel, "/") },
+		{ label: "Products", href: channelHref(params.channel, "/products") },
 	];
 
 	return (

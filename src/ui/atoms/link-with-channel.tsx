@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { type ComponentProps } from "react";
 
+import { channelHref } from "@/lib/channel-path";
+
 export const LinkWithChannel = ({
 	href,
 	channel,
@@ -12,7 +14,5 @@ export const LinkWithChannel = ({
 		return <Link {...props} href={href} />;
 	}
 
-	const encodedChannel = encodeURIComponent(channel);
-	const hrefWithChannel = `/${encodedChannel}${href}`;
-	return <Link {...props} href={hrefWithChannel} />;
+	return <Link {...props} href={channelHref(channel, href)} />;
 };

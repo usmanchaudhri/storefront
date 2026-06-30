@@ -1,18 +1,14 @@
-import { redirect } from "next/navigation";
 import { DefaultChannelSlug } from "@/app/config";
 
 /**
- * Root page redirects to the default channel.
- *
- * Requires NEXT_PUBLIC_DEFAULT_CHANNEL to be set.
- * In development, shows setup instructions if not configured.
+ * Shown only when NEXT_PUBLIC_DEFAULT_CHANNEL is unset.
+ * When configured, middleware rewrites `/` to the channel homepage internally.
  */
 export default function RootPage() {
 	if (DefaultChannelSlug) {
-		redirect(`/${DefaultChannelSlug}`);
+		return null;
 	}
 
-	// No channel configured - show setup instructions
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-background p-8">
 			<div className="max-w-md text-center">

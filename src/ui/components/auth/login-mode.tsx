@@ -8,6 +8,7 @@ import { useSaleorAuthContext } from "@saleor/auth-sdk/react";
 import { Button } from "@/ui/components/ui/button";
 import { Input } from "@/ui/components/ui/input";
 import { Label } from "@/ui/components/ui/label";
+import { channelHref } from "@/lib/channel-path";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,7 +58,7 @@ export function LoginMode() {
 			}
 
 			if (result.data?.tokenCreate?.token) {
-				router.push(`/${params.channel}`);
+				router.push(channelHref(params.channel, "/"));
 				router.refresh();
 			}
 		} catch {
@@ -85,7 +86,7 @@ export function LoginMode() {
 				body: JSON.stringify({
 					email,
 					channel: params.channel,
-					redirectUrl: `${window.location.origin}/${params.channel}/login`,
+					redirectUrl: `${window.location.origin}${channelHref(params.channel, "/login")}`,
 				}),
 			});
 
@@ -118,7 +119,7 @@ export function LoginMode() {
 					<p className="mt-2 text-sm text-muted-foreground">
 						Don&apos;t have an account?{" "}
 						<Link
-							href={`/${params.channel}/signup`}
+							href={channelHref(params.channel, "/signup")}
 							className="font-medium text-foreground underline underline-offset-2 hover:no-underline"
 						>
 							Sign up

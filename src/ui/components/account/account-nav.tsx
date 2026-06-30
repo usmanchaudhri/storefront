@@ -5,6 +5,7 @@ import Image from "next/image";
 import { LayoutGrid, Receipt, MapPin, Settings, ArrowLeft } from "lucide-react";
 import { LinkWithChannel } from "@/ui/atoms/link-with-channel";
 import { cn } from "@/lib/utils";
+import { isDefaultChannel } from "@/lib/channel-path";
 import { logout } from "@/app/actions";
 import { useAccountUser } from "@/ui/components/account/account-context";
 import { accountRoutes } from "@/ui/components/account/routes";
@@ -25,10 +26,13 @@ export function AccountNav({ channel }: { channel: string }) {
 	const user = useAccountUser();
 	const pathname = usePathname();
 
-	const channelPrefix = `/${channel}`;
+	const channelPrefix = isDefaultChannel(channel) ? "" : `/${channel}`;
 
 	const isActive = (href: string, exact?: boolean) => {
-		const accountPath = pathname.startsWith(channelPrefix) ? pathname.slice(channelPrefix.length) : pathname;
+		const accountPath =
+			channelPrefix && pathname.startsWith(channelPrefix)
+				? pathname.slice(channelPrefix.length) || "/"
+				: pathname;
 		if (exact) return accountPath === href;
 		return accountPath.startsWith(href);
 	};

@@ -26,7 +26,7 @@ function NavLinksSkeleton() {
 
 export async function Header({ channel }: { channel: string }) {
 	return (
-		<header className="bg-background/95 supports-[backdrop-filter]:bg-background/90 sticky top-0 z-40 border-b border-border backdrop-blur">
+		<header className="sticky top-0 z-40 border-b border-border bg-white">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex h-16 items-center gap-3 sm:gap-4 lg:h-[4.25rem] lg:gap-6">
 					<div className="flex shrink-0 items-center">

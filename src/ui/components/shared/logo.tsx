@@ -6,35 +6,46 @@ import { cn } from "@/lib/utils";
  * Shared Logo Component
  *
  * Single source of truth for the storefront logo.
- * Raster wordmark: /public/kayapure-logo.png
+ * Raster wordmark: /public/kayapure-logo.png (header)
+ * Footer wordmark: /public/kayapure-footer-logo.png
  *
- * Black-on-white source asset: CSS `invert` adapts the mark for
- * light header (default), dark header (dark:invert), and dark footer
- * (inverted prop). Footer uses `invert dark:invert-0` for correct
- * contrast in both color schemes.
+ * Black-on-white source asset: CSS `invert` adapts the header mark for
+ * light header (default) and dark mode (dark:invert). Footer uses the
+ * dedicated teal wordmark (variant="footer") without inversion.
  *
  * @example
  * <Logo className="h-7 w-auto" />
  * <Logo className="h-7 w-auto" inverted />
+ * <Logo className="h-7 w-auto" variant="footer" />
  */
 
 const LOGO_SRC = "/kayapure-logo.png" as const;
-const LOGO_WIDTH = 1024;
-const LOGO_HEIGHT = 231;
+const FOOTER_LOGO_SRC = "/kayapure-footer-logo.png" as const;
+const LOGO_WIDTH = 543;
+const LOGO_HEIGHT = 116;
 const ASPECT = `${LOGO_WIDTH} / ${LOGO_HEIGHT}` as const;
 
 interface LogoProps {
 	className?: string;
 	/** Accessible label for the logo (defaults to brand) */
 	ariaLabel?: string;
-	/** Invert for dark backgrounds (e.g. dark footer) */
+	/** Invert for dark backgrounds (e.g. dark footer) — default header logo only */
 	inverted?: boolean;
+	/** Footer wordmark (dark teal on transparent) */
+	variant?: "default" | "footer";
 }
 
-export const Logo = ({ className, ariaLabel = brandConfig.logoAriaLabel, inverted = false }: LogoProps) => {
+export const Logo = ({
+	className,
+	ariaLabel = brandConfig.logoAriaLabel,
+	inverted = false,
+	variant = "default",
+}: LogoProps) => {
+	const isFooter = variant === "footer";
+
 	return (
 		<Image
-			src={LOGO_SRC}
+			src={isFooter ? FOOTER_LOGO_SRC : LOGO_SRC}
 			alt={ariaLabel}
 			width={LOGO_WIDTH}
 			height={LOGO_HEIGHT}
@@ -43,7 +54,7 @@ export const Logo = ({ className, ariaLabel = brandConfig.logoAriaLabel, inverte
 			sizes="(max-width: 768px) 40vw, 200px"
 			className={cn(
 				"min-w-0 object-contain object-left",
-				inverted ? "invert dark:invert-0" : "dark:invert",
+				!isFooter && (inverted ? "invert dark:invert-0" : "dark:invert"),
 				className,
 			)}
 			style={{ aspectRatio: ASPECT }}

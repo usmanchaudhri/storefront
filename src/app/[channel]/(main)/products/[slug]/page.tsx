@@ -9,6 +9,7 @@ import xss from "xss";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { ProductDetailsDocument, type ProductDetailsQuery } from "@/gql/graphql";
 import { buildPageMetadata, buildProductJsonLd } from "@/lib/seo";
+import { channelHref } from "@/lib/channel-path";
 import { stripShippingReturnsCtaFromHtml } from "@/lib/strip-pdp-shipping-returns-cta";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import {
@@ -72,7 +73,7 @@ export async function generateMetadata(props: {
 		title: product.seoTitle || product.name,
 		description,
 		image: ogImage,
-		url: `/${params.channel}/products/${encodeURIComponent(params.slug)}`,
+		url: channelHref(params.channel, `/products/${encodeURIComponent(params.slug)}`),
 		openGraph:
 			priceAmount && priceCurrency
 				? {
@@ -134,9 +135,14 @@ async function ProductContent({
 	const bottomBanner = extractPdpBottomBanner(product);
 
 	const breadcrumbs = [
-		{ label: "Home", href: `/${params.channel}` },
+		{ label: "Home", href: channelHref(params.channel, "/") },
 		...(product.category
-			? [{ label: product.category.name, href: `/${params.channel}/categories/${product.category.slug}` }]
+			? [
+					{
+						label: product.category.name,
+						href: channelHref(params.channel, `/categories/${product.category.slug}`),
+					},
+				]
 			: []),
 		{ label: product.name },
 	];
@@ -146,7 +152,7 @@ async function ProductContent({
 		description: product.seoDescription || product.name,
 		images: images.length > 0 ? images.map((img) => img.url) : undefined,
 		brand: product.category?.name,
-		url: `/${params.channel}/products/${product.slug}`,
+		url: channelHref(params.channel, `/products/${product.slug}`),
 		priceRange: product.pricing?.priceRange?.start?.gross
 			? {
 					lowPrice: product.pricing.priceRange.start.gross.amount,

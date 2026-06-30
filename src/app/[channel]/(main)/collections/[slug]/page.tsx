@@ -9,6 +9,7 @@ import { parseEditorJSToText } from "@/lib/editorjs";
 import { CategoryHero, transformToProductCard } from "@/ui/components/plp";
 import { buildSortVariables, buildFilterVariables } from "@/ui/components/plp/filter-utils";
 import { CollectionPageClient } from "./client";
+import { channelHref } from "@/lib/channel-path";
 
 async function getCollectionData(slug: string, channel: string) {
 	"use cache";
@@ -80,8 +81,8 @@ async function CollectionContent({
 	const plainDescription = parseEditorJSToText(collection.description);
 
 	const breadcrumbs = [
-		{ label: "Home", href: `/${params.channel}` },
-		{ label: collection.name, href: `/${params.channel}/collections/${params.slug}` },
+		{ label: "Home", href: channelHref(params.channel, "/") },
+		{ label: collection.name, href: channelHref(params.channel, `/collections/${params.slug}`) },
 	];
 
 	return (

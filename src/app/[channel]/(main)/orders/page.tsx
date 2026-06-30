@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { channelHref } from "@/lib/channel-path";
 
 type Props = {
 	params: Promise<{ channel: string }>;
@@ -9,5 +10,5 @@ type Props = {
  */
 export default async function LegacyOrdersPage({ params }: Props) {
 	const { channel } = await params;
-	redirect(`/${channel}/account/orders`);
+	redirect(channelHref(channel, "/account/orders"));
 }

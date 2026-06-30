@@ -51,7 +51,7 @@ async function MainLayout({
 function MainLayoutSkeleton() {
 	return (
 		<>
-			<header className="bg-background/95 sticky top-0 z-40 h-16 border-b border-border" aria-hidden="true" />
+			<header className="sticky top-0 z-40 h-16 border-b border-border bg-white" aria-hidden="true" />
 			<div className="flex min-h-[calc(100dvh-64px)] flex-col">
 				<main className="flex-1" />
 				<footer className="h-16 bg-foreground" aria-hidden="true" />
