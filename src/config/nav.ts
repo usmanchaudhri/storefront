@@ -1,7 +1,9 @@
+import { homeSignatureProductBanner } from "@/config/home-signature-product";
+
 /** Header navigation links after “Shop All” (Saleor CMS pages: `/pages/{slug}`). */
 export const headerContentNav = [
 	{ name: "About us", href: "/pages/about-us" },
-	{ name: "Ingredients", href: "/pages/ingredients" },
+	{ name: "Ingredients", href: `/#${homeSignatureProductBanner.sectionId}` },
 	{ name: "Reviews", href: "/pages/reviews" },
 	{ name: "FAQs", href: "/pages/faqs" },
 ] as const;

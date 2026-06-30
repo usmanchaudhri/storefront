@@ -12,10 +12,14 @@ import {
 import { cn } from "@/lib/utils";
 
 export function HomeSignatureProductBanner({ channel }: { channel: string }) {
-	const { problem, solution, ingredients, productName, productSlug } = homeSignatureProductBanner;
+	const { problem, solution, ingredients, productName, productSlug, sectionId } = homeSignatureProductBanner;
 
 	return (
-		<section className={homeSignatureBannerSurfaceClass} aria-labelledby="signature-product-heading">
+		<section
+			id={sectionId}
+			className={cn(homeSignatureBannerSurfaceClass, "scroll-mt-16 lg:scroll-mt-[4.25rem]")}
+			aria-labelledby="signature-product-heading"
+		>
 			<div
 				className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-white/10"
 				aria-hidden

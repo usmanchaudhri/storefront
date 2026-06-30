@@ -50,10 +50,13 @@ export const rootMetadata: Metadata = {
 		},
 	}),
 
-	// Icons — kayapure-logo.png is in /public (copied into the Docker image)
+	// Icons — kayapure-favicon.png and sized variants in /public
 	icons: {
-		icon: [{ url: "/kayapure-logo.png", type: "image/png" }],
-		apple: "/kayapure-logo.png",
+		icon: [
+			{ url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+			{ url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+		],
+		apple: [{ url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" }],
 	},
 
 	// Web App Manifest

@@ -1,5 +1,7 @@
 /** Homepage problem → product banner (7-in-1 Shilajit Gummies). */
 export const homeSignatureProductBanner = {
+	/** Anchor for in-page nav (e.g. header “Ingredients”) */
+	sectionId: "daily-fatigue-low-stamina",
 	productName: "7-in-1 Shilajit Gummies",
 	productSlug: "energy-boost-pro",
 	imageSrc: "/images/7-in-1-shilajit-gummies.png",
