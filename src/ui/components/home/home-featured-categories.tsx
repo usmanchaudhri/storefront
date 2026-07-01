@@ -54,12 +54,8 @@ async function getProductsBySlugs(slugs: readonly string[], channel: string) {
 	return result.data.products?.edges.map(({ node }) => node) ?? [];
 }
 
-async function getCategoryProducts(
-	saleorCategorySlug: string,
-	channel: string,
-	productSlugOrder: readonly string[],
-) {
-	const fromCategory = await fetchCategoryProducts(saleorCategorySlug, channel);
+async function getCategoryProducts(slug: string, channel: string, productSlugOrder: readonly string[]) {
+	const fromCategory = await fetchCategoryProducts(slug, channel);
 
 	if (fromCategory.length > 0) {
 		return fromCategory;
@@ -70,7 +66,7 @@ async function getCategoryProducts(
 
 async function fetchCategoryProducts(slug: string, channel: string) {
 	"use cache";
-	applyCacheProfile(CACHE_PROFILES.categories, `home-${slug}`);
+	applyCacheProfile(CACHE_PROFILES.categories, `${slug}:${channel}`);
 
 	const result = await executePublicGraphQL(ProductListByCategoryDocument, {
 		variables: { slug, channel, first: PRODUCTS_PER_CATEGORY },
@@ -121,11 +117,7 @@ export function HomeFeaturedCategoriesSkeleton() {
 export async function HomeFeaturedCategories({ channel }: { channel: string }) {
 	const categoryProducts = await Promise.all(
 		homeFeaturedCategories.map(async (category) => {
-			const products = await getCategoryProducts(
-				category.saleorCategorySlug,
-				channel,
-				category.productSlugOrder,
-			);
+			const products = await getCategoryProducts(category.slug, channel, category.productSlugOrder);
 			const sorted = sortProductsBySlugOrder(products, category.productSlugOrder);
 
 			return {

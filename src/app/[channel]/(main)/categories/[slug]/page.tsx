@@ -3,32 +3,25 @@ import { notFound } from "next/navigation";
 import { type ResolvingMetadata, type Metadata } from "next";
 import { ProductListByCategoryDocument } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
-import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { getPaginatedListVariables } from "@/lib/utils";
 import { parseEditorJSToText } from "@/lib/editorjs";
 import { CategoryHero, transformToProductCard } from "@/ui/components/plp";
 import { buildSortVariables, buildFilterVariables } from "@/ui/components/plp/filter-utils";
 import { CategoryPageClient } from "./client";
 import { channelHref } from "@/lib/channel-path";
-import { resolveSaleorCategorySlug } from "@/config/nav";
 
-async function getCategoryData(storefrontSlug: string, channel: string) {
-	"use cache";
-	applyCacheProfile(CACHE_PROFILES.categories, storefrontSlug);
-
-	const saleorSlug = resolveSaleorCategorySlug(storefrontSlug);
-
+async function getCategoryData(slug: string, channel: string) {
 	const result = await executePublicGraphQL(ProductListByCategoryDocument, {
-		variables: { slug: saleorSlug, channel, first: 1 },
+		variables: { slug, channel, first: 1 },
 		revalidate: 300,
 	});
 
 	if (!result.ok) {
-		console.error(`[getCategoryData] Failed to fetch category ${storefrontSlug}:`, result.error.message);
+		console.error(`[getCategoryData] Failed to fetch category ${slug}:`, result.error.message);
 		return null;
 	}
 
-	return result.data.category;
+	return result.data.category ?? null;
 }
 
 type PageProps = {
@@ -116,11 +109,9 @@ async function CategoryProducts({
 	const sortBy = buildSortVariables(searchParams.sort);
 	const filter = buildFilterVariables({ priceRange: searchParams.price });
 
-	const saleorSlug = resolveSaleorCategorySlug(params.slug);
-
 	const result = await executePublicGraphQL(ProductListByCategoryDocument, {
 		variables: {
-			slug: saleorSlug,
+			slug: params.slug,
 			channel: params.channel,
 			...paginationVariables,
 			sortBy,
