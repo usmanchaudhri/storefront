@@ -15,7 +15,7 @@
 
 export const brandConfig = {
 	/** Site name used in titles, metadata, and headers */
-	siteName: "Saleor Store",
+	siteName: "Kpure Store",
 
 	/** Legal entity name for copyright notices */
 	copyrightHolder: "Kaya Pure",
