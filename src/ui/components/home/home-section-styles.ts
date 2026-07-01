@@ -1,6 +1,10 @@
 /** Shared layout and typography for homepage marketing sections. */
 export const homeSectionShellClass = "mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20";
 
+/** Featured shop section — tighter top spacing below the signature banner. */
+export const homeFeaturedShopShellClass =
+	"mx-auto max-w-7xl px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-16 lg:px-8 lg:pt-10 lg:pb-20";
+
 export const homeSectionSurfaceClass = "bg-secondary/30";
 
 /** KayaPure brand teal — banner gradient base. */

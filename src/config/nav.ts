@@ -34,7 +34,7 @@ export type ShopAllCategoryColumn = {
 export const headerShopAllMegaNav: readonly ShopAllCategoryColumn[] = [
 	{
 		name: "Gummies",
-		slug: "gummies",
+		slug: "gummy",
 		tagline: "Chewable daily rituals",
 		products: [
 			{ name: "Energy Boost Pro", slug: "7-in-1-shilajit-gummies" },

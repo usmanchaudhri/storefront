@@ -1,0 +1,9 @@
+query HomeFeaturedProductsBySlug($channel: String!, $slugs: [String!]!) {
+	products(first: 20, channel: $channel, filter: { slugs: $slugs }) {
+		edges {
+			node {
+				...ProductListItem
+			}
+		}
+	}
+}

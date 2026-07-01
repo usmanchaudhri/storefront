@@ -1,13 +1,13 @@
 import { Suspense } from "react";
-import { ProductListByCollectionDocument, ProductOrderField, OrderDirection } from "@/gql/graphql";
-import { executePublicGraphQL } from "@/lib/graphql";
-import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { HomeEnergyFocusSection } from "@/ui/components/home/home-energy-focus-section";
 import { HomeHero } from "@/ui/components/home/home-hero";
 import { HomeSignatureProductBanner } from "@/ui/components/home/home-signature-product-banner";
 import { HomeFaq } from "@/ui/components/home/home-faq";
 import { HomeVideoGallery } from "@/ui/components/home/home-video-gallery";
-import { ProductList } from "@/ui/components/product-list";
+import {
+	HomeFeaturedCategories,
+	HomeFeaturedCategoriesSkeleton,
+} from "@/ui/components/home/home-featured-categories";
 
 export const metadata = {
 	title: "Kpure",
@@ -15,37 +15,8 @@ export const metadata = {
 };
 
 /**
- * Cached function to fetch featured products.
- * Returns [] on failure so the page always renders (never null).
- * Note: the empty array IS cached for the cacheLife duration —
- * on-demand revalidation via cacheTag is the intended recovery path.
- */
-async function getFeaturedProducts(channel: string) {
-	"use cache";
-	applyCacheProfile(CACHE_PROFILES.collections, "featured-products");
-
-	const result = await executePublicGraphQL(ProductListByCollectionDocument, {
-		variables: {
-			slug: "featured-products",
-			channel,
-			first: 12,
-			sortBy: { field: ProductOrderField.Collection, direction: OrderDirection.Asc },
-		},
-		revalidate: 300,
-	});
-
-	if (!result.ok) {
-		console.warn(`[Homepage] Failed to fetch featured products for ${channel}:`, result.error.message);
-		return [];
-	}
-
-	return result.data.collection?.products?.edges.map(({ node }) => node) ?? [];
-}
-
-/**
  * Page shell — renders immediately with a static section wrapper.
- * The async product grid streams inside its own Suspense boundary
- * so it doesn't rely on the layout's main Suspense for reconciliation.
+ * Category product grids stream inside their own Suspense boundary.
  */
 export default async function Page(props: { params: Promise<{ channel: string }> }) {
 	const { channel } = await props.params;
@@ -55,41 +26,11 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 			<HomeHero channel={channel} />
 			<HomeEnergyFocusSection />
 			<HomeSignatureProductBanner channel={channel} />
-			<section className="mx-auto max-w-7xl p-8 pb-16">
-				<h2 className="sr-only">Product list</h2>
-				<Suspense
-					fallback={
-						<ul
-							role="list"
-							data-testid="ProductList"
-							className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
-						>
-							{Array.from({ length: 12 }).map((_, i) => (
-								<li key={i} className="animate-pulse">
-									<div className="aspect-square overflow-hidden bg-secondary" />
-									<div className="mt-2 flex justify-between">
-										<div>
-											<div className="mt-1 h-4 w-32 rounded bg-secondary" />
-											<div className="mt-1 h-4 w-20 rounded bg-secondary" />
-										</div>
-										<div className="mt-1 h-4 w-16 rounded bg-secondary" />
-									</div>
-								</li>
-							))}
-						</ul>
-					}
-				>
-					<FeaturedProducts channel={channel} />
-				</Suspense>
-			</section>
+			<Suspense fallback={<HomeFeaturedCategoriesSkeleton />}>
+				<HomeFeaturedCategories channel={channel} />
+			</Suspense>
 			<HomeVideoGallery channel={channel} />
 			<HomeFaq />
 		</>
 	);
-}
-
-async function FeaturedProducts({ channel }: { channel: string }) {
-	const products = await getFeaturedProducts(channel);
-
-	return <ProductList products={products} channel={channel} />;
 }
