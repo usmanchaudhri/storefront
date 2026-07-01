@@ -21,8 +21,10 @@ export type ShopAllProductThumbnailMap = Readonly<Record<string, { url: string; 
 /** Column in the Shop All mega menu — category + featured products. */
 export type ShopAllCategoryColumn = {
 	name: string;
-	/** Saleor category slug → `/categories/{slug}` */
+	/** Storefront category URL slug → `/categories/{slug}` */
 	slug: string;
+	/** Saleor category slug for GraphQL when it differs from `slug` */
+	saleorCategorySlug?: string;
 	tagline: string;
 	products: readonly ShopAllProductNavItem[];
 };
@@ -34,7 +36,8 @@ export type ShopAllCategoryColumn = {
 export const headerShopAllMegaNav: readonly ShopAllCategoryColumn[] = [
 	{
 		name: "Gummies",
-		slug: "gummy",
+		slug: "gummies",
+		saleorCategorySlug: "gummy",
 		tagline: "Chewable daily rituals",
 		products: [
 			{ name: "Energy Boost Pro", slug: "7-in-1-shilajit-gummies" },
@@ -69,6 +72,19 @@ export const headerShopAllMegaNav: readonly ShopAllCategoryColumn[] = [
 		],
 	},
 ] as const;
+
+const saleorCategorySlugOverrides = new Map(
+	headerShopAllMegaNav
+		.filter((column): column is ShopAllCategoryColumn & { saleorCategorySlug: string } =>
+			Boolean(column.saleorCategorySlug),
+		)
+		.map((column) => [column.slug, column.saleorCategorySlug] as const),
+);
+
+/** Map storefront category URL slug to Saleor GraphQL category slug. */
+export function resolveSaleorCategorySlug(slug: string): string {
+	return saleorCategorySlugOverrides.get(slug) ?? slug;
+}
 
 /** Saleor category slugs used only in the Shop All mega menu — omit from navbar duplicates. */
 const shopAllCategorySlugs = new Set(headerShopAllMegaNav.map((column) => column.slug));

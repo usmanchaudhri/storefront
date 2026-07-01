@@ -10,18 +10,21 @@ import { CategoryHero, transformToProductCard } from "@/ui/components/plp";
 import { buildSortVariables, buildFilterVariables } from "@/ui/components/plp/filter-utils";
 import { CategoryPageClient } from "./client";
 import { channelHref } from "@/lib/channel-path";
+import { resolveSaleorCategorySlug } from "@/config/nav";
 
-async function getCategoryData(slug: string, channel: string) {
+async function getCategoryData(storefrontSlug: string, channel: string) {
 	"use cache";
-	applyCacheProfile(CACHE_PROFILES.categories, slug);
+	applyCacheProfile(CACHE_PROFILES.categories, storefrontSlug);
+
+	const saleorSlug = resolveSaleorCategorySlug(storefrontSlug);
 
 	const result = await executePublicGraphQL(ProductListByCategoryDocument, {
-		variables: { slug, channel, first: 1 },
+		variables: { slug: saleorSlug, channel, first: 1 },
 		revalidate: 300,
 	});
 
 	if (!result.ok) {
-		console.error(`[getCategoryData] Failed to fetch category ${slug}:`, result.error.message);
+		console.error(`[getCategoryData] Failed to fetch category ${storefrontSlug}:`, result.error.message);
 		return null;
 	}
 
@@ -113,9 +116,11 @@ async function CategoryProducts({
 	const sortBy = buildSortVariables(searchParams.sort);
 	const filter = buildFilterVariables({ priceRange: searchParams.price });
 
+	const saleorSlug = resolveSaleorCategorySlug(params.slug);
+
 	const result = await executePublicGraphQL(ProductListByCategoryDocument, {
 		variables: {
-			slug: params.slug,
+			slug: saleorSlug,
 			channel: params.channel,
 			...paginationVariables,
 			sortBy,

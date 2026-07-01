@@ -34,7 +34,7 @@ type ColumnAccent = {
 };
 
 const columnAccent: Record<string, ColumnAccent> = {
-	gummy: {
+	gummies: {
 		icon: "text-red-600 dark:text-red-400",
 		heading: "text-red-600 dark:text-red-400",
 		productHover: "hover:bg-red-500/10",
@@ -58,13 +58,13 @@ const columnAccent: Record<string, ColumnAccent> = {
 };
 
 function getColumnAccent(slug: string): ColumnAccent {
-	return columnAccent[slug] ?? columnAccent.gummy;
+	return columnAccent[slug] ?? columnAccent.gummies;
 }
 
 function CategoryIcon({ slug }: { slug: string }) {
 	const className = "h-4 w-4 shrink-0";
 	switch (slug) {
-		case "gummy":
+		case "gummies":
 			return <Candy className={className} aria-hidden />;
 		case "shots":
 			return <FlaskConical className={className} aria-hidden />;
