@@ -12,6 +12,7 @@ const STORE_ROUTE_SEGMENTS = new Set([
 	"search",
 	"orders",
 	"pages",
+	"blog",
 ]);
 
 function normalizePath(path: string): string {

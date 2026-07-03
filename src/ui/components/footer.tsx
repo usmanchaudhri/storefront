@@ -4,7 +4,7 @@ import { ChannelSelect } from "./channel-select";
 import { ChannelsListDocument } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
-import { footerProductSections } from "@/config/footer";
+import { footerLearnMoreNav, footerProductSections } from "@/config/footer";
 import { channelHref } from "@/lib/channel-path";
 import { CopyrightText } from "./copyright-text";
 import { FooterNewsletter } from "./footer-newsletter";
@@ -71,6 +71,25 @@ export async function Footer({ channel }: { channel: string }) {
 							</ul>
 						</div>
 					))}
+
+					{/* Learn more */}
+					<div>
+						<h4 className="mb-3 text-sm font-medium text-neutral-300">Learn more</h4>
+						<ul className="space-y-2">
+							{footerLearnMoreNav.map((item) => (
+								<li key={item.href}>
+									<LinkWithChannel
+										href={item.href}
+										channel={channel}
+										prefetch={false}
+										className={footerLinkClass}
+									>
+										{item.name}
+									</LinkWithChannel>
+								</li>
+							))}
+						</ul>
+					</div>
 				</div>
 
 				{/* Channel selector */}

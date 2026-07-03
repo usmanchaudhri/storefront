@@ -1,0 +1,11 @@
+query PageTypeBySlug($slug: String!) {
+	pageTypes(first: 1, filter: { slugs: [$slug] }) {
+		edges {
+			node {
+				id
+				slug
+				name
+			}
+		}
+	}
+}

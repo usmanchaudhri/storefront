@@ -1,0 +1,51 @@
+fragment PageAssignedAttribute on AssignedAttribute {
+	attribute {
+		name
+		slug
+		inputType
+		type
+	}
+	... on AssignedPlainTextAttribute {
+		plainText: value
+	}
+	... on AssignedTextAttribute {
+		richText: value
+	}
+	... on AssignedFileAttribute {
+		file: value {
+			url
+			contentType
+		}
+	}
+	... on AssignedSingleChoiceAttribute {
+		choice: value {
+			name
+			slug
+		}
+	}
+	... on AssignedMultiChoiceAttribute {
+		choices: value {
+			name
+			slug
+		}
+	}
+	... on AssignedMultiProductReferenceAttribute {
+		relatedProducts: value(limit: 12) {
+			...ProductListItem
+		}
+	}
+	... on AssignedSingleProductReferenceAttribute {
+		relatedProduct: value {
+			...ProductListItem
+		}
+	}
+	... on AssignedBooleanAttribute {
+		booleanValue: value
+	}
+	... on AssignedDateAttribute {
+		dateValue: value
+	}
+	... on AssignedDateTimeAttribute {
+		dateTimeValue: value
+	}
+}

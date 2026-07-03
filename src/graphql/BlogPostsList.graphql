@@ -1,0 +1,15 @@
+query BlogPostsList($channel: String!, $pageTypeId: ID!, $first: Int = 24) {
+	pages(
+		first: $first
+		channel: $channel
+		where: { pageType: { eq: $pageTypeId } }
+		sortBy: { field: PUBLISHED_AT, direction: DESC }
+	) {
+		totalCount
+		edges {
+			node {
+				...BlogPostListItem
+			}
+		}
+	}
+}

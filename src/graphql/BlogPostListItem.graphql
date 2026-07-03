@@ -1,0 +1,25 @@
+fragment BlogPostListItem on Page {
+	id
+	slug
+	title
+	publishedAt
+	assignedAttributes(limit: 10) {
+		attribute {
+			slug
+		}
+		... on AssignedPlainTextAttribute {
+			plainText: value
+		}
+		... on AssignedFileAttribute {
+			file: value {
+				url
+			}
+		}
+		... on AssignedMultiChoiceAttribute {
+			choices: value {
+				name
+				slug
+			}
+		}
+	}
+}

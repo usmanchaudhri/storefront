@@ -15,35 +15,40 @@ export type FooterProductSection = {
  */
 export const footerProductSections: readonly FooterProductSection[] = [
 	{
-		title: "Energy Gummies",
+		title: "Gummies",
 		products: [
-			{ name: "7-in-1 Shilajit Gummies", slug: "energy-boost-pro" },
+			{ name: "Energy Boost Pro", slug: "7-in-1-shilajit-gummies" },
 			{ name: "Plain Shilajit Gummies", slug: "plain-shilajit-gummies" },
 			{ name: "Elderberry Shilajit Gummies", slug: "elderberry-shilajit-gummies" },
-			{ name: "Zinc and Magnesium Gummies", slug: "magnesium-glycinate-calcium-zinc-gummies" },
 			{ name: "Sea Moss & Elderberry Gummies", slug: "sea-moss-elderberry-gummies" },
+			{
+				name: "Magnesium Glycinate, Calcium & Zinc Gummies",
+				slug: "magnesium-glycinate-calcium-zinc-gummies",
+			},
+			{ name: "Apple Cider & Ashwagandha Gummies", slug: "apple-cider-ashwagandha-gummies" },
 		],
 	},
 	{
-		title: "Sleep",
+		title: "Shots",
 		products: [
-			{ name: "Sleep Well Gummies", slug: "sleep-well-gummies" },
-			{ name: "Ashwagandha + Apple Cider Gummies", slug: "apple-cider-ashwagandha-gummies" },
+			{ name: "Mango Complete Shot", slug: "mango-complete-shot" },
+			{ name: "Elderberry Complete Shot", slug: "elderberry-complete-shot" },
+			{ name: "Blueberry Complete Shot", slug: "blueberry-complete-shot" },
 		],
 	},
 	{
-		title: "Energy Drops",
+		title: "Drops",
 		products: [
-			{ name: "Shilajit Power Drops", slug: "shilajit-power-drops" },
-			{ name: "Shilajit + L-Arginine Drops", slug: "shilajit-l-arginine" },
+			{ name: "Shilajit Liquid Drops", slug: "shilajit-liquid-drops" },
+			{ name: "Shilajit GINKGO Drops", slug: "shilajit-ginkgo-drops" },
+			{ name: "Shilajit + L-Arginine", slug: "shilajit-l-arginine" },
 		],
 	},
-	{
-		title: "Energy Shots",
-		products: [
-			{ name: "Mango Complete Shots", slug: "mango-complete-shot" },
-			{ name: "Blueberry Complete Shots", slug: "blueberry-complete-shot" },
-			{ name: "Elderberry Complete Shots", slug: "elderberry-complete-shot" },
-		],
-	},
+] as const;
+
+/** Footer “Learn more” links (not product PDPs). */
+export const footerLearnMoreNav = [
+	{ name: "Blog", href: "/blog" },
+	{ name: "About us", href: "/pages/about" },
+	{ name: "FAQs", href: "/#home-faq-heading" },
 ] as const;

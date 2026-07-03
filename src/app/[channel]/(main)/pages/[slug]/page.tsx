@@ -1,30 +1,53 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
-import edjsHTML from "editorjs-html";
-import xss from "xss";
 import { PageGetBySlugDocument } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
-
-const parser = edjsHTML();
+import { buildPageMetadata } from "@/lib/seo";
+import { isBlogPostPage, parseBlogPostFromPage } from "@/lib/pages/blog-post";
+import { parseEditorJsContent } from "@/lib/pages/parse-editorjs-content";
+import { channelHref } from "@/lib/channel-path";
+import { BlogPostView } from "@/ui/components/pages/blog-post-view";
+import { CmsPageView } from "@/ui/components/pages/cms-page-view";
 
 type PageProps = {
 	params: Promise<{ slug: string; channel: string }>;
 };
 
-export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
-	const params = await props.params;
+async function getPage(slug: string, channel: string) {
 	const result = await executePublicGraphQL(PageGetBySlugDocument, {
-		variables: { slug: params.slug },
+		variables: { slug, channel },
 		revalidate: 60,
 	});
 
-	const page = result.ok ? result.data.page : null;
+	if (!result.ok || !result.data.page) {
+		return null;
+	}
 
-	return {
-		title: `${page?.seoTitle || page?.title || "Page"} · Saleor Storefront example`,
-		description: page?.seoDescription || page?.seoTitle || page?.title,
-	};
+	return result.data.page;
+}
+
+export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
+	const params = await props.params;
+	const page = await getPage(params.slug, params.channel);
+
+	if (!page) {
+		return buildPageMetadata({
+			title: "Page not found",
+		});
+	}
+
+	const contentHtml = parseEditorJsContent(page.content);
+	const isBlogPost = isBlogPostPage(page);
+	const blogPost = isBlogPost ? parseBlogPostFromPage(page, contentHtml) : null;
+
+	return buildPageMetadata({
+		title: page.seoTitle || page.title,
+		description: page.seoDescription || blogPost?.excerpt || page.seoTitle || page.title,
+		image: blogPost?.coverImageUrl,
+		url: channelHref(params.channel, `/pages/${page.slug}`),
+		openGraph: isBlogPost ? { type: "article" } : undefined,
+	});
 };
 
 export default function Page(props: PageProps) {
@@ -37,31 +60,20 @@ export default function Page(props: PageProps) {
 
 async function CmsPageContent({ params: paramsPromise }: { params: PageProps["params"] }) {
 	const params = await paramsPromise;
-	const result = await executePublicGraphQL(PageGetBySlugDocument, {
-		variables: { slug: params.slug },
-		revalidate: 60,
-	});
+	const page = await getPage(params.slug, params.channel);
 
-	if (!result.ok || !result.data.page) {
+	if (!page) {
 		notFound();
 	}
 
-	const page = result.data.page;
-	const { title, content } = page;
-	const contentHtml = content ? parser.parse(JSON.parse(content)) : null;
+	const contentHtml = parseEditorJsContent(page.content);
 
-	return (
-		<div className="mx-auto max-w-7xl p-8 pb-16">
-			<h1 className="text-3xl font-semibold">{title}</h1>
-			{contentHtml && (
-				<div className="prose">
-					{contentHtml.map((content) => (
-						<div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
-					))}
-				</div>
-			)}
-		</div>
-	);
+	if (isBlogPostPage(page)) {
+		const blogPost = parseBlogPostFromPage(page, contentHtml);
+		return <BlogPostView post={blogPost} channel={params.channel} />;
+	}
+
+	return <CmsPageView title={page.title} content={page.content} />;
 }
 
 function PageSkeleton() {
