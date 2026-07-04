@@ -2,6 +2,7 @@ import { brandConfig } from "@/config/brand";
 import { STOREFRONT_CONTENT_VERSION, type StorefrontContent } from "@/lib/content/types";
 
 const heroBackgroundImage = process.env.NEXT_PUBLIC_HOME_HERO_IMAGE_URL?.trim() || null;
+const heroBackgroundVideo = process.env.NEXT_PUBLIC_HOME_HERO_VIDEO_URL?.trim() || null;
 
 /**
  * Code fallback for storefront marketing copy.
@@ -25,6 +26,7 @@ export const defaultStorefrontContent = {
 				subheading: brandConfig.homeHero.subtitle,
 				primaryCtaLabel: brandConfig.homeHero.ctaLabel,
 				backgroundImage: heroBackgroundImage,
+				backgroundVideo: heroBackgroundVideo,
 			},
 			featuredCollection: {
 				heading: "Fuel your day, your way",

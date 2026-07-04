@@ -38,6 +38,8 @@ export type HomepageHeroContent = {
 	subheading: string;
 	primaryCtaLabel: string;
 	backgroundImage?: string | null;
+	/** Autoplay background video (mp4/webm). Uses backgroundImage as poster when set. */
+	backgroundVideo?: string | null;
 };
 
 export type HomepageFeaturedCollectionContent = {
