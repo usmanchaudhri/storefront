@@ -6,6 +6,8 @@ export type HomeFaqItem = {
 
 /** Homepage FAQ — copied from kayapure.com. */
 export const homeFaq = {
+	/** Anchor for in-page nav (e.g. header “FAQs”) */
+	sectionId: "frequently-asked-questions",
 	headline: "Frequently Asked Questions",
 	intro: "Get answers to common questions about our energy supplement",
 	items: [

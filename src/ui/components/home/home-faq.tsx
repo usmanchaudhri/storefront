@@ -10,7 +10,7 @@ export function HomeFaq() {
 	const { headline, intro, items, support } = homeFaq;
 
 	return (
-		<section aria-labelledby="home-faq-heading">
+		<section id={homeFaq.sectionId} aria-labelledby="home-faq-heading">
 			<div className={homeSectionShellClass}>
 				<div className="mx-auto max-w-3xl text-center">
 					<h2 id="home-faq-heading" className={homeSectionHeadlineClass}>

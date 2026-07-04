@@ -1,11 +1,11 @@
+import { homeFaq } from "@/config/home-faq";
 import { homeSignatureProductBanner } from "@/config/home-signature-product";
 
 /** Header navigation links after “Shop All” (Saleor CMS pages: `/pages/{slug}`). */
 export const headerContentNav = [
-	{ name: "About us", href: "/pages/about-us" },
+	{ name: "About us", href: "/pages/about" },
 	{ name: "Ingredients", href: `/#${homeSignatureProductBanner.sectionId}` },
-	{ name: "Reviews", href: "/pages/reviews" },
-	{ name: "FAQs", href: "/pages/faqs" },
+	{ name: "FAQs", href: `/#${homeFaq.sectionId}` },
 ] as const;
 
 /** Product links inside the “Shop All” mega menu (PDP: `/products/{slug}`). */
