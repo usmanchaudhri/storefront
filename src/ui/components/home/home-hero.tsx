@@ -11,12 +11,15 @@ function heroImageSrc(): string | null {
 
 export function HomeHeroSkeleton() {
 	return (
-		<section className="bg-muted/40 relative w-full border-b border-border" aria-hidden>
-			<div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-				<div className="mx-auto max-w-2xl space-y-4 text-center">
-					<div className="mx-auto h-9 w-3/4 max-w-md animate-pulse rounded-lg bg-secondary" />
-					<div className="bg-secondary/80 mx-auto h-5 w-full max-w-lg animate-pulse rounded" />
-					<div className="mx-auto mt-8 h-11 w-36 animate-pulse rounded-xl bg-secondary" />
+		<section
+			className="bg-muted/40 relative flex min-h-[calc(100svh-var(--chrome-offset))] w-full border-b border-border"
+			aria-hidden
+		>
+			<div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+				<div className="mx-auto max-w-2xl space-y-4 text-center sm:mx-0 sm:text-left">
+					<div className="mx-auto h-9 w-3/4 max-w-md animate-pulse rounded-lg bg-secondary sm:mx-0" />
+					<div className="bg-secondary/80 mx-auto h-5 w-full max-w-lg animate-pulse rounded sm:mx-0" />
+					<div className="mx-auto mt-8 h-11 w-36 animate-pulse rounded-xl bg-secondary sm:mx-0" />
 				</div>
 			</div>
 		</section>
@@ -30,7 +33,7 @@ export function HomeHero({ channel }: { channel: string }) {
 	const imgSrc = heroImageSrc();
 
 	return (
-		<section className="relative w-full overflow-hidden border-b border-border">
+		<section className="relative flex min-h-[calc(100svh-var(--chrome-offset))] w-full flex-col overflow-hidden border-b border-border">
 			{imgSrc ? (
 				<div className="absolute inset-0" aria-hidden>
 					<Image
@@ -59,7 +62,7 @@ export function HomeHero({ channel }: { channel: string }) {
 				aria-hidden
 			/>
 
-			<div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+			<div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
 				<div className="max-w-xl text-center sm:text-left">
 					<p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">{eyebrow}</p>
 					<h1 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">

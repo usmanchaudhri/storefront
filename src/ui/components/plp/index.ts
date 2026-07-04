@@ -1,7 +1,7 @@
 export { CategoryHero } from "./category-hero";
 export { PageHeader } from "./page-header";
 export { ProductCard, type ProductCardData } from "./product-card";
-export { ProductGrid } from "./product-grid";
+export { ProductGrid, type ProductGridDesktopColumns } from "./product-grid";
 export {
 	FilterBar,
 	type SortOption,

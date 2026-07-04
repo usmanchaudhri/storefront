@@ -21,3 +21,37 @@
 		-moz-osx-font-smoothing: grayscale;
 	}
 }
+
+@layer components {
+	.container-prose,
+	.container-content,
+	.container-wide,
+	.container-super-wide,
+	.container-full {
+		@apply mx-auto w-full px-4 sm:px-6 lg:px-8;
+	}
+	.container-prose {
+		max-width: var(--container-prose);
+	}
+	.container-content {
+		max-width: var(--container-content);
+	}
+	.container-wide {
+		max-width: var(--container-wide);
+	}
+	.container-super-wide {
+		max-width: var(--container-super-wide);
+	}
+	.container-full {
+		max-width: var(--container-full);
+	}
+}
+
+@layer utilities {
+	.text-display,
+	.text-h1,
+	.text-h2,
+	.text-h3 {
+		font-family: var(--font-display);
+	}
+}

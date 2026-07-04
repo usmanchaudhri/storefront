@@ -37,9 +37,10 @@ export interface ProductCardData {
 interface ProductCardProps {
 	product: ProductCardData;
 	priority?: boolean;
+	imageSizes?: string;
 }
 
-export function ProductCard({ product, priority = false }: ProductCardProps) {
+export function ProductCard({ product, priority = false, imageSizes }: ProductCardProps) {
 	const canQuickAdd = !product.hasVariants && product.onQuickAdd;
 
 	const handleQuickAdd = (e: React.MouseEvent) => {
@@ -55,6 +56,8 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 		}).format(amount);
 	};
 
+	const imageSizeAttr = imageSizes ?? "(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 33vw";
+
 	return (
 		<article className="group">
 			<Link href={product.href} className="block">
@@ -65,7 +68,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 						src={product.image}
 						alt={product.imageAlt || product.name}
 						fill
-						sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 33vw"
+						sizes={imageSizeAttr}
 						className={cn(
 							"object-cover transition-all duration-500 ease-out md:group-hover:scale-105",
 							product.hoverImage && "md:group-hover:opacity-0",
@@ -79,7 +82,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 							src={product.hoverImage}
 							alt={`${product.name} - alternate view`}
 							fill
-							sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 33vw"
+							sizes={imageSizeAttr}
 							className="object-cover opacity-0 transition-all duration-500 ease-out md:group-hover:scale-105 md:group-hover:opacity-100"
 						/>
 					)}

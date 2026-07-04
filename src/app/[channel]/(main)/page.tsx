@@ -1,34 +1,34 @@
-import { Suspense } from "react";
+import { getStorefrontContent } from "@/lib/content/server";
 import { HomeEnergyFocusSection } from "@/ui/components/home/home-energy-focus-section";
 import { HomeHero } from "@/ui/components/home/home-hero";
 import { HomeSignatureProductBanner } from "@/ui/components/home/home-signature-product-banner";
 import { HomeFaq } from "@/ui/components/home/home-faq";
 import { HomeVideoGallery } from "@/ui/components/home/home-video-gallery";
-import {
-	HomeFeaturedCategories,
-	HomeFeaturedCategoriesSkeleton,
-} from "@/ui/components/home/home-featured-categories";
+import { FeaturedCollectionSection } from "@/ui/sections/featured-collection-section/featured-collection-section";
 
 export const metadata = {
 	title: "Kpure",
 	description: "Kaya Pure",
 };
 
-/**
- * Page shell — renders immediately with a static section wrapper.
- * Category product grids stream inside their own Suspense boundary.
- */
 export default async function Page(props: { params: Promise<{ channel: string }> }) {
 	const { channel } = await props.params;
+	const content = await getStorefrontContent(channel);
+	const { featuredCollection } = content.surfaces.homepage;
 
 	return (
 		<>
 			<HomeHero channel={channel} />
 			<HomeEnergyFocusSection />
 			<HomeSignatureProductBanner channel={channel} />
-			<Suspense fallback={<HomeFeaturedCategoriesSkeleton />}>
-				<HomeFeaturedCategories channel={channel} />
-			</Suspense>
+			<FeaturedCollectionSection
+				channel={channel}
+				heading={featuredCollection.heading}
+				intro={featuredCollection.intro}
+				collectionSlug={featuredCollection.collectionSlug}
+				limit={featuredCollection.limit}
+				desktopColumns={4}
+			/>
 			<HomeVideoGallery channel={channel} />
 			<HomeFaq />
 		</>

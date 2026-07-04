@@ -65,6 +65,13 @@ const profiles = {
 		tagPattern: "channels",
 		pathPattern: null,
 	},
+	storefrontContent: {
+		id: "storefront-content",
+		label: "Storefront Content",
+		cacheProfile: "hours",
+		tagPattern: "storefront-content:{channel}",
+		pathPattern: null,
+	},
 } as const satisfies Record<string, CacheProfile>;
 
 export const CACHE_PROFILES = profiles;

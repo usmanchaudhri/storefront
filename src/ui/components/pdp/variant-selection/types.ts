@@ -19,27 +19,14 @@ export interface VariantOption {
 	existsWithCurrentSelection?: boolean;
 	/** Hex color code for swatch display (e.g., "#ff0000") */
 	colorHex?: string;
+	/** Image URL for swatch display (Saleor Swatch attribute file) */
+	swatchImageUrl?: string;
 	/** Variant IDs that have this option value */
 	variantIds?: string[];
 	/** Whether any variant with this option is on sale */
 	hasDiscount?: boolean;
 	/** Maximum discount percentage for variants with this option (e.g., 20 for 20% off) */
 	discountPercent?: number;
-	/**
-	 * Pricing for the concrete variant that would be selected if the user picks this option
-	 * with the current other selections (best-effort for partial selections).
-	 *
-	 * `sellingPriceAmount` → Saleor `pricing.price.gross`; `costPriceAmount` → `pricing.priceUndiscounted.gross` when present.
-	 */
-	sellingPriceAmount?: number;
-	costPriceAmount?: number;
-	currency?: string;
-	/** Percent off between cost and selling price (rounded) */
-	percentOff?: number;
-	/** Primary label override used by card-style renderers (e.g. "1 Bottle"). */
-	primaryLabel?: string;
-	/** Secondary label shown under primary label (e.g. "30 Gummies"). */
-	secondaryLabel?: string;
 	/** Additional metadata from Saleor attributes */
 	metadata?: Record<string, unknown>;
 }
@@ -79,7 +66,7 @@ export type OptionRenderer = React.ComponentType<OptionRendererProps>;
  * Configuration for mapping attribute types to renderers.
  *
  * Keys are attribute slugs (e.g., "color", "size") or special keys:
- * - "_color": Used when option has a colorHex value
+ * - "_color": Used when option has a colorHex or swatchImageUrl value
  * - "_default": Fallback for unmatched options
  */
 export interface RendererRegistry {
@@ -102,12 +89,12 @@ export interface VariantSelectorProps {
 	onSelect: (attributeSlug: string, optionId: string) => void;
 	/** Optional: Custom renderer to use for all options */
 	renderer?: OptionRenderer;
+	/** Optional: Renderer registry (merged with defaults) */
+	renderers?: Partial<RendererRegistry>;
 	/** Optional: Message to show when no options available (replaces selected value display) */
 	unavailableMessage?: string;
 	/** Whether a transition is in progress */
 	isPending?: boolean;
-	/** When false, hides the inline label (e.g. when wrapped in PurchaseFlowStep). */
-	showLabel?: boolean;
 }
 
 /**
@@ -125,12 +112,12 @@ export interface VariantSelectionSectionProps {
 		/** Attributes used for variant selection (color, size, etc.) */
 		selectionAttributes: Array<{
 			attribute: { slug?: string | null; name?: string | null };
-			values: Array<{ name?: string | null; value?: string | null }>;
+			values: Array<{ name?: string | null; slug?: string | null; value?: string | null }>;
 		}>;
 		/** Non-selection attributes (material, brand, etc.) - displayed elsewhere */
 		nonSelectionAttributes?: Array<{
 			attribute: { slug?: string | null; name?: string | null };
-			values: Array<{ name?: string | null; value?: string | null }>;
+			values: Array<{ name?: string | null; slug?: string | null; value?: string | null }>;
 		}>;
 		/** Pricing info for discount detection */
 		pricing?: {
@@ -148,6 +135,4 @@ export interface VariantSelectionSectionProps {
 	renderers?: Partial<RendererRegistry>;
 	/** Optional: Override the entire section rendering */
 	children?: React.ReactNode;
-	/** Merged onto the section root (for layout wrappers, e.g. purchase card). */
-	className?: string;
 }

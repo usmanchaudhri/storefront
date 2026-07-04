@@ -48,6 +48,26 @@ module.exports = {
 				md: "calc(var(--radius) - 2px)",
 				sm: "calc(var(--radius) - 4px)",
 				xl: "calc(var(--radius) + 4px)",
+				button: "var(--radius-button)",
+				card: "var(--radius-card)",
+			},
+			maxWidth: {
+				content: "var(--container-content)",
+				wide: "var(--container-wide)",
+				"super-wide": "var(--container-super-wide)",
+			},
+			spacing: {
+				"section-sm": "var(--section-space-sm)",
+				"section-md": "var(--section-space-md)",
+				"section-lg": "var(--section-space-lg)",
+			},
+			fontSize: {
+				display: ["var(--text-display)", { lineHeight: "1", letterSpacing: "-0.03em", fontWeight: "700" }],
+				h1: ["var(--text-h1)", { lineHeight: "1.05", letterSpacing: "-0.02em", fontWeight: "700" }],
+				h2: ["var(--text-h2)", { lineHeight: "1.12", letterSpacing: "-0.015em", fontWeight: "600" }],
+				h3: ["var(--text-h3)", { lineHeight: "1.25", letterSpacing: "-0.005em", fontWeight: "600" }],
+				lead: ["var(--text-lead)", { lineHeight: "1.55" }],
+				eyebrow: ["var(--text-eyebrow)", { lineHeight: "1.4", letterSpacing: "0.1em", fontWeight: "600" }],
 			},
 			fontFamily: {
 				sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],

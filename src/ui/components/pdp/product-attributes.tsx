@@ -1,13 +1,15 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Shirt, Leaf, Droplets, Ruler, Sparkles } from "lucide-react";
 import {
 	Accordion,
 	AccordionItemWithContext,
 	AccordionTrigger,
 	AccordionContent,
 } from "@/ui/components/ui/accordion";
+import { Badge } from "@/ui/components/ui/badge";
+import type { PolicyLabelValues } from "@/lib/content/policy-format";
+import { type ReactNode } from "react";
 
 interface Attribute {
 	name: string;
@@ -15,57 +17,99 @@ interface Attribute {
 }
 
 interface ProductAttributesProps {
+	descriptionHtml?: string[] | null;
 	attributes?: Attribute[];
 	careInstructions?: string | null;
+	policyLabels: PolicyLabelValues;
 	className?: string;
 }
 
-function extractKeyBenefits(attributes: Attribute[]): string[] {
-	const benefitsAttribute = attributes.find((attr) =>
-		["benefits", "key benefits", "key features"].includes(attr.name.trim().toLowerCase()),
-	);
+const attributeIcons: Record<string, ReactNode> = {
+	Material: <Shirt className="h-4 w-4" />,
+	"Made with Recycled Fibers": <Leaf className="h-4 w-4" />,
+	Waterproof: <Droplets className="h-4 w-4" />,
+	Fit: <Ruler className="h-4 w-4" />,
+	"Key Features": <Sparkles className="h-4 w-4" />,
+};
 
-	if (!benefitsAttribute) return [];
+const SHIPPING_BODY =
+	"Free shipping on orders over {freeShippingThreshold}. Standard delivery 3-5 business days.";
+const RETURNS_BODY =
+	"Free returns within {returnsWindowDays} days of purchase. Items must be unused and in original packaging.";
 
-	if (Array.isArray(benefitsAttribute.value)) {
-		return benefitsAttribute.value.filter(Boolean).slice(0, 4);
-	}
-
-	if (typeof benefitsAttribute.value === "string") {
-		return benefitsAttribute.value
-			.split(/[\n,;|]+/)
-			.map((item) => item.trim())
-			.filter(Boolean)
-			.slice(0, 4);
-	}
-
-	return [];
+function interpolatePolicyCopy(template: string, policyLabels: PolicyLabelValues): string {
+	return template
+		.replace("{freeShippingThreshold}", policyLabels.freeShippingThreshold)
+		.replace("{returnsWindowDays}", String(policyLabels.returnsWindowDays));
 }
 
-export function ProductAttributes({ attributes = [], careInstructions, className }: ProductAttributesProps) {
-	const keyBenefits = extractKeyBenefits(attributes);
+export function ProductAttributes({
+	descriptionHtml,
+	attributes = [],
+	careInstructions,
+	policyLabels,
+	className,
+}: ProductAttributesProps) {
+	const formatValue = (value: string | boolean | string[]): ReactNode => {
+		if (typeof value === "boolean") return value ? "Yes" : "No";
+		if (Array.isArray(value)) {
+			return (
+				<div className="flex flex-wrap justify-end gap-1">
+					{value.map((v) => (
+						<Badge key={v} variant="secondary" className="font-normal">
+							{v}
+						</Badge>
+					))}
+				</div>
+			);
+		}
+		return value;
+	};
 
-	if (keyBenefits.length === 0 && !careInstructions) {
+	const displayAttributes = attributes.filter((attr) => !["Size", "Color", "Bundle"].includes(attr.name));
+
+	const hasContent =
+		(descriptionHtml && descriptionHtml.length > 0) ||
+		displayAttributes.length > 0 ||
+		careInstructions ||
+		policyLabels.freeShippingThreshold ||
+		policyLabels.returnsWindowDays;
+
+	if (!hasContent) {
 		return null;
 	}
 
-	const defaultOpen = keyBenefits.length > 0 ? ["details"] : ["care"];
-
 	return (
-		<Accordion type="multiple" defaultValue={defaultOpen} className={cn("w-full", className)}>
-			{keyBenefits.length > 0 && (
+		<Accordion type="multiple" defaultValue={["description"]} className={className}>
+			{descriptionHtml && descriptionHtml.length > 0 && (
+				<AccordionItemWithContext value="description" className="border-border">
+					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
+						Description
+					</AccordionTrigger>
+					<AccordionContent>
+						<div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-foreground prose-strong:text-foreground">
+							{descriptionHtml.map((html) => (
+								<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
+							))}
+						</div>
+					</AccordionContent>
+				</AccordionItemWithContext>
+			)}
+
+			{displayAttributes.length > 0 && (
 				<AccordionItemWithContext value="details" className="border-border">
 					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
 						Product Details
 					</AccordionTrigger>
 					<AccordionContent>
-						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-							{keyBenefits.map((benefit) => (
-								<div key={benefit} className="bg-secondary/40 rounded-lg border border-border p-3 text-sm">
-									<p className="flex items-start gap-2 font-medium text-foreground">
-										<CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-										<span>{benefit}</span>
-									</p>
+						<div className="grid gap-3">
+							{displayAttributes.map((attr) => (
+								<div key={attr.name} className="flex items-start justify-between gap-4 text-sm">
+									<span className="flex items-center gap-2 text-muted-foreground">
+										{attributeIcons[attr.name]}
+										{attr.name}
+									</span>
+									<span className="text-right font-medium">{formatValue(attr.value)}</span>
 								</div>
 							))}
 						</div>
@@ -83,6 +127,18 @@ export function ProductAttributes({ attributes = [], careInstructions, className
 					</AccordionContent>
 				</AccordionItemWithContext>
 			)}
+
+			<AccordionItemWithContext value="shipping" className="border-border">
+				<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
+					Shipping & Returns
+				</AccordionTrigger>
+				<AccordionContent className="leading-relaxed text-muted-foreground">
+					{policyLabels.freeShippingThreshold ? (
+						<p className="mb-2">{interpolatePolicyCopy(SHIPPING_BODY, policyLabels)}</p>
+					) : null}
+					<p>{interpolatePolicyCopy(RETURNS_BODY, policyLabels)}</p>
+				</AccordionContent>
+			</AccordionItemWithContext>
 		</Accordion>
 	);
 }

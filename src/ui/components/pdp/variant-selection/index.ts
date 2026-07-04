@@ -49,14 +49,20 @@ export { VariantNameSelector } from "./variant-name-selector";
 export { VariantAttributeBadges, OptionalAttributes, extractOptionalAttributes } from "./optional-attributes";
 
 // Option renderers (for custom compositions)
-export { ColorSwatchOption, ButtonOption, SizeButtonOption, TextOption, defaultRenderers } from "./renderers";
+export {
+	ColorSwatchOption,
+	ImageSwatchPillOption,
+	ButtonOption,
+	SizeButtonOption,
+	TextOption,
+	defaultRenderers,
+} from "./renderers";
 
 // Utilities (for custom implementations)
 export {
 	groupVariantsByAttributes,
-	getSelectableAttributeGroups,
-	countVariantSelectionSteps,
-	getAttributeStepTitle,
+	getInteractiveAttributeGroups,
+	getImplicitSelections,
 	findMatchingVariant,
 	getSelectionsFromVariant,
 	getOptionsForAttribute,

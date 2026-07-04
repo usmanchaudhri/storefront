@@ -60,6 +60,32 @@
 
 	/* --- Layout --- */
 	--radius: 0.5rem; /* Base border radius (8px) */
+	--container-content: 80rem; /* 1280px — default storefront body width */
+	--container-super-wide: 160rem; /* immersive PDP / editorial bands */
+	--header-height: 4rem; /* matches header h-16 */
+	--announcement-bar-height: 0rem; /* no announcement bar in Kayapure */
+	--chrome-offset: calc(var(--header-height) + var(--announcement-bar-height));
+	--pdp-immersive-reserved: 9.5rem;
+
+	/* --- Typography scale (upstream Paper storefront) --- */
+	--font-display: var(--font-geist-sans), system-ui, sans-serif;
+	--text-display: clamp(2.75rem, 1.9rem + 4.2vw, 4.5rem);
+	--text-h1: clamp(2.25rem, 1.6rem + 3vw, 3.5rem);
+	--text-h2: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+	--text-h3: clamp(1.25rem, 1.1rem + 0.8vw, 1.5rem);
+	--text-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+	--text-eyebrow: 0.6875rem;
+
+	/* --- Section rhythm --- */
+	--section-space-sm: clamp(2.5rem, 1.7rem + 3vw, 4rem);
+	--section-space-md: clamp(4rem, 2.6rem + 5vw, 7rem);
+	--section-space-lg: clamp(5rem, 3rem + 7vw, 9rem);
+
+	--container-wide: 96rem;
+	--container-prose: 48rem;
+	--container-full: 100%;
+	--radius-button: var(--radius);
+	--radius-card: calc(var(--radius) + 4px);
 
 	/* --- Skeleton Delay --- */
 	--skeleton-delay: 300ms; /* Delay before skeleton appears */

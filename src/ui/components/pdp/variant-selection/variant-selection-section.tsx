@@ -2,13 +2,13 @@
 
 import { useCallback, useMemo, useEffect, useTransition, useOptimistic } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { channelHref } from "@/lib/channel-path";
 import type { VariantSelectionSectionProps } from "./types";
 import { VariantSelector } from "./variant-selector";
 import { VariantNameSelector } from "./variant-name-selector";
 import {
 	groupVariantsByAttributes,
-	getSelectableAttributeGroups,
-	getAttributeStepTitle,
+	getInteractiveAttributeGroups,
 	findMatchingVariant,
 	getSelectionsFromVariant,
 	getOptionsForAttribute,
@@ -16,11 +16,9 @@ import {
 	getUnavailableAttributeInfo,
 	type SaleorVariant,
 } from "./utils";
-import { cn } from "@/lib/utils";
-import { channelHref } from "@/lib/channel-path";
+import { defaultRenderers } from "./renderers";
+import type { RendererRegistry } from "./types";
 import { VariantAttributeBadges, extractOptionalAttributes } from "./optional-attributes";
-import { PurchaseFlowStep } from "../purchase-flow-step";
-import { normalizeVariantsForSelection, looksLikeKayapureGummyProduct } from "./gummy-variant-normalizer";
 
 /**
  * Main container for variant selection with multiple attributes.
@@ -57,22 +55,18 @@ export function VariantSelectionSection({
 	selectedVariantId,
 	productSlug,
 	channel,
+	renderers: customRenderers,
 	children,
-	className,
 }: VariantSelectionSectionProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
-	const selectionVariants = useMemo(
-		() => normalizeVariantsForSelection(variants as SaleorVariant[]),
-		[variants],
-	);
-
-	const attributeGroups = useMemo(() => groupVariantsByAttributes(selectionVariants), [selectionVariants]);
-	const selectableAttributeGroups = useMemo(
-		() => getSelectableAttributeGroups(selectionVariants),
-		[selectionVariants],
+	const attributeGroups = useMemo(() => groupVariantsByAttributes(variants as SaleorVariant[]), [variants]);
+	const interactiveGroups = useMemo(() => getInteractiveAttributeGroups(attributeGroups), [attributeGroups]);
+	const rendererRegistry = useMemo(
+		() => ({ ...defaultRenderers, ...customRenderers }) as RendererRegistry,
+		[customRenderers],
 	);
 
 	// Get current selections from URL params OR from selected variant
@@ -87,11 +81,11 @@ export function VariantSelectionSection({
 		}
 
 		if (Object.keys(selections).length === 0 && selectedVariantId) {
-			return getSelectionsFromVariant(selectionVariants, selectedVariantId);
+			return getSelectionsFromVariant(variants as SaleorVariant[], selectedVariantId);
 		}
 
 		return selections;
-	}, [attributeGroups, searchParams, selectedVariantId, selectionVariants]);
+	}, [attributeGroups, searchParams, selectedVariantId, variants]);
 
 	// Optimistic selections: immediately reflect user clicks while navigation is pending.
 	// Without this, selections only update after the server round-trip completes
@@ -103,26 +97,24 @@ export function VariantSelectionSection({
 
 	// Compute the matching variant from optimistic selections
 	const currentVariantId = useMemo(
-		() => findMatchingVariant(selectionVariants, optimisticSelections),
-		[selectionVariants, optimisticSelections],
+		() => findMatchingVariant(variants as SaleorVariant[], optimisticSelections, attributeGroups),
+		[variants, optimisticSelections, attributeGroups],
 	);
 
-	const optionalAttributes = useMemo(() => {
-		const attrs = extractOptionalAttributes(variants, currentVariantId);
-		if (!looksLikeKayapureGummyProduct(variants as SaleorVariant[])) {
-			return attrs;
-		}
-		return attrs.filter((attr) => attr.slug !== "gummy-size" && attr.slug !== "bundle");
-	}, [variants, currentVariantId]);
+	const optionalAttributes = useMemo(
+		() => extractOptionalAttributes(variants, currentVariantId),
+		[variants, currentVariantId],
+	);
 
 	// Handle selection change with smart adjustment + optimistic UI
 	const handleSelect = useCallback(
 		(attributeSlug: string, optionId: string) => {
 			const newSelections = getAdjustedSelections(
-				selectionVariants,
+				variants as SaleorVariant[],
 				optimisticSelections,
 				attributeSlug,
 				optionId,
+				attributeGroups,
 			);
 
 			const params = new URLSearchParams();
@@ -130,21 +122,25 @@ export function VariantSelectionSection({
 				if (value) params.set(slug, value);
 			}
 
-			const matchingVariantId = findMatchingVariant(selectionVariants, newSelections);
+			const matchingVariantId = findMatchingVariant(
+				variants as SaleorVariant[],
+				newSelections,
+				attributeGroups,
+			);
 			if (matchingVariantId) {
 				params.set("variant", matchingVariantId);
 			}
 
 			startTransition(() => {
 				setOptimisticSelections(newSelections);
-				router.push(`${channelHref(channel, `/products/${productSlug}`)}?${params.toString()}`, {
-					scroll: false,
-				});
+				const path = `${channelHref(channel, `/products/${productSlug}`)}?${params.toString()}`;
+				router.push(path, { scroll: false });
 			});
 		},
 		[
 			optimisticSelections,
-			selectionVariants,
+			variants,
+			attributeGroups,
 			channel,
 			productSlug,
 			router,
@@ -155,8 +151,8 @@ export function VariantSelectionSection({
 
 	// Check if any attribute group is completely unavailable
 	const unavailableInfo = useMemo(
-		() => getUnavailableAttributeInfo(selectionVariants, attributeGroups, optimisticSelections),
-		[selectionVariants, attributeGroups, optimisticSelections],
+		() => getUnavailableAttributeInfo(variants as SaleorVariant[], attributeGroups, optimisticSelections),
+		[variants, attributeGroups, optimisticSelections],
 	);
 
 	useEffect(() => {
@@ -190,13 +186,10 @@ export function VariantSelectionSection({
 		return null;
 	}
 
-	const sectionClass = cn("space-y-6 py-2", className);
-
 	// Fallback: variants without structured attributes use name-based selector
 	if (attributeGroups.length === 0) {
 		return (
-			<div className={sectionClass}>
-				<PurchaseFlowStep step={1} title="Choose your option" />
+			<div className="space-y-6 py-2">
 				<VariantNameSelector
 					variants={variants}
 					selectedVariantId={optimisticVariantId}
@@ -208,10 +201,10 @@ export function VariantSelectionSection({
 	}
 
 	return (
-		<div className={sectionClass}>
-			{selectableAttributeGroups.map((group, index) => {
+		<div className="space-y-6 py-2">
+			{interactiveGroups.map((group) => {
 				const options = getOptionsForAttribute(
-					selectionVariants,
+					variants as SaleorVariant[],
 					attributeGroups,
 					optimisticSelections,
 					group.slug,
@@ -223,19 +216,17 @@ export function VariantSelectionSection({
 					: undefined;
 
 				return (
-					<div key={group.slug} className="space-y-4">
-						<PurchaseFlowStep step={index + 1} title={getAttributeStepTitle(group.slug, group.name)} />
-						<VariantSelector
-							label={group.name}
-							options={options}
-							selectedId={optimisticSelections[group.slug]}
-							attributeSlug={group.slug}
-							onSelect={handleSelect}
-							unavailableMessage={unavailableMessage}
-							isPending={isPending}
-							showLabel={false}
-						/>
-					</div>
+					<VariantSelector
+						key={group.slug}
+						label={group.name}
+						options={options}
+						selectedId={optimisticSelections[group.slug]}
+						attributeSlug={group.slug}
+						onSelect={handleSelect}
+						renderers={rendererRegistry}
+						unavailableMessage={unavailableMessage}
+						isPending={isPending}
+					/>
 				);
 			})}
 

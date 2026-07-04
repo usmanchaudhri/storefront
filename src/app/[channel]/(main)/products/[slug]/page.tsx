@@ -1,29 +1,29 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
-import Image from "next/image";
 import { ErrorBoundary } from "react-error-boundary";
 import edjsHTML from "editorjs-html";
 import xss from "xss";
 
 import { executePublicGraphQL } from "@/lib/graphql";
 import { ProductDetailsDocument, type ProductDetailsQuery } from "@/gql/graphql";
-import { buildPageMetadata, buildProductJsonLd } from "@/lib/seo";
+import { buildPageMetadata, buildProductJsonLd, jsonLdScriptProps } from "@/lib/seo";
 import { channelHref } from "@/lib/channel-path";
-import { stripShippingReturnsCtaFromHtml } from "@/lib/strip-pdp-shipping-returns-cta";
+import { getStorefrontContent, buildPolicyLabelValues } from "@/lib/content/server";
+import { resolveChannelCurrencyFromProduct } from "@/lib/channels/resolve-channel-currency";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
-import {
-	getPdpBottomBannerAttributeSlugs,
-	getPdpPackageConfigAttributeSlugs,
-	type PdpBottomBanner,
-} from "@/config/pdp-layout";
 import { Breadcrumbs } from "@/ui/components/breadcrumbs";
 import {
-	ProductGallery,
 	ProductAttributes,
+	activeGalleryVariant,
+	VariantGalleryDynamic,
+	ProductRouteSkeleton,
 	VariantSectionDynamic,
-	VariantSectionSkeleton,
 	VariantSectionError,
+	VariantSectionSkeleton,
+	getDefaultGalleryImages,
+	PDP_GALLERY_LAYOUT,
+	PDP_LAYOUT_CLASSES,
 } from "@/ui/components/pdp";
 
 // ============================================================================
@@ -94,45 +94,47 @@ export async function generateMetadata(props: {
 const parser = edjsHTML();
 
 /**
- * Sync page shell with dedicated Suspense boundary.
- * All cached product data + dynamic variant section stream inside
- * this boundary, not through the layout's main Suspense.
+ * Sync page entry — Suspense while params resolve and cached product data loads.
+ * searchParams is passed through without being awaited here or in the shell.
  */
 export default function ProductPage(props: {
 	params: Promise<{ slug: string; channel: string }>;
 	searchParams: Promise<{ variant?: string }>;
 }) {
 	return (
-		<Suspense fallback={<ProductPageSkeleton />}>
-			<ProductContent params={props.params} searchParams={props.searchParams} />
+		<Suspense fallback={<ProductRouteSkeleton surface="page" />}>
+			<ProductShell params={props.params} searchParams={props.searchParams} />
 		</Suspense>
 	);
 }
 
-async function ProductContent({
+/**
+ * Static product shell — only reads route params (cacheable / prerenderable).
+ * Dynamic islands (gallery, variant section) read searchParams in nested Suspense.
+ */
+async function ProductShell({
 	params: paramsPromise,
-	searchParams: searchParamsPromise,
+	searchParams,
 }: {
 	params: Promise<{ slug: string; channel: string }>;
 	searchParams: Promise<{ variant?: string }>;
 }) {
-	const [params, searchParams] = await Promise.all([paramsPromise, searchParamsPromise]);
-
-	const product = await getProductData(params.slug, params.channel);
+	const params = await paramsPromise;
+	const [product, content] = await Promise.all([
+		getProductData(params.slug, params.channel),
+		getStorefrontContent(params.channel),
+	]);
 
 	if (!product) {
 		notFound();
 	}
 
-	const variants = product.variants || [];
-	const selectedVariantId = searchParams.variant || (variants.length === 1 ? variants[0].id : undefined);
-	const selectedVariant = variants.find((v) => v.id === selectedVariantId);
-
+	const currency = resolveChannelCurrencyFromProduct(product);
+	const policyLabels = buildPolicyLabelValues(content.policies, { currency });
 	const descriptionHtml = parseDescription(product.description);
-	const images = getGalleryImages(product, selectedVariant);
 	const productAttributes = extractProductAttributes(product);
 	const careInstructions = extractCareInstructions(product);
-	const bottomBanner = extractPdpBottomBanner(product);
+	const defaultImages = getDefaultGalleryImages(product);
 
 	const breadcrumbs = [
 		{ label: "Home", href: channelHref(params.channel, "/") },
@@ -150,7 +152,7 @@ async function ProductContent({
 	const productJsonLd = buildProductJsonLd({
 		name: product.name,
 		description: product.seoDescription || product.name,
-		images: images.length > 0 ? images.map((img) => img.url) : undefined,
+		images: defaultImages.length > 0 ? defaultImages.map((img) => img.url) : undefined,
 		brand: product.category?.name,
 		url: channelHref(params.channel, `/products/${product.slug}`),
 		priceRange: product.pricing?.priceRange?.start?.gross
@@ -165,101 +167,68 @@ async function ProductContent({
 		variantCount: product.variants?.length ?? 0,
 	});
 
-	const lcpImageUrl = images[0]?.url;
+	const lcpImage = defaultImages[0];
+	const showGalleryChrome = defaultImages.length > 1;
+	const layout = PDP_LAYOUT_CLASSES[PDP_GALLERY_LAYOUT];
+	const { Fallback: GalleryFallback } = activeGalleryVariant();
+	const galleryFallback = lcpImage ? (
+		<GalleryFallback
+			src={lcpImage.url}
+			alt={lcpImage.alt ?? product.name}
+			imageCount={defaultImages.length}
+			showChrome={showGalleryChrome}
+		/>
+	) : null;
+
+	const productAttributesNode = (
+		<ProductAttributes
+			descriptionHtml={descriptionHtml}
+			attributes={productAttributes}
+			careInstructions={careInstructions}
+			policyLabels={policyLabels}
+		/>
+	);
 
 	return (
 		<div className="flex min-h-screen flex-col bg-background">
-			{lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} fetchPriority="high" />}
+			{lcpImage && <link rel="preload" as="image" href={lcpImage.url} fetchPriority="high" />}
+			{productJsonLd && <script {...jsonLdScriptProps(productJsonLd)} />}
 
-			{productJsonLd && (
-				<script
-					type="application/ld+json"
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-				/>
-			)}
-
-			<main className="mx-auto w-full max-w-7xl flex-1 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-10">
+			<main className={layout.main}>
 				<div className="mb-6 hidden sm:block">
-					<Breadcrumbs items={breadcrumbs} />
+					<Breadcrumbs items={breadcrumbs} ariaLabel="Breadcrumb" />
 				</div>
 
-				<div className="grid gap-8 lg:grid-cols-[minmax(0,720px)_minmax(0,1fr)] lg:gap-10 xl:gap-12">
-					<div className="lg:sticky lg:top-24 lg:max-w-[720px] lg:self-start xl:max-w-[760px]">
-						<ProductGallery images={images} productName={product.name} />
+				<div className={layout.grid}>
+					<div className={layout.galleryColumn}>
+						<Suspense fallback={galleryFallback}>
+							<VariantGalleryDynamic product={product} searchParams={searchParams} />
+						</Suspense>
 					</div>
 
-					<div className="flex flex-col gap-3">
-						<div className="order-2 flex flex-col gap-1.5">
-							<h1 className="text-balance text-3xl font-semibold tracking-tight lg:text-4xl">
-								{product.name}
-							</h1>
-							{descriptionHtml && descriptionHtml.length > 0 && (
-								<div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-foreground prose-strong:text-foreground [&_p:first-child]:mt-0">
-									{descriptionHtml.map((html) => (
-										<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
-									))}
-								</div>
-							)}
-						</div>
+					<div className={layout.infoColumn}>
+						<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight lg:text-4xl">
+							{product.name}
+						</h1>
 
-						<ProductAttributes
-							className="order-4"
-							attributes={productAttributes}
-							careInstructions={careInstructions}
-						/>
+						<ErrorBoundary FallbackComponent={VariantSectionError}>
+							<Suspense fallback={<VariantSectionSkeleton />}>
+								<VariantSectionDynamic
+									product={product}
+									channel={params.channel}
+									searchParams={searchParams}
+								/>
+							</Suspense>
+						</ErrorBoundary>
 
-						<div className="order-5">
-							<ErrorBoundary FallbackComponent={VariantSectionError}>
-								<Suspense fallback={<VariantSectionSkeleton />}>
-									<VariantSectionDynamic
-										product={product}
-										channel={params.channel}
-										searchParams={searchParamsPromise}
-									/>
-								</Suspense>
-							</ErrorBoundary>
-						</div>
+						{layout.attributesPlacement === "info" && (
+							<div className="order-4 mt-6">{productAttributesNode}</div>
+						)}
 					</div>
-				</div>
-			</main>
 
-			{bottomBanner && (
-				<section className="w-full pb-10 pt-2 sm:pb-12 lg:pb-16">
-					<Image
-						src={bottomBanner.url}
-						alt={bottomBanner.alt}
-						width={1536}
-						height={864}
-						className="h-auto w-full object-cover"
-						sizes="100vw"
-						priority={false}
-					/>
-				</section>
-			)}
-		</div>
-	);
-}
-
-// ============================================================================
-// Skeleton
-// ============================================================================
-
-function ProductPageSkeleton() {
-	return (
-		<div className="flex min-h-screen animate-skeleton-delayed flex-col bg-background opacity-0">
-			<main className="mx-auto w-full max-w-7xl flex-1 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-10">
-				<div className="mb-6 hidden h-4 w-64 animate-pulse rounded bg-secondary sm:block" />
-				<div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
-					<div className="aspect-square animate-pulse rounded-lg bg-secondary" />
-					<div className="flex flex-col gap-4">
-						<div className="h-8 w-3/4 animate-pulse rounded bg-secondary" />
-						<div className="h-6 w-24 animate-pulse rounded bg-secondary" />
-						<div className="mt-4 space-y-3">
-							<div className="h-10 w-full animate-pulse rounded bg-secondary" />
-							<div className="h-10 w-full animate-pulse rounded bg-secondary" />
-						</div>
-						<div className="mt-4 h-12 w-full animate-pulse rounded bg-secondary" />
-					</div>
+					{layout.attributesPlacement === "gallery" && layout.attributesGalleryBlock && (
+						<div className={layout.attributesGalleryBlock}>{productAttributesNode}</div>
+					)}
 				</div>
 			</main>
 		</div>
@@ -275,25 +244,20 @@ function parseDescription(description: string | null | undefined): string[] | nu
 
 	try {
 		const parsed = parser.parse(JSON.parse(description));
-		return parsed.map((html: string) => stripShippingReturnsCtaFromHtml(xss(html))).filter(Boolean);
+		return parsed.map((html: string) => xss(html)).filter(Boolean);
 	} catch {
-		return [stripShippingReturnsCtaFromHtml(xss(`<p>${description}</p>`))].filter(Boolean);
+		return [xss(`<p>${description}</p>`)].filter(Boolean);
 	}
 }
 
 function extractProductAttributes(product: NonNullable<ProductDetailsQuery["product"]>) {
-	const variantAttributeSlugs = ["size", "color", "colour", "variant"];
+	const variantAttributeSlugs = ["size", "color", "colour", "variant", "bundle"];
 	const internalAttributeSlugs = ["care-instructions", "care"];
-	const layoutAttributeSlugs = new Set([
-		...getPdpBottomBannerAttributeSlugs(),
-		...getPdpPackageConfigAttributeSlugs(),
-	]);
 
 	return (product.attributes || [])
 		.filter((attr) => attr.attribute.name)
 		.filter((attr) => !variantAttributeSlugs.includes((attr.attribute.slug ?? "").toLowerCase()))
 		.filter((attr) => !internalAttributeSlugs.includes((attr.attribute.slug ?? "").toLowerCase()))
-		.filter((attr) => !layoutAttributeSlugs.has((attr.attribute.slug ?? "").toLowerCase()))
 		.map((attr) => ({
 			name: attr.attribute.name!,
 			value:
@@ -321,65 +285,4 @@ function extractCareInstructions(product: NonNullable<ProductDetailsQuery["produ
 			.filter(Boolean)
 			.join(". ") || null
 	);
-}
-
-type Product = NonNullable<ProductDetailsQuery["product"]>;
-type Variant = NonNullable<Product["variants"]>[number];
-
-function getGalleryImages(
-	product: Product,
-	selectedVariant: Variant | null | undefined,
-): { url: string; thumbnailUrl?: string; alt: string | null | undefined }[] {
-	if (selectedVariant?.media && selectedVariant.media.length > 0) {
-		const variantImages = selectedVariant.media
-			.filter((m) => m.type === "IMAGE")
-			.map((m) => ({ url: m.mainUrl, thumbnailUrl: m.thumbnailUrl, alt: m.alt }));
-		if (variantImages.length > 0) {
-			return variantImages;
-		}
-	}
-
-	if (product.media && product.media.length > 0) {
-		return product.media
-			.filter((m) => m.type === "IMAGE")
-			.map((m) => ({ url: m.mainUrl, thumbnailUrl: m.thumbnailUrl, alt: m.alt }));
-	}
-
-	if (product.thumbnail) {
-		return [{ url: product.thumbnail.url, alt: product.thumbnail.alt }];
-	}
-
-	return [];
-}
-
-function extractPdpBottomBanner(
-	product: NonNullable<ProductDetailsQuery["product"]>,
-): PdpBottomBanner | null {
-	const slugs = getPdpBottomBannerAttributeSlugs();
-	for (const slug of slugs) {
-		const attr = (product.attributes || []).find((a) => (a.attribute.slug ?? "").toLowerCase() === slug);
-		const first = attr?.values?.[0];
-		if (!first) continue;
-
-		const fileUrl = first.file?.url;
-		const raw = [first.value?.trim(), first.name?.trim()].find((s) => s && s.length > 0);
-		const textUrl = raw && isLikelyImageUrl(raw) ? raw : null;
-
-		const url = fileUrl || textUrl;
-		if (url) {
-			return {
-				url,
-				alt: `${product.name} — details banner`,
-			};
-		}
-	}
-
-	return null;
-}
-
-function isLikelyImageUrl(s: string): boolean {
-	if (/^https?:\/\//i.test(s)) return true;
-	// protocol-relative or absolute path (pair with same-origin / configured media host if needed)
-	if (s.startsWith("//")) return true;
-	return false;
 }

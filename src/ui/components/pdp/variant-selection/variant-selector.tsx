@@ -2,7 +2,6 @@
 
 import type { VariantSelectorProps, OptionRenderer } from "./types";
 import { defaultRenderers } from "./renderers";
-import { getGummySizeOptionLabels } from "./gummy-size-display";
 
 /**
  * A single variant selector for one attribute (e.g., Color or Size).
@@ -10,7 +9,7 @@ import { getGummySizeOptionLabels } from "./gummy-size-display";
  * Renders options using the appropriate renderer based on:
  * 1. Explicit `renderer` prop
  * 2. `attributeSlug` for registry lookup
- * 3. `colorHex` presence (uses `_color` renderer)
+ * 3. `swatchImageUrl` (pill) or `colorHex` (circle swatch)
  * 4. `_default` fallback
  */
 export function VariantSelector({
@@ -20,10 +19,11 @@ export function VariantSelector({
 	attributeSlug,
 	onSelect,
 	renderer: explicitRenderer,
+	renderers,
 	unavailableMessage,
 	isPending,
-	showLabel = true,
 }: VariantSelectorProps) {
+	const registry = { ...defaultRenderers, ...renderers };
 	const selectedOption = options.find((opt) => opt.id === selectedId);
 
 	const handleSelect = (optionId: string) => {
@@ -39,88 +39,49 @@ export function VariantSelector({
 		// 1. Explicit renderer prop takes precedence
 		if (explicitRenderer) return explicitRenderer;
 
-		// 2. If option has colorHex, use color swatch
-		if (option.colorHex && defaultRenderers._color) {
-			return defaultRenderers._color;
+		// 2. Image swatches → pill; hex swatches → circle
+		if (option.swatchImageUrl && registry._imageSwatch) {
+			return registry._imageSwatch;
+		}
+		if (option.colorHex && registry._color) {
+			return registry._color;
 		}
 
 		// 3. Try attribute slug
-		if (attributeSlug && attributeSlug in defaultRenderers) {
-			return defaultRenderers[attributeSlug];
+		const slugRenderer = attributeSlug ? registry[attributeSlug] : undefined;
+		if (slugRenderer) {
+			return slugRenderer;
 		}
 
 		// 4. Fallback to default
-		return defaultRenderers._default;
+		return registry._default ?? defaultRenderers._default!;
 	};
 
 	// Group options by renderer for better layout
-	const colorOptions = options.filter((opt) => opt.colorHex);
-	const textOptions = options.filter((opt) => !opt.colorHex);
-
-	const normalizedSlug = (attributeSlug ?? "").toLowerCase();
-	const normalizedLabel = (label ?? "").toLowerCase();
-	const isGummySize =
-		normalizedSlug === "gummy-size" ||
-		normalizedLabel === "gummy size" ||
-		(normalizedSlug === "size" && normalizedLabel.includes("gummy"));
-
-	const normalizeOptionForDisplay = (option: (typeof options)[number]) => {
-		if (!isGummySize) return option;
-
-		const sizeLabels = getGummySizeOptionLabels(option.name);
-
-		// For Gummy Size, hide pricing/discount UI from the option card.
-		return {
-			...option,
-			primaryLabel: sizeLabels?.primaryLabel ?? option.name,
-			secondaryLabel: sizeLabels?.secondaryLabel,
-			sellingPriceAmount: undefined,
-			costPriceAmount: undefined,
-			currency: undefined,
-			percentOff: undefined,
-			discountPercent: undefined,
-		};
-	};
-
-	const isCardGrid =
-		["size", "pack", "bundle", "quantity", "serving", "servings"].includes(
-			attributeSlug?.toLowerCase?.() ?? "",
-		) ||
-		label.toLowerCase().includes("size") ||
-		label.toLowerCase().includes("pack");
-
-	const isGummyBundle =
-		normalizedSlug === "gummy-bundle" ||
-		normalizedLabel === "gummy bundle" ||
-		(normalizedSlug.includes("bundle") && normalizedLabel.includes("gummy"));
+	const swatchOptions = options.filter((opt) => opt.colorHex || opt.swatchImageUrl);
+	const textOptions = options.filter((opt) => !opt.colorHex && !opt.swatchImageUrl);
 
 	const labelId = `variant-label-${attributeSlug}`;
 
 	return (
 		<div className="space-y-3">
-			{showLabel ? (
-				<div className="flex items-center gap-2">
-					<span id={labelId} className="text-sm font-medium">
-						{label}
-					</span>
-					{unavailableMessage ? (
-						<span className="text-sm text-muted-foreground" role="status">
-							{unavailableMessage}
-						</span>
-					) : selectedOption ? (
-						<span className="text-sm text-muted-foreground">{selectedOption.name}</span>
-					) : null}
-				</div>
-			) : unavailableMessage ? (
-				<span className="text-sm text-muted-foreground" role="status">
-					{unavailableMessage}
+			<div className="flex items-center gap-2">
+				<span id={labelId} className="text-sm font-medium">
+					{label}
 				</span>
-			) : null}
+				{unavailableMessage ? (
+					<span className="text-sm text-muted-foreground" role="status">
+						{unavailableMessage}
+					</span>
+				) : selectedOption ? (
+					<span className="text-sm text-muted-foreground">{selectedOption.name}</span>
+				) : null}
+			</div>
 
-			{/* Color swatches row */}
-			{colorOptions.length > 0 && (
+			{/* Swatch row (image pills and/or color circles) */}
+			{swatchOptions.length > 0 && (
 				<div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-4">
-					{colorOptions.map((option) => {
+					{swatchOptions.map((option) => {
 						const Renderer = getRendererForOption(option);
 						return (
 							<Renderer
@@ -137,26 +98,13 @@ export function VariantSelector({
 
 			{/* Text/Size buttons row */}
 			{textOptions.length > 0 && (
-				<div
-					role="group"
-					aria-labelledby={labelId}
-					className={
-						isCardGrid
-							? isGummyBundle
-								? "grid grid-cols-1 gap-3 md:grid-cols-3"
-								: isGummySize
-									? "grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4"
-									: "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
-							: "flex flex-wrap gap-4"
-					}
-				>
+				<div role="group" aria-labelledby={labelId} className="flex flex-wrap gap-4">
 					{textOptions.map((option) => {
-						const normalizedOption = normalizeOptionForDisplay(option);
-						const Renderer = getRendererForOption(normalizedOption);
+						const Renderer = getRendererForOption(option);
 						return (
 							<Renderer
 								key={option.id}
-								option={normalizedOption}
+								option={option}
 								isSelected={selectedId === option.id}
 								onSelect={handleSelect}
 								isPending={isPending}

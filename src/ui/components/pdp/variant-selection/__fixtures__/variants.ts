@@ -247,88 +247,6 @@ export const singleAttributeVariants: SaleorVariant[] = [
 ];
 
 // =============================================================================
-// Gummy Product: Gummy Size + Gummy Bundle (Kayapure-style)
-// =============================================================================
-export const gummyVariants: SaleorVariant[] = [
-	{
-		id: "gummy-sm-1",
-		name: "1 Bottle SM",
-		quantityAvailable: 10,
-		selectionAttributes: [
-			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
-			{
-				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
-				values: [{ name: "1 Bottle SM", value: "1-bottle-sm" }],
-			},
-		],
-	},
-	{
-		id: "gummy-sm-2",
-		name: "2 Bottles SM",
-		quantityAvailable: 10,
-		selectionAttributes: [
-			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
-			{
-				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
-				values: [{ name: "2 Bottles SM", value: "2-bottles-sm" }],
-			},
-		],
-	},
-	{
-		id: "gummy-md-1",
-		name: "1 Bottle MD",
-		quantityAvailable: 10,
-		selectionAttributes: [
-			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "MD", value: "md" }] },
-			{
-				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
-				values: [{ name: "1 Bottle MD", value: "1-bottle-md" }],
-			},
-		],
-	},
-	{
-		id: "gummy-md-2",
-		name: "2 Bottles MD",
-		quantityAvailable: 10,
-		selectionAttributes: [
-			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "MD", value: "md" }] },
-			{
-				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
-				values: [{ name: "2 Bottles MD", value: "2-bottles-md" }],
-			},
-		],
-	},
-];
-
-/** Gummy product with only bundle attribute (single size in catalog). */
-export const gummyBundleOnlyVariants: SaleorVariant[] = [
-	{
-		id: "gummy-bundle-1",
-		name: "1 Bottle",
-		quantityAvailable: 10,
-		selectionAttributes: [
-			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
-			{
-				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
-				values: [{ name: "1 Bottle", value: "1-bottle" }],
-			},
-		],
-	},
-	{
-		id: "gummy-bundle-2",
-		name: "2 Bottles",
-		quantityAvailable: 10,
-		selectionAttributes: [
-			{ attribute: { slug: "gummy-size", name: "Gummy Size" }, values: [{ name: "SM", value: "sm" }] },
-			{
-				attribute: { slug: "gummy-bundle", name: "Gummy Bundle" },
-				values: [{ name: "2 Bottles", value: "2-bottles" }],
-			},
-		],
-	},
-];
-
-// =============================================================================
 // Name-Only Variants: No structured attributes, only names
 // This is the fallback case when Saleor variants aren't properly configured
 // =============================================================================
@@ -398,5 +316,60 @@ export const nameOnlyDifferentPrices: SaleorVariant[] = [
 			price: { gross: { amount: 100.0, currency: "USD" } },
 			priceUndiscounted: { gross: { amount: 100.0, currency: "USD" } },
 		},
+	},
+];
+
+// =============================================================================
+// Audiobook: 3 selection attributes (medium + audio quality + instant delivery)
+// Mirrors demo Saleor "Battle-tested at brands like Lush" matrix
+// =============================================================================
+export const audiobookVariants: SaleorVariant[] = [
+	{
+		id: "audiobook-dvd",
+		name: "DVD",
+		quantityAvailable: 50,
+		selectionAttributes: [
+			{ attribute: { slug: "medium", name: "Medium", inputType: "DROPDOWN" }, values: [{ name: "DVD" }] },
+			{
+				attribute: { slug: "audio-quality", name: "Audio quality", inputType: "SWATCH" },
+				values: [{ name: "Hi-Res 24-bit", file: { url: "https://example.com/hires.svg" } }],
+			},
+			{
+				attribute: { slug: "instant-delivery", name: "Instant Delivery", inputType: "BOOLEAN" },
+				values: [{ name: "Instant Delivery: No" }],
+			},
+		],
+	},
+	{
+		id: "audiobook-itunes",
+		name: "iTunes",
+		quantityAvailable: 50,
+		selectionAttributes: [
+			{ attribute: { slug: "medium", name: "Medium", inputType: "DROPDOWN" }, values: [{ name: "iTunes" }] },
+			{
+				attribute: { slug: "audio-quality", name: "Audio quality", inputType: "SWATCH" },
+				values: [{ name: "Hi-Res 24-bit", file: { url: "https://example.com/hires.svg" } }],
+			},
+			{
+				attribute: { slug: "instant-delivery", name: "Instant Delivery", inputType: "BOOLEAN" },
+				values: [{ name: "Instant Delivery: Yes" }],
+			},
+		],
+	},
+	{
+		id: "audiobook-mp3",
+		name: "MP3",
+		quantityAvailable: 50,
+		selectionAttributes: [
+			{ attribute: { slug: "medium", name: "Medium", inputType: "DROPDOWN" }, values: [{ name: "MP3" }] },
+			{
+				attribute: { slug: "audio-quality", name: "Audio quality", inputType: "SWATCH" },
+				values: [{ name: "Standard", file: { url: "https://example.com/standard.svg" } }],
+			},
+			{
+				attribute: { slug: "instant-delivery", name: "Instant Delivery", inputType: "BOOLEAN" },
+				values: [{ name: "Instant Delivery: Yes" }],
+			},
+		],
 	},
 ];
