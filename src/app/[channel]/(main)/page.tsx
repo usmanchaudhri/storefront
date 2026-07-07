@@ -4,7 +4,7 @@ import { HomeSignatureProductBanner } from "@/ui/components/home/home-signature-
 import { HomeFaq } from "@/ui/components/home/home-faq";
 import { HomeVideoGallery } from "@/ui/components/home/home-video-gallery";
 import { EditorialHero } from "@/ui/sections/editorial-hero/editorial-hero";
-import { FeaturedCollectionSection } from "@/ui/sections/featured-collection-section/featured-collection-section";
+import { HomeFeaturedCategories } from "@/ui/components/home/home-featured-categories";
 import { MediaHero } from "@/ui/sections/media-hero/media-hero";
 
 export const metadata = {
@@ -15,7 +15,7 @@ export const metadata = {
 export default async function Page(props: { params: Promise<{ channel: string }> }) {
 	const { channel } = await props.params;
 	const content = await getStorefrontContent(channel);
-	const { hero, featuredCollection } = content.surfaces.homepage;
+	const { hero } = content.surfaces.homepage;
 	const hasMediaHero = Boolean(hero.backgroundVideo || hero.backgroundImage);
 
 	return (
@@ -44,14 +44,7 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 
 			<HomeEnergyFocusSection />
 			<HomeSignatureProductBanner channel={channel} />
-			<FeaturedCollectionSection
-				channel={channel}
-				heading={featuredCollection.heading}
-				intro={featuredCollection.intro}
-				collectionSlug={featuredCollection.collectionSlug}
-				limit={featuredCollection.limit}
-				desktopColumns={4}
-			/>
+			<HomeFeaturedCategories channel={channel} />
 			<HomeVideoGallery channel={channel} />
 			<HomeFaq />
 		</>
