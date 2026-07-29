@@ -31,10 +31,15 @@ export function getChatbotConfig(): AiAssistantConfig {
 	).trim();
 
 	const searchExplicitlyDisabled = process.env.NEXT_PUBLIC_AI_SEARCH_ENABLED === "false";
+	// Prefer an explicit public flag for client builds; otherwise enable chat whenever
+	// the server-side assist proxy has a configured kpure-ai base URL.
+	const chatExplicitlyEnabled = process.env.NEXT_PUBLIC_AI_CHAT_ENABLED === "true";
+	const chatExplicitlyDisabled = process.env.NEXT_PUBLIC_AI_CHAT_ENABLED === "false";
+	const chatEnabled = chatExplicitlyDisabled ? false : chatExplicitlyEnabled || Boolean(apiUrl);
 
 	return {
 		enabled: !searchExplicitlyDisabled,
-		chatEnabled: Boolean(apiUrl),
+		chatEnabled,
 		apiUrl,
 		defaultModel,
 		assistantName: `${brandConfig.organizationName} Assistant`,

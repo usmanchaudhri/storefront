@@ -2,15 +2,14 @@
 
 import { AiAssistant } from "@/ui/components/ai-assistant/ai-assistant";
 
-import { getChatbotConfig } from "./config";
+import type { AiAssistantConfig } from "./config";
 
 type ChatAssistantShellProps = {
 	channel: string;
+	config: AiAssistantConfig;
 };
 
-export function ChatAssistantShell({ channel }: ChatAssistantShellProps) {
-	const config = getChatbotConfig();
-
+export function ChatAssistantShell({ channel, config }: ChatAssistantShellProps) {
 	if (!config.enabled) {
 		return null;
 	}
