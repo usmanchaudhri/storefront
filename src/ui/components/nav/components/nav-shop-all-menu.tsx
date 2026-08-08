@@ -31,6 +31,8 @@ type ColumnAccent = {
 	productHover: string;
 	productHoverText: string;
 	productArrow: string;
+	/** Background tint for the active category row in the vertical rail. */
+	activeBg: string;
 };
 
 const columnAccent: Record<string, ColumnAccent> = {
@@ -40,6 +42,7 @@ const columnAccent: Record<string, ColumnAccent> = {
 		productHover: "hover:bg-red-500/10",
 		productHoverText: "group-hover:text-red-700 dark:group-hover:text-red-400",
 		productArrow: "group-hover:text-red-600 dark:group-hover:text-red-400",
+		activeBg: "bg-red-500/10",
 	},
 	shots: {
 		icon: "text-orange-600 dark:text-orange-400",
@@ -47,6 +50,7 @@ const columnAccent: Record<string, ColumnAccent> = {
 		productHover: "hover:bg-orange-500/10",
 		productHoverText: "group-hover:text-orange-700 dark:group-hover:text-orange-400",
 		productArrow: "group-hover:text-orange-600 dark:group-hover:text-orange-400",
+		activeBg: "bg-orange-500/10",
 	},
 	drops: {
 		icon: "text-blue-600 dark:text-blue-400",
@@ -54,6 +58,7 @@ const columnAccent: Record<string, ColumnAccent> = {
 		productHover: "hover:bg-blue-500/10",
 		productHoverText: "group-hover:text-blue-700 dark:group-hover:text-blue-400",
 		productArrow: "group-hover:text-blue-600 dark:group-hover:text-blue-400",
+		activeBg: "bg-blue-500/10",
 	},
 };
 
@@ -157,7 +162,8 @@ function ShopAllProductLink({
 	);
 }
 
-function ShopAllColumn({
+/** Right pane: the hovered category's products (sub-options) + shop CTA. */
+function ShopAllActivePanel({
 	column,
 	channel,
 	thumbnails,
@@ -171,25 +177,36 @@ function ShopAllColumn({
 	const accent = getColumnAccent(column.slug);
 
 	return (
-		<div className="flex min-w-0 flex-col px-1 sm:px-2">
-			<div className="mb-1.5 flex items-start gap-1.5">
-				<span className={cn("mt-px", accent.icon)}>
-					<CategoryIcon slug={column.slug} />
-				</span>
+		// keyed by slug so the pane re-mounts and animates on category change
+		<div key={column.slug} className="duration-200 animate-in fade-in-0 slide-in-from-left-2">
+			<div className="mb-2 flex items-start justify-between gap-4">
 				<div className="min-w-0">
 					<LinkWithChannel
 						href={`/categories/${column.slug}`}
 						channel={channel}
 						prefetch={false}
-						className={cn("text-sm font-semibold tracking-tight hover:underline", accent.heading)}
+						className={cn("text-base font-semibold tracking-tight hover:underline", accent.heading)}
 						onClick={onNavigate}
 					>
 						{column.name}
 					</LinkWithChannel>
 					<p className="text-[11px] leading-tight text-muted-foreground">{column.tagline}</p>
 				</div>
+				<LinkWithChannel
+					href={`/categories/${column.slug}`}
+					channel={channel}
+					prefetch={false}
+					className={cn(
+						"inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold uppercase tracking-wide transition-opacity hover:opacity-80",
+						accent.heading,
+					)}
+					onClick={onNavigate}
+				>
+					Shop {column.name.toLowerCase()}
+					<ArrowRight className={cn("h-3.5 w-3.5 shrink-0", accent.icon)} aria-hidden />
+				</LinkWithChannel>
 			</div>
-			<ul className="space-y-0.5" role="list">
+			<ul className="grid grid-cols-2 gap-x-6 gap-y-0.5" role="list">
 				{column.products.map((product) => (
 					<li key={product.slug}>
 						<ShopAllProductLink
@@ -202,20 +219,6 @@ function ShopAllColumn({
 					</li>
 				))}
 			</ul>
-			<LinkWithChannel
-				href={`/categories/${column.slug}`}
-				channel={channel}
-				prefetch={false}
-				className={cn(
-					"mt-0 inline-flex items-center gap-1.5 text-sm font-semibold uppercase leading-none tracking-wide",
-					accent.heading,
-					"transition-opacity hover:opacity-80",
-				)}
-				onClick={onNavigate}
-			>
-				Shop {column.name.toLowerCase()}
-				<ArrowRight className={cn("h-3.5 w-3.5 shrink-0", accent.icon)} aria-hidden />
-			</LinkWithChannel>
 		</div>
 	);
 }
@@ -231,20 +234,79 @@ function ShopAllMegaPanel({
 	className?: string;
 	onNavigate?: () => void;
 }) {
+	const [activeSlug, setActiveSlug] = useState<string>(headerShopAllMegaNav[0]?.slug ?? "");
+	const activeColumn =
+		headerShopAllMegaNav.find((column) => column.slug === activeSlug) ?? headerShopAllMegaNav[0];
+
 	return (
-		<div className={cn("px-4 pb-1.5 pt-1 sm:px-6 lg:px-8", className)}>
-			<div className="grid gap-1.5 sm:grid-cols-3">
-				{headerShopAllMegaNav.map((column) => (
-					<ShopAllColumn
-						key={column.slug}
-						column={column}
-						channel={channel}
-						thumbnails={thumbnails}
-						onNavigate={onNavigate}
-					/>
-				))}
+		<div className={cn("px-4 pb-4 pt-3 sm:px-6 lg:px-8", className)}>
+			<div className="mx-auto flex max-w-5xl gap-6">
+				{/* Left rail: categories listed vertically */}
+				<ul className="border-border/60 w-64 shrink-0 space-y-1 border-r pr-3" role="list">
+					{headerShopAllMegaNav.map((column) => {
+						const accent = getColumnAccent(column.slug);
+						const isActive = column.slug === activeColumn?.slug;
+
+						return (
+							<li key={column.slug}>
+								<LinkWithChannel
+									href={`/categories/${column.slug}`}
+									channel={channel}
+									prefetch={false}
+									onMouseEnter={() => setActiveSlug(column.slug)}
+									onFocus={() => setActiveSlug(column.slug)}
+									onClick={onNavigate}
+									aria-current={isActive ? "true" : undefined}
+									className={cn(
+										"group flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-colors",
+										isActive ? accent.activeBg : "hover:bg-muted/60",
+									)}
+								>
+									<span className={accent.icon}>
+										<CategoryIcon slug={column.slug} />
+									</span>
+									<span className="min-w-0 flex-1">
+										<span
+											className={cn(
+												"block text-sm font-semibold tracking-tight",
+												isActive ? accent.heading : "text-foreground",
+											)}
+										>
+											{column.name}
+										</span>
+										<span className="block text-[11px] leading-tight text-muted-foreground">
+											{column.tagline}
+										</span>
+									</span>
+									<ArrowRight
+										className={cn(
+											"h-4 w-4 shrink-0 transition-all",
+											isActive
+												? cn("translate-x-0 opacity-100", accent.icon)
+												: "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-60",
+										)}
+										aria-hidden
+									/>
+								</LinkWithChannel>
+							</li>
+						);
+					})}
+				</ul>
+
+				{/* Right pane: sub-options for the hovered category */}
+				<div className="min-w-0 flex-1">
+					{activeColumn && (
+						<ShopAllActivePanel
+							column={activeColumn}
+							channel={channel}
+							thumbnails={thumbnails}
+							onNavigate={onNavigate}
+						/>
+					)}
+				</div>
 			</div>
-			<div className="border-border/60 mt-2 flex justify-end border-t pt-1.5">
+
+			<div className="border-border/60 mx-auto mt-3 flex max-w-5xl justify-end border-t pt-2">
 				<LinkWithChannel
 					href="/products"
 					channel={channel}

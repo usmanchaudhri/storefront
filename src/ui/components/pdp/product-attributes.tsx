@@ -83,11 +83,11 @@ export function ProductAttributes({
 		<Accordion type="multiple" defaultValue={["description"]} className={className}>
 			{descriptionHtml && descriptionHtml.length > 0 && (
 				<AccordionItemWithContext value="description" className="border-border">
-					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
+					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
 						Description
 					</AccordionTrigger>
 					<AccordionContent>
-						<div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-foreground prose-strong:text-foreground">
+						<div className="prose max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground prose-a:text-foreground prose-strong:text-foreground">
 							{descriptionHtml.map((html) => (
 								<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
 							))}
@@ -98,14 +98,14 @@ export function ProductAttributes({
 
 			{displayAttributes.length > 0 && (
 				<AccordionItemWithContext value="details" className="border-border">
-					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
+					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
 						Product Details
 					</AccordionTrigger>
 					<AccordionContent>
 						<div className="grid gap-3">
 							{displayAttributes.map((attr) => (
-								<div key={attr.name} className="flex items-start justify-between gap-4 text-sm">
-									<span className="flex items-center gap-2 text-muted-foreground">
+								<div key={attr.name} className="flex items-start justify-between gap-4 text-base">
+									<span className="text-foreground/80 flex items-center gap-2">
 										{attributeIcons[attr.name]}
 										{attr.name}
 									</span>
@@ -119,20 +119,20 @@ export function ProductAttributes({
 
 			{careInstructions && (
 				<AccordionItemWithContext value="care" className="border-border">
-					<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
+					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
 						Care Instructions
 					</AccordionTrigger>
-					<AccordionContent className="leading-relaxed text-muted-foreground">
+					<AccordionContent className="text-foreground/80 text-base leading-relaxed">
 						{careInstructions}
 					</AccordionContent>
 				</AccordionItemWithContext>
 			)}
 
 			<AccordionItemWithContext value="shipping" className="border-border">
-				<AccordionTrigger className="py-4 text-sm font-medium hover:no-underline">
+				<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
 					Shipping & Returns
 				</AccordionTrigger>
-				<AccordionContent className="leading-relaxed text-muted-foreground">
+				<AccordionContent className="text-foreground/80 text-base leading-relaxed">
 					{policyLabels.freeShippingThreshold ? (
 						<p className="mb-2">{interpolatePolicyCopy(SHIPPING_BODY, policyLabels)}</p>
 					) : null}

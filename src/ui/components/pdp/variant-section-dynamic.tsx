@@ -115,7 +115,7 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 	return (
 		<>
 			<div className="order-1 flex items-center gap-2">
-				{product.category && <span className="text-sm text-muted-foreground">{product.category.name}</span>}
+				{product.category && <span className="text-foreground/80 text-base">{product.category.name}</span>}
 				{isOnSale && <SaleBadge />}
 				{!isAvailable && (
 					<Badge variant="secondary" className="text-xs">

@@ -65,7 +65,7 @@
 	--header-height: 4rem; /* matches header h-16 */
 	--announcement-bar-height: 0rem; /* no announcement bar in Kayapure */
 	--chrome-offset: calc(var(--header-height) + var(--announcement-bar-height));
-	--pdp-immersive-reserved: 9.5rem;
+	--pdp-immersive-reserved: 20rem; /* larger reserve = shorter immersive PDP hero image (was 9.5rem). Increase to shrink further, decrease to enlarge. */
 
 	/* --- Typography scale (upstream Paper storefront) --- */
 	--font-display: var(--font-geist-sans), system-ui, sans-serif;

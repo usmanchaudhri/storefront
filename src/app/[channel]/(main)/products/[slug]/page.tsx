@@ -207,7 +207,7 @@ async function ProductShell({
 					</div>
 
 					<div className={layout.infoColumn}>
-						<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight lg:text-4xl">
+						<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
 							{product.name}
 						</h1>
 

@@ -18,9 +18,10 @@
  * Agent note: when asked to make the PDP immersive (wide gallery + sticky buy box), set this to
  * `"immersive"`; to restore the classic split layout, set it to `"standard"`; for
  * an editorial grid where every image is visible at once, set it to `"mosaic"`.
- * Immersive uses `container-super-wide` (full-bleed up to 2560px, capped on ultrawide).
- * Standard and mosaic use `container-content` — same body width as PLP/cart/search.
- * For true edge-to-edge at every resolution, change immersive `main` to `container-full`.
+ * All layouts use `container-content` — the same body width as the landing page
+ * (home sections use `max-w-7xl` = 80rem) and PLP/cart/search. To make the immersive
+ * PDP full-bleed instead, change its `main` to `container-super-wide` (up to 2560px)
+ * or `container-full` for true edge-to-edge.
  */
 export type PdpGalleryLayout = "standard" | "immersive" | "mosaic";
 
@@ -75,7 +76,10 @@ export const PDP_LAYOUT_CLASSES: Record<PdpGalleryLayout, PdpLayoutClasses> = {
 		attributesPlacement: "info",
 	},
 	immersive: {
-		main: "container-super-wide flex-1 py-4 sm:py-6",
+		// container-content (80rem/1280px) matches the landing page body width
+		// (home sections use max-w-7xl = 80rem). Use container-super-wide here for
+		// a full-bleed editorial PDP instead.
+		main: "container-content flex-1 py-4 sm:py-6",
 		grid: "flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(20rem,30rem)] lg:items-start lg:gap-12",
 		galleryColumn: "order-1 min-w-0 lg:col-start-1 lg:row-start-1",
 		infoColumn: `order-2 flex flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky ${STICKY_BELOW_HEADER} lg:self-start`,

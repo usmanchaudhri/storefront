@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
  *
  * Single source of truth for the storefront logo.
  * Raster wordmark: /public/kayapure-logo.png (header)
- * Footer wordmark: /public/kayapure-footer-logo.png
+ * Footer wordmark: /public/kayapure-logo-black.png
  *
  * Black-on-white source asset: CSS `invert` adapts the header mark for
  * light header (default) and dark mode (dark:invert). Footer uses the
- * dedicated teal wordmark (variant="footer") without inversion.
+ * dedicated black wordmark (variant="footer") without inversion.
  *
  * @example
  * <Logo className="h-7 w-auto" />
@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
  */
 
 const LOGO_SRC = "/kayapure-logo.png" as const;
-const FOOTER_LOGO_SRC = "/kayapure-footer-logo.png" as const;
+const FOOTER_LOGO_SRC = "/kayapure-logo-black.png" as const;
 const LOGO_WIDTH = 543;
 const LOGO_HEIGHT = 116;
 const ASPECT = `${LOGO_WIDTH} / ${LOGO_HEIGHT}` as const;
