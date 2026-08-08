@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const HOVER_CLOSE_DELAY_MS = 200;
 
 const triggerClass = cn(
-	"inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-sm font-medium tracking-tight transition-colors duration-200",
+	"inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-lg font-medium tracking-tight transition-colors duration-200",
 	"text-muted-foreground outline-none",
 	"hover:bg-teal-500/18 hover:text-teal-700 dark:hover:text-teal-400",
 	"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",

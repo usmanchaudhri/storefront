@@ -79,7 +79,7 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 								href={item.url}
 								prefetch={false}
 								className={clsx(
-									"inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium tracking-tight transition-colors duration-200",
+									"inline-flex items-center rounded-lg px-3.5 py-2 text-lg font-medium tracking-tight transition-colors duration-200",
 									"hover:bg-teal-500/18 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-400",
 									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 								)}

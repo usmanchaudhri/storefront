@@ -173,7 +173,9 @@ export const ShippingStep: FC<ShippingStepProps> = ({ checkout: initialCheckout,
 										</div>
 										{method.minimumDeliveryDays && method.maximumDeliveryDays && (
 											<p className="text-sm text-muted-foreground">
-												{method.minimumDeliveryDays}-{method.maximumDeliveryDays} business days
+												{method.minimumDeliveryDays === method.maximumDeliveryDays
+													? `${method.maximumDeliveryDays} business days`
+													: `${method.minimumDeliveryDays}-${method.maximumDeliveryDays} business days`}
 											</p>
 										)}
 									</div>
