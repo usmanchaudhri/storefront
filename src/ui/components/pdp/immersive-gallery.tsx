@@ -98,7 +98,7 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 										alt={image.alt || `${productName} - View ${index + 1}`}
 										fill
 										draggable={false}
-										className="pointer-events-none object-cover"
+										className="pointer-events-none object-contain"
 										sizes={PDP_IMMERSIVE_IMAGE_SIZES}
 										quality={PRODUCT_IMAGE_QUALITY}
 										priority={false}

@@ -31,7 +31,7 @@ export function ImmersiveGalleryFallback({ src, alt }: ImmersiveGalleryFallbackP
 							src={src}
 							alt={alt}
 							fill
-							className="object-cover"
+							className="object-contain"
 							sizes={PDP_IMMERSIVE_IMAGE_SIZES}
 							quality={PRODUCT_IMAGE_QUALITY}
 							priority
