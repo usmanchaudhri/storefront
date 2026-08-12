@@ -31,7 +31,7 @@ interface GalleryImageThumbTriggerProps extends React.ComponentProps<"button"> {
 	selected?: boolean;
 }
 
-/** Thumbnail carousel control — inset focus ring + selected ring on top of the clip. */
+/** Thumbnail control — 86px square tile (MoonBrew PDP spec). */
 export function GalleryImageThumbTrigger({
 	className,
 	selected = false,
@@ -42,22 +42,15 @@ export function GalleryImageThumbTrigger({
 		<button
 			type="button"
 			className={cn(
-				"relative h-20 w-20 shrink-0 rounded-md",
+				"relative size-[86px] max-w-[86px] shrink-0 rounded-xl border transition-opacity duration-300",
 				PDP_GALLERY_IMAGE_FOCUS_CLASS,
-				selected ? "opacity-100" : "opacity-60 hover:opacity-100",
+				selected ? "border-foreground opacity-100" : "border-border/40 opacity-60 hover:opacity-100",
 				className,
 			)}
 			{...props}
 		>
-			<span className={cn(PDP_GALLERY_IMAGE_CLIP_CLASS, "rounded-md")}>{children}</span>
-			<span
-				className={cn(
-					PDP_GALLERY_IMAGE_FOCUS_OVERLAY_CLASS,
-					"rounded-md",
-					selected && "ring-2 ring-foreground",
-				)}
-				aria-hidden
-			/>
+			<span className={cn(PDP_GALLERY_IMAGE_CLIP_CLASS, "rounded-xl")}>{children}</span>
+			<span className={cn(PDP_GALLERY_IMAGE_FOCUS_OVERLAY_CLASS, "rounded-xl")} aria-hidden />
 		</button>
 	);
 }

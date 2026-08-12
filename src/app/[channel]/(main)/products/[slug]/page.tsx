@@ -12,6 +12,7 @@ import { channelHref } from "@/lib/channel-path";
 import { getStorefrontContent, buildPolicyLabelValues } from "@/lib/content/server";
 import { resolveChannelCurrencyFromProduct } from "@/lib/channels/resolve-channel-currency";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
+import { getPdpStory } from "@/config/pdp-stories";
 import { Breadcrumbs } from "@/ui/components/breadcrumbs";
 import {
 	ProductAttributes,
@@ -25,6 +26,7 @@ import {
 	PDP_GALLERY_LAYOUT,
 	PDP_LAYOUT_CLASSES,
 } from "@/ui/components/pdp";
+import { PdpStoryModules } from "@/ui/components/pdp/story/pdp-story-modules";
 
 // ============================================================================
 // Cached Data Fetching
@@ -170,6 +172,7 @@ async function ProductShell({
 	const lcpImage = defaultImages[0];
 	const showGalleryChrome = defaultImages.length > 1;
 	const layout = PDP_LAYOUT_CLASSES[PDP_GALLERY_LAYOUT];
+	const pdpStory = getPdpStory(product.slug) ?? getPdpStory(params.slug);
 	const { Fallback: GalleryFallback } = activeGalleryVariant();
 	const galleryFallback = lcpImage ? (
 		<GalleryFallback
@@ -231,6 +234,7 @@ async function ProductShell({
 					)}
 				</div>
 			</main>
+			{pdpStory ? <PdpStoryModules story={pdpStory} /> : null}
 		</div>
 	);
 }

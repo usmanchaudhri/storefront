@@ -24,11 +24,10 @@ export const PLP_HERO_IMAGE_SIZES = "100vw";
 export const PDP_MAIN_IMAGE_SIZES = "(max-width: 768px) 100vw, 50vw";
 
 /**
- * PDP immersive gallery: full-width square on mobile, height-driven square that
- * fills the viewport (≈ 60% width) on desktop. Width follows the fixed height,
- * so request a generously sized variant on large screens.
+ * PDP immersive gallery: full-width on mobile; ~631px-wide landscape hero on desktop
+ * (MoonBrew-style 631×490 frame within a 605fr gallery column).
  */
-export const PDP_IMMERSIVE_IMAGE_SIZES = "(max-width: 1024px) 100vw, 60vw";
+export const PDP_IMMERSIVE_IMAGE_SIZES = "(max-width: 1200px) 100vw, 800px";
 
 /**
  * PDP mosaic gallery: all images tiled in a 2-column grid.
@@ -37,8 +36,8 @@ export const PDP_IMMERSIVE_IMAGE_SIZES = "(max-width: 1024px) 100vw, 60vw";
  */
 export const PDP_MOSAIC_IMAGE_SIZES = "(max-width: 1024px) 50vw, 30vw";
 
-/** PDP desktop thumbnail strip */
-export const PDP_THUMBNAIL_IMAGE_SIZES = "80px";
+/** PDP thumbnail strip (MoonBrew: 86px tiles, served ~400px for retina) */
+export const PDP_THUMBNAIL_IMAGE_SIZES = "86px";
 
 /** LCP candidate on Home, PLP, and PDP — only one high-priority image per viewport */
 export const LCP_IMAGE_PRIORITY_COUNT = 1;

@@ -55,14 +55,20 @@ export interface PdpLayoutClasses {
 }
 
 /**
- * Desktop height of an immersive square image — fits the first frame above the
- * fold. Composed from chrome-height tokens (`--chrome-offset`) + a PDP-local
- * reserve (`--pdp-immersive-reserved`) defined in `brand.css`, so it self-corrects
- * when the announcement bar changes and never relies on a magic constant. Full
- * Tailwind literal (underscores = spaces) so the JIT scanner picks it up.
+ * MoonBrew-style immersive hero frame — 631×490 display ratio (~1.29:1 landscape).
+ * Images use `object-contain` so the full asset is visible inside the frame.
  */
-export const PDP_IMMERSIVE_IMAGE_HEIGHT =
-	"lg:h-[calc(100svh_-_var(--chrome-offset)_-_var(--pdp-immersive-reserved))]";
+export const PDP_IMMERSIVE_HERO_FRAME_CLASS = "aspect-[631/490] w-full";
+
+/** Space between hero and thumbnail strip on desktop (MoonBrew: 50px). */
+export const PDP_IMMERSIVE_HERO_MARGIN_CLASS = "mb-0 lg:mb-[50px]";
+
+/** Thumbnail strip — hidden below 1200px (MoonBrew breakpoint). */
+export const PDP_IMMERSIVE_THUMB_STRIP_CLASS =
+	"scrollbar-hide flex max-w-[calc(100%-3rem)] gap-2 overflow-x-auto px-1 py-1 max-[1200px]:hidden";
+
+/** Dot indicators when the thumbnail strip is hidden (≤1200px). */
+export const PDP_IMMERSIVE_MOBILE_DOTS_CLASS = "hidden max-[1200px]:flex justify-center gap-1.5";
 
 /** Sticky offset that clears the (sticky) header with a small gap. */
 const STICKY_BELOW_HEADER = "lg:top-[calc(var(--header-height)_+_2rem)]";
@@ -80,7 +86,8 @@ export const PDP_LAYOUT_CLASSES: Record<PdpGalleryLayout, PdpLayoutClasses> = {
 		// (home sections use max-w-7xl = 80rem). Use container-super-wide here for
 		// a full-bleed editorial PDP instead.
 		main: "container-content flex-1 py-4 sm:py-6",
-		grid: "flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(20rem,30rem)] lg:items-start lg:gap-12",
+		// MoonBrew product-v4 grid: 605fr gallery / 540fr buy box, 61px gap, ~1255px inner max
+		grid: "flex flex-col gap-8 lg:mx-auto lg:grid lg:max-w-[1255px] lg:grid-cols-[minmax(0,605fr)_minmax(0,540fr)] lg:items-start lg:gap-[61px]",
 		galleryColumn: "order-1 min-w-0 lg:col-start-1 lg:row-start-1",
 		infoColumn: `order-2 flex flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky ${STICKY_BELOW_HEADER} lg:self-start`,
 		attributesPlacement: "gallery",
