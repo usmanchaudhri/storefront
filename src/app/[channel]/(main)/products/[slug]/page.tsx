@@ -197,7 +197,7 @@ async function ProductShell({
 			{lcpImage && <link rel="preload" as="image" href={lcpImage.url} fetchPriority="high" />}
 			{productJsonLd && <script {...jsonLdScriptProps(productJsonLd)} />}
 
-			<main className={layout.main}>
+			<main id="main" className={layout.main}>
 				<div className="mb-6 hidden sm:block">
 					<Breadcrumbs items={breadcrumbs} ariaLabel="Breadcrumb" />
 				</div>

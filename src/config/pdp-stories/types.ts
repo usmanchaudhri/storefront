@@ -9,6 +9,7 @@ export type PdpStoryTile = {
 	id: "format" | "wellness" | "clarity" | "gummies";
 	title: string;
 	body: string;
+	icon: PdpStoryImage;
 };
 
 export type PdpStoryBlend = {
@@ -25,6 +26,7 @@ export type PdpStoryRoutine = {
 	iconItems: readonly {
 		id: "convenient" | "nearby" | "ritual" | "bottle";
 		label: string;
+		icon: PdpStoryImage;
 	}[];
 	image: PdpStoryImage;
 };
@@ -36,10 +38,61 @@ export type PdpStoryIngredient = {
 };
 
 export type PdpStoryLookInside = {
-	eyebrow: string;
-	title: string;
+	titlePrefix: string;
+	titleAccent: string;
 	intro: string;
 	ingredients: readonly PdpStoryIngredient[];
+	ctaLabel: string;
+};
+
+export type PdpStoryComparisonRow = {
+	feature: string;
+	kayaPure: boolean;
+	traditional: boolean;
+};
+
+/** Figma nodes 2435:1089–2435:1135 + gummy 2435:1523 — How Kaya Pure is different. */
+export type PdpStoryComparison = {
+	titlePrefix: string;
+	titleAccent: string;
+	intro: string;
+	traditionalLabel: string;
+	kayaPureLabel: string;
+	rows: readonly PdpStoryComparisonRow[];
+	/** Figma 2435:1523 — black gummy, Kaya Pure column heading. */
+	kayaPureImage: PdpStoryImage;
+	/** Figma 2435:1135 — traditional bottle, Traditional column heading. */
+	traditionalImage: PdpStoryImage;
+};
+
+/** Figma node 2435:996 — Got Questions? FAQ. */
+export type PdpStoryFaqItem = {
+	id: string;
+	question: string;
+	answer: string;
+};
+
+export type PdpStoryFaq = {
+	title: string;
+	intro: string;
+	image: PdpStoryImage;
+	items: readonly PdpStoryFaqItem[];
+};
+
+/** Figma node 2435:1040 — teal trust / benefit bar. */
+export type PdpStoryTrustItem = {
+	id: "shipping" | "customers" | "guarantee";
+	title: string;
+	/** Plain body lines; optional rich fields override rendering for guarantee. */
+	body: string;
+	icon: PdpStoryImage;
+	detailsLabel?: string;
+	detailsHref?: string;
+	email?: string;
+};
+
+export type PdpStoryTrust = {
+	items: readonly PdpStoryTrustItem[];
 };
 
 export type PdpStoryPack = {
@@ -47,5 +100,8 @@ export type PdpStoryPack = {
 	blend: PdpStoryBlend;
 	routine: PdpStoryRoutine;
 	lookInside: PdpStoryLookInside;
+	comparison: PdpStoryComparison;
+	faq: PdpStoryFaq;
+	trust: PdpStoryTrust;
 	disclaimer: string;
 };
