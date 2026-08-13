@@ -41,14 +41,6 @@ export async function Footer({ channel }: { channel: string }) {
 			<div className="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 sm:pb-12 lg:px-8 lg:py-16">
 				<FooterNewsletter />
 
-				{/* Full-width brand wordmark, spanning the footer above the link columns */}
-				<Link href={channelHref(channel, "/")} prefetch={false} className="mb-10 block lg:mb-12">
-					<Logo
-						className="mx-auto h-auto max-h-32 w-full object-contain object-center lg:max-h-40"
-						variant="footer"
-					/>
-				</Link>
-
 				<div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-10">
 					{/* Brand */}
 					<div className="col-span-2 sm:col-span-3 lg:col-span-1">
@@ -98,6 +90,14 @@ export async function Footer({ channel }: { channel: string }) {
 						</ul>
 					</div>
 				</div>
+
+				{/* Figma 2435:1490 wordmark — after menu columns */}
+				<Link href={channelHref(channel, "/")} prefetch={false} className="mt-10 block lg:mt-12">
+					<Logo
+						className="mx-auto h-auto max-h-28 w-full max-w-md object-contain object-center lg:max-h-36 lg:max-w-xl"
+						variant="footer"
+					/>
+				</Link>
 
 				{/* Channel selector */}
 				{channels?.channels && (

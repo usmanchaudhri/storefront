@@ -5,13 +5,16 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PDP_IMMERSIVE_IMAGE_SIZES, PDP_THUMBNAIL_IMAGE_SIZES, PRODUCT_IMAGE_QUALITY } from "@/lib/images";
 import { cn } from "@/lib/utils";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/ui/components/ui/carousel";
 import { type ImageCarouselImage } from "@/ui/components/ui/image-carousel";
 import { Button } from "@/ui/components/ui/button";
-import { galleryImageFrameClass } from "@/ui/components/shared/gallery-image-frame";
 import {
-	GalleryImageThumbTrigger,
-	GalleryImageZoomTrigger,
-} from "@/ui/components/shared/gallery-image-zoom-trigger";
+	galleryImageFrameClass,
+	galleryImageZoomTriggerClass,
+	PDP_GALLERY_IMAGE_CLIP_CLASS,
+	PDP_GALLERY_IMAGE_FOCUS_OVERLAY_CLASS,
+} from "@/ui/components/shared/gallery-image-frame";
+import { GalleryImageThumbTrigger } from "@/ui/components/shared/gallery-image-zoom-trigger";
 import { GalleryZoomLayer } from "./gallery-zoom-layer";
 import {
 	PDP_IMMERSIVE_HERO_FRAME_CLASS,
@@ -29,8 +32,10 @@ interface ImmersiveGalleryProps {
 /**
  * Immersive PDP gallery — MoonBrew-style 631×490 hero frame with the full image
  * visible (`object-contain`), thumbnail strip below (86px squares, desktop only).
+ * Mobile uses Embla swipe; desktop keeps hover arrows + thumbnails.
  */
 export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps) {
+	const [api, setApi] = React.useState<CarouselApi>();
 	const [selectedIndex, setSelectedIndex] = React.useState(0);
 	const [isHeroHovered, setIsHeroHovered] = React.useState(false);
 
@@ -39,15 +44,38 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 
 	React.useEffect(() => {
 		setSelectedIndex(0);
-	}, [imagesKey]);
+		api?.scrollTo(0, true);
+	}, [imagesKey, api]);
+
+	React.useEffect(() => {
+		if (!api) return;
+
+		const onSelect = () => {
+			setSelectedIndex(api.selectedScrollSnap());
+		};
+
+		api.on("select", onSelect);
+		onSelect();
+
+		return () => {
+			api.off("select", onSelect);
+		};
+	}, [api]);
 
 	const goToPrevious = React.useCallback(() => {
-		setSelectedIndex((current) => (current === 0 ? images.length - 1 : current - 1));
-	}, [images.length]);
+		api?.scrollPrev();
+	}, [api]);
 
 	const goToNext = React.useCallback(() => {
-		setSelectedIndex((current) => (current === images.length - 1 ? 0 : current + 1));
-	}, [images.length]);
+		api?.scrollNext();
+	}, [api]);
+
+	const scrollToImage = React.useCallback(
+		(index: number) => {
+			api?.scrollTo(index);
+		},
+		[api],
+	);
 
 	if (!images.length) {
 		return (
@@ -62,7 +90,6 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 		);
 	}
 
-	const activeImage = images[selectedIndex] ?? images[0];
 	const hasMultiple = images.length > 1;
 
 	return (
@@ -73,24 +100,59 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 					onMouseEnter={() => setIsHeroHovered(true)}
 					onMouseLeave={() => setIsHeroHovered(false)}
 				>
-					<GalleryImageZoomTrigger
-						onClick={() => openViewer(selectedIndex)}
-						className={PDP_IMMERSIVE_HERO_FRAME_CLASS}
-						aria-label={`${productName} - View ${selectedIndex + 1}`}
+					<Carousel
+						setApi={setApi}
+						opts={{
+							align: "start",
+							loop: hasMultiple,
+							dragFree: false,
+						}}
+						className="w-full"
 					>
-						<Image
-							key={activeImage.url}
-							src={activeImage.url}
-							alt={activeImage.alt || `${productName} - View ${selectedIndex + 1}`}
-							fill
-							draggable={false}
-							className="pointer-events-none object-contain"
-							sizes={PDP_IMMERSIVE_IMAGE_SIZES}
-							quality={PRODUCT_IMAGE_QUALITY}
-							priority={selectedIndex === 0}
-							loading={selectedIndex === 0 ? "eager" : "lazy"}
-						/>
-					</GalleryImageZoomTrigger>
+						<div className={cn("relative w-full overflow-hidden", PDP_IMMERSIVE_HERO_FRAME_CLASS)}>
+							<CarouselContent className="ml-0">
+								{images.map((image, index) => (
+									<CarouselItem key={image.url} className="pl-0">
+										{/*
+										  Div (not <button>) so Embla can own touch drag on mobile.
+										  Tap still opens the zoom viewer; drag does not.
+										*/}
+										<div
+											role="button"
+											tabIndex={0}
+											onClick={() => openViewer(index)}
+											onKeyDown={(event) => {
+												if (event.key === "Enter" || event.key === " ") {
+													event.preventDefault();
+													openViewer(index);
+												}
+											}}
+											className={galleryImageZoomTriggerClass(
+												"h-full w-full",
+												PDP_IMMERSIVE_HERO_FRAME_CLASS,
+											)}
+											aria-label={`${productName} - View ${index + 1}`}
+										>
+											<span className={PDP_GALLERY_IMAGE_CLIP_CLASS}>
+												<Image
+													src={image.url}
+													alt={image.alt || `${productName} - View ${index + 1}`}
+													fill
+													draggable={false}
+													className="pointer-events-none object-contain"
+													sizes={PDP_IMMERSIVE_IMAGE_SIZES}
+													quality={PRODUCT_IMAGE_QUALITY}
+													priority={index === 0}
+													loading={index === 0 ? "eager" : "lazy"}
+												/>
+											</span>
+											<span className={PDP_GALLERY_IMAGE_FOCUS_OVERLAY_CLASS} aria-hidden />
+										</div>
+									</CarouselItem>
+								))}
+							</CarouselContent>
+						</div>
+					</Carousel>
 
 					{hasMultiple ? (
 						<div
@@ -142,7 +204,7 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 								<GalleryImageThumbTrigger
 									key={image.url}
 									selected={selectedIndex === index}
-									onClick={() => setSelectedIndex(index)}
+									onClick={() => scrollToImage(index)}
 									aria-label={`Show image ${index + 1}`}
 									aria-selected={selectedIndex === index}
 									role="tab"
@@ -163,7 +225,7 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 								<button
 									key={image.url}
 									type="button"
-									onClick={() => setSelectedIndex(index)}
+									onClick={() => scrollToImage(index)}
 									aria-label={`Go to image ${index + 1}`}
 									aria-current={selectedIndex === index ? "true" : undefined}
 									className={cn(

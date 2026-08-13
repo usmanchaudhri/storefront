@@ -166,7 +166,8 @@ export const shilajitGummiesStory: PdpStoryPack = {
 	},
 	faq: {
 		title: "Got questions?",
-		intro: "Add your store’s verified policy and product details here.",
+		intro:
+			"We offer a 60-day satisfaction guarantee. If you're not satisfied, email info@kayapure.com and we'll take care of you.",
 		image: img(
 			"faq-product.png",
 			"Kaya Pure Himalayan Shilajit 7-in-1 Gummies bottle with ginger, shilajit resin, and herbs",
@@ -184,31 +185,30 @@ export const shilajitGummiesStory: PdpStoryPack = {
 				id: "how-to-use",
 				question: "How should I use it?",
 				answer:
-					"Follow the serving directions on the product label. Take as part of your regular daily supplement routine unless your healthcare provider advises otherwise.",
+					"Take 2 gummies in the morning or before workout for best results. Most people start feeling increased energy and focus within 30-45 minutes, with peak effects lasting 4-6 hours. The adaptogenic benefits build over time, so you’ll notice even better stress resilience and energy stability after 2-3 weeks of consistent use.",
 			},
 			{
-				id: "sleep",
-				question: "How might MoonBrew affect my sleep?",
+				id: "side-effects",
+				question: "Are there any side effects?",
 				answer:
-					"This listing still uses template copy from the design file. Replace with your verified product guidance on evening use and sleep-related expectations.",
-			},
-			{
-				id: "melatonin",
-				question: "Is there melatonin in MoonBrew?",
-				answer:
-					"Confirm melatonin (or lack of it) against your current formula label and store policy before publishing final FAQ copy.",
+					"Our supplement is made with natural ingredients and is generally well-tolerated. Some people may experience mild digestive upset. If you’re sensitive start with 1 gummy to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
 			},
 			{
 				id: "sugar",
 				question: "Do these gummies contain sugar?",
+				answer: "Yes, KayaPure gummmies contain only 3 grams of sugar. You can consume it without any guilt.",
+			},
+			{
+				id: "usage-with-other-supplements",
+				question: "Can I take this with other supplements or medications?",
 				answer:
-					"Check the Supplement Facts panel on the bottle for sugars and other sweeteners, and mirror that verified information here.",
+					"While our ingredients are natural, they can interact with certain medications, especially blood thinners or medications for anxiety/depression. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications. Avoid taking with other caffeine sources to prevent overstimulation.",
 			},
 			{
 				id: "how-made",
-				question: "How is MoonBrew made?",
+				question: "Are the ingredients organic and tested for quality?",
 				answer:
-					"Share your manufacturing, sourcing, and quality-control details here once they are verified for the live Kaya Pure formula.",
+					"All our ingredients are sourced from reputable suppliers and undergo third-party testing for purity and potency. While not all ingredients are certified organic, they are all natural and free from pesticides, heavy metals, and contaminants. We manufacture in an FDA-approved facility following strict GMP guidelines.",
 			},
 		],
 	},
@@ -236,6 +236,39 @@ export const shilajitGummiesStory: PdpStoryPack = {
 				icon: img("trust-icon-guarantee.svg", "", 60, 62),
 			},
 		],
+	},
+	reviews: {
+		titlePrefix: "Real Reviews.",
+		titleAccent: "Real Results.",
+		intro:
+			"Development preview: review text below is intentionally marked as placeholder to avoid inventing customer claims.",
+		items: [
+			{
+				id: "review-1",
+				badgeLabel: "Review placeholder",
+				ratingLabel: "★★★★★",
+				title: "Verified review title",
+				body: "Connect your genuine review feed here.",
+				author: "—",
+			},
+			{
+				id: "review-2",
+				badgeLabel: "Review placeholder",
+				ratingLabel: "★★★★★",
+				title: "Verified review title",
+				body: "Connect your genuine review feed here.",
+				author: "—",
+			},
+			{
+				id: "review-3",
+				badgeLabel: "Review placeholder",
+				ratingLabel: "★★★★★",
+				title: "Verified review title",
+				body: "Connect your genuine review feed here.",
+				author: "—",
+			},
+		],
+		ctaLabel: "Shop Now",
 	},
 	disclaimer:
 		"These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",

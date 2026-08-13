@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ArrowRight, Candy, Droplets, FlaskConical, Package } from "lucide-react";
+import { ChevronDown, Package } from "lucide-react";
 import { LinkWithChannel } from "@/ui/atoms/link-with-channel";
 import {
 	headerShopAllMegaNav,
@@ -14,6 +14,21 @@ import { cn } from "@/lib/utils";
 
 const HOVER_CLOSE_DELAY_MS = 200;
 
+/** Figma 2435:637 — Shop All mega menu tokens */
+const MEGA = {
+	sidebarBg: "bg-[#D9F6F1]",
+	sidebarLabel: "text-[#6A7F7B]",
+	itemDefault: "text-[#173532]",
+	itemActive: "text-[#064B45]",
+	itemActiveBg: "bg-white/60",
+	cardBorder: "border-[#E5EFED]",
+	cardShadow: "shadow-[0px_8px_13px_rgba(12,90,78,0.06)]",
+	panelShadow: "shadow-[0px_20px_45px_rgba(0,0,0,0.08)]",
+	title: "text-[#064B45]",
+	subtitle: "text-[#66827D]",
+	imageGradient: "bg-gradient-to-br from-[#EFFBF9] to-[#CFF2EC]",
+} as const;
+
 const triggerClass = cn(
 	"inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-lg font-medium tracking-tight transition-colors duration-200",
 	"text-muted-foreground outline-none",
@@ -22,120 +37,44 @@ const triggerClass = cn(
 	"data-[state=open]:bg-teal-500/15 data-[state=open]:text-teal-700 dark:data-[state=open]:text-teal-400",
 );
 
-const productNameClass =
-	"min-w-0 flex-1 text-[16px] font-medium leading-snug text-foreground transition-colors";
-
-type ColumnAccent = {
-	icon: string;
-	heading: string;
-	productHover: string;
-	productHoverText: string;
-	productArrow: string;
-	/** Background tint for the active category row in the vertical rail. */
-	activeBg: string;
-};
-
-const columnAccent: Record<string, ColumnAccent> = {
-	gummies: {
-		icon: "text-red-600 dark:text-red-400",
-		heading: "text-red-600 dark:text-red-400",
-		productHover: "hover:bg-red-500/10",
-		productHoverText: "group-hover:text-red-700 dark:group-hover:text-red-400",
-		productArrow: "group-hover:text-red-600 dark:group-hover:text-red-400",
-		activeBg: "bg-red-500/10",
-	},
-	shots: {
-		icon: "text-orange-600 dark:text-orange-400",
-		heading: "text-orange-600 dark:text-orange-400",
-		productHover: "hover:bg-orange-500/10",
-		productHoverText: "group-hover:text-orange-700 dark:group-hover:text-orange-400",
-		productArrow: "group-hover:text-orange-600 dark:group-hover:text-orange-400",
-		activeBg: "bg-orange-500/10",
-	},
-	drops: {
-		icon: "text-blue-600 dark:text-blue-400",
-		heading: "text-blue-600 dark:text-blue-400",
-		productHover: "hover:bg-blue-500/10",
-		productHoverText: "group-hover:text-blue-700 dark:group-hover:text-blue-400",
-		productArrow: "group-hover:text-blue-600 dark:group-hover:text-blue-400",
-		activeBg: "bg-blue-500/10",
-	},
-};
-
-function getColumnAccent(slug: string): ColumnAccent {
-	return columnAccent[slug] ?? columnAccent.gummies;
-}
-
-function CategoryIcon({ slug }: { slug: string }) {
-	const className = "h-4 w-4 shrink-0";
-	switch (slug) {
-		case "gummies":
-			return <Candy className={className} aria-hidden />;
-		case "shots":
-			return <FlaskConical className={className} aria-hidden />;
-		case "drops":
-			return <Droplets className={className} aria-hidden />;
-		default:
-			return null;
-	}
-}
-
-function ProductThumbnail({
-	slug,
-	thumbnails,
-	size = "md",
-}: {
-	slug: string;
-	thumbnails: ShopAllProductThumbnailMap;
-	size?: "md" | "sm";
-}) {
+function ProductCardImage({ slug, thumbnails }: { slug: string; thumbnails: ShopAllProductThumbnailMap }) {
 	const thumb = thumbnails[slug];
-	const dimension = size === "sm" ? 40 : 44;
-
-	if (!thumb?.url) {
-		return (
-			<div
-				className={cn(
-					"border-border/80 bg-background/80 flex shrink-0 items-center justify-center rounded-md border text-muted-foreground",
-					size === "sm" ? "h-10 w-10" : "h-11 w-11",
-				)}
-				aria-hidden
-			>
-				<Package className={size === "sm" ? "h-4 w-4" : "h-4 w-4"} />
-			</div>
-		);
-	}
 
 	return (
 		<div
 			className={cn(
-				"border-border/60 relative shrink-0 overflow-hidden rounded-md border bg-background",
-				size === "sm" ? "h-10 w-10" : "h-11 w-11",
+				"relative h-[140px] w-full overflow-hidden rounded-[22px] sm:h-[160px] lg:h-[190px]",
+				MEGA.imageGradient,
 			)}
 		>
-			<Image
-				src={thumb.url}
-				alt={thumb.alt}
-				width={dimension}
-				height={dimension}
-				className="h-full w-full object-cover"
-				sizes={`${dimension}px`}
-			/>
+			{thumb?.url ? (
+				<Image
+					src={thumb.url}
+					alt={thumb.alt}
+					fill
+					className="object-contain p-3 sm:p-4"
+					sizes="(max-width: 1024px) 40vw, 220px"
+				/>
+			) : (
+				<div className="flex h-full w-full items-center justify-center text-[#66827D]" aria-hidden>
+					<Package className="h-8 w-8 opacity-50" />
+				</div>
+			)}
 		</div>
 	);
 }
 
-function ShopAllProductLink({
+function ShopAllProductCard({
 	product,
 	channel,
 	thumbnails,
-	accent,
+	tagline,
 	onNavigate,
 }: {
 	product: ShopAllCategoryColumn["products"][number];
 	channel: string;
 	thumbnails: ShopAllProductThumbnailMap;
-	accent: ColumnAccent;
+	tagline: string;
 	onNavigate?: () => void;
 }) {
 	return (
@@ -143,27 +82,28 @@ function ShopAllProductLink({
 			href={`/products/${product.slug}`}
 			channel={channel}
 			prefetch={false}
-			className={cn(
-				"group flex items-center gap-2.5 rounded-md py-0.5 pr-1 transition-colors",
-				accent.productHover,
-			)}
 			onClick={onNavigate}
+			className={cn(
+				"flex flex-col gap-1.5 rounded-[28px] border bg-white px-3.5 pb-[18px] pt-3.5 transition-transform hover:-translate-y-0.5",
+				MEGA.cardBorder,
+				MEGA.cardShadow,
+			)}
 		>
-			<ProductThumbnail slug={product.slug} thumbnails={thumbnails} />
-			<span className={cn(productNameClass, accent.productHoverText)}>{product.name}</span>
-			<ArrowRight
-				className={cn(
-					"h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-70",
-					accent.productArrow,
-				)}
-				aria-hidden
-			/>
+			<ProductCardImage slug={product.slug} thumbnails={thumbnails} />
+			<div className="min-w-0 pt-2">
+				<p className={cn("truncate text-[15px] font-bold leading-snug lg:text-[15.8px]", MEGA.title)}>
+					{product.name}
+				</p>
+				{tagline ? (
+					<p className={cn("mt-1 truncate text-[12px] font-normal leading-snug", MEGA.subtitle)}>{tagline}</p>
+				) : null}
+			</div>
 		</LinkWithChannel>
 	);
 }
 
-/** Right pane: the hovered category's products (sub-options) + shop CTA. */
-function ShopAllActivePanel({
+/** Right pane: product cards for the active category (Figma grid). */
+function ShopAllProductGrid({
 	column,
 	channel,
 	thumbnails,
@@ -174,51 +114,21 @@ function ShopAllActivePanel({
 	thumbnails: ShopAllProductThumbnailMap;
 	onNavigate?: () => void;
 }) {
-	const accent = getColumnAccent(column.slug);
-
 	return (
-		// keyed by slug so the pane re-mounts and animates on category change
-		<div key={column.slug} className="duration-200 animate-in fade-in-0 slide-in-from-left-2">
-			<div className="mb-2 flex items-start justify-between gap-4">
-				<div className="min-w-0">
-					<LinkWithChannel
-						href={`/categories/${column.slug}`}
-						channel={channel}
-						prefetch={false}
-						className={cn("text-base font-semibold tracking-tight hover:underline", accent.heading)}
-						onClick={onNavigate}
-					>
-						{column.name}
-					</LinkWithChannel>
-					<p className="text-[11px] leading-tight text-muted-foreground">{column.tagline}</p>
-				</div>
-				<LinkWithChannel
-					href={`/categories/${column.slug}`}
+		<div
+			key={column.slug}
+			className="grid grid-cols-2 gap-[14px] duration-200 animate-in fade-in-0 sm:gap-[18px] lg:grid-cols-3 xl:grid-cols-4 xl:gap-[22px]"
+		>
+			{column.products.map((product) => (
+				<ShopAllProductCard
+					key={product.slug}
+					product={product}
 					channel={channel}
-					prefetch={false}
-					className={cn(
-						"inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold uppercase tracking-wide transition-opacity hover:opacity-80",
-						accent.heading,
-					)}
-					onClick={onNavigate}
-				>
-					Shop {column.name.toLowerCase()}
-					<ArrowRight className={cn("h-3.5 w-3.5 shrink-0", accent.icon)} aria-hidden />
-				</LinkWithChannel>
-			</div>
-			<ul className="grid grid-cols-2 gap-x-6 gap-y-0.5" role="list">
-				{column.products.map((product) => (
-					<li key={product.slug}>
-						<ShopAllProductLink
-							product={product}
-							channel={channel}
-							thumbnails={thumbnails}
-							accent={accent}
-							onNavigate={onNavigate}
-						/>
-					</li>
-				))}
-			</ul>
+					thumbnails={thumbnails}
+					tagline={column.tagline}
+					onNavigate={onNavigate}
+				/>
+			))}
 		</div>
 	);
 }
@@ -239,12 +149,27 @@ function ShopAllMegaPanel({
 		headerShopAllMegaNav.find((column) => column.slug === activeSlug) ?? headerShopAllMegaNav[0];
 
 	return (
-		<div className={cn("px-4 pb-4 pt-3 sm:px-6 lg:px-8", className)}>
-			<div className="mx-auto flex max-w-5xl gap-6">
-				{/* Left rail: categories listed vertically */}
-				<ul className="border-border/60 w-64 shrink-0 space-y-1 border-r pr-3" role="list">
+		<div className={cn("flex w-full overflow-hidden bg-white", className)}>
+			{/* Left rail — Figma Aside (#D9F6F1) */}
+			<aside
+				className={cn(
+					"flex min-h-[420px] w-[220px] shrink-0 flex-col self-stretch px-6 pb-8 pt-10 sm:w-[260px] lg:min-h-[520px] lg:w-[280px] lg:px-[34px] lg:pb-12 lg:pt-[54px]",
+					MEGA.sidebarBg,
+				)}
+			>
+				<p
+					className={cn(
+						"mb-5 text-[15px] font-bold uppercase leading-tight tracking-[1.7px] lg:mb-[29px] lg:text-[17px]",
+						MEGA.sidebarLabel,
+					)}
+				>
+					Shop by
+					<br />
+					collection
+				</p>
+
+				<ul className="flex flex-col" role="list">
 					{headerShopAllMegaNav.map((column) => {
-						const accent = getColumnAccent(column.slug);
 						const isActive = column.slug === activeColumn?.slug;
 
 						return (
@@ -258,65 +183,46 @@ function ShopAllMegaPanel({
 									onClick={onNavigate}
 									aria-current={isActive ? "true" : undefined}
 									className={cn(
-										"group flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-colors",
-										isActive ? accent.activeBg : "hover:bg-muted/60",
+										"flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-[15px] text-left transition-colors",
+										isActive ? cn(MEGA.itemActiveBg, MEGA.itemActive) : MEGA.itemDefault,
 									)}
 								>
-									<span className={accent.icon}>
-										<CategoryIcon slug={column.slug} />
+									<span className="text-[18px] font-bold leading-none lg:text-[23px]">{column.name}</span>
+									<span className="text-[18px] font-bold leading-none lg:text-[23px]" aria-hidden>
+										›
 									</span>
-									<span className="min-w-0 flex-1">
-										<span
-											className={cn(
-												"block text-sm font-semibold tracking-tight",
-												isActive ? accent.heading : "text-foreground",
-											)}
-										>
-											{column.name}
-										</span>
-										<span className="block text-[11px] leading-tight text-muted-foreground">
-											{column.tagline}
-										</span>
-									</span>
-									<ArrowRight
-										className={cn(
-											"h-4 w-4 shrink-0 transition-all",
-											isActive
-												? cn("translate-x-0 opacity-100", accent.icon)
-												: "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-60",
-										)}
-										aria-hidden
-									/>
 								</LinkWithChannel>
 							</li>
 						);
 					})}
 				</ul>
 
-				{/* Right pane: sub-options for the hovered category */}
-				<div className="min-w-0 flex-1">
-					{activeColumn && (
-						<ShopAllActivePanel
-							column={activeColumn}
-							channel={channel}
-							thumbnails={thumbnails}
-							onNavigate={onNavigate}
-						/>
-					)}
+				<div className="mt-auto pt-8 lg:pt-[33px]">
+					<LinkWithChannel
+						href="/products"
+						channel={channel}
+						prefetch={false}
+						onClick={onNavigate}
+						className={cn(
+							"inline-block px-3 text-[14px] font-bold uppercase underline decoration-solid underline-offset-2 transition-opacity hover:opacity-80 lg:text-[16px]",
+							MEGA.itemDefault,
+						)}
+					>
+						Shop All
+					</LinkWithChannel>
 				</div>
-			</div>
+			</aside>
 
-			<div className="border-border/60 mx-auto mt-3 flex max-w-5xl justify-end border-t pt-2">
-				<LinkWithChannel
-					href="/products"
-					channel={channel}
-					prefetch={false}
-					className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3 py-1 text-xs font-medium text-background transition-opacity hover:opacity-90"
-					onClick={onNavigate}
-				>
-					Shop all products
-					<ArrowRight className="h-3.5 w-3.5" aria-hidden />
-				</LinkWithChannel>
+			{/* Right pane — product cards */}
+			<div className="min-w-0 flex-1 p-5 sm:p-6 lg:p-8">
+				{activeColumn && (
+					<ShopAllProductGrid
+						column={activeColumn}
+						channel={channel}
+						thumbnails={thumbnails}
+						onNavigate={onNavigate}
+					/>
+				)}
 			</div>
 		</div>
 	);
@@ -390,8 +296,10 @@ function ShopAllDesktopHoverMenu({
 				>
 					{/* Invisible hover bridge — overlaps upward without pushing the panel down */}
 					<div className="absolute -top-3 left-0 right-0 h-3" aria-hidden />
-					<div className="border-border/80 w-full border-b bg-popover shadow-xl">
-						<ShopAllMegaPanel channel={channel} thumbnails={thumbnails} onNavigate={closeMenu} />
+					<div className={cn("w-full border-b border-[#E5EFED] bg-white", MEGA.panelShadow)}>
+						<div className="mx-auto max-w-[1600px]">
+							<ShopAllMegaPanel channel={channel} thumbnails={thumbnails} onNavigate={closeMenu} />
+						</div>
 					</div>
 				</div>
 			)}
@@ -407,7 +315,7 @@ function ShopAllMobileAccordion({
 	thumbnails: ShopAllProductThumbnailMap;
 }) {
 	const [open, setOpen] = useState(false);
-	const [openCategory, setOpenCategory] = useState<string | null>(null);
+	const [openCategory, setOpenCategory] = useState<string | null>(headerShopAllMegaNav[0]?.slug ?? null);
 
 	const closeMenu = () => {
 		setOpen(false);
@@ -428,75 +336,63 @@ function ShopAllMobileAccordion({
 				/>
 			</button>
 			{open && (
-				<div className="bg-secondary/30 mt-2 space-y-2 rounded-xl border border-border p-3">
-					<LinkWithChannel
-						href="/products"
-						channel={channel}
-						prefetch={false}
-						className="flex items-center justify-between rounded-lg bg-foreground px-3 py-2 text-sm font-medium text-background"
-						onClick={closeMenu}
+				<div className={cn("mt-2 overflow-hidden rounded-2xl", MEGA.sidebarBg)}>
+					<p
+						className={cn(
+							"px-4 pb-2 pt-4 text-[13px] font-bold uppercase tracking-[1.7px]",
+							MEGA.sidebarLabel,
+						)}
 					>
-						Shop all products
-						<ArrowRight className="h-4 w-4" aria-hidden />
-					</LinkWithChannel>
+						Shop by collection
+					</p>
 					{headerShopAllMegaNav.map((column) => {
 						const isCatOpen = openCategory === column.slug;
-						const accent = getColumnAccent(column.slug);
 						return (
-							<div key={column.slug} className="rounded-lg bg-background">
+							<div key={column.slug} className="px-2">
 								<button
 									type="button"
 									onClick={() => setOpenCategory(isCatOpen ? null : column.slug)}
-									className="flex w-full items-center justify-between px-3 py-2.5 text-left text-sm font-semibold"
+									className={cn(
+										"mb-1 flex w-full items-center justify-between rounded-[10px] px-3 py-3 text-left text-[17px] font-bold",
+										isCatOpen ? cn(MEGA.itemActiveBg, MEGA.itemActive) : MEGA.itemDefault,
+									)}
 									aria-expanded={isCatOpen}
 								>
-									<span className={cn("flex items-center gap-2", accent.heading)}>
-										<span className={accent.icon}>
-											<CategoryIcon slug={column.slug} />
-										</span>
-										{column.name}
-									</span>
-									<ChevronDown
-										className={cn("h-4 w-4 opacity-60 transition-transform", isCatOpen && "rotate-180")}
-									/>
+									{column.name}
+									<span aria-hidden>›</span>
 								</button>
 								{isCatOpen && (
-									<ul className="space-y-0.5 px-2 pb-2 pt-1" role="list">
+									<ul className="mb-3 grid grid-cols-1 gap-2 px-1 pb-2 sm:grid-cols-2" role="list">
 										{column.products.map((product) => (
 											<li key={product.slug}>
-												<LinkWithChannel
-													href={`/products/${product.slug}`}
+												<ShopAllProductCard
+													product={product}
 													channel={channel}
-													prefetch={false}
-													className={cn(
-														"group flex items-center gap-2.5 rounded-md py-0.5 pr-1 transition-colors",
-														accent.productHover,
-													)}
-													onClick={closeMenu}
-												>
-													<ProductThumbnail slug={product.slug} thumbnails={thumbnails} size="sm" />
-													<span className={cn(productNameClass, accent.productHoverText)}>
-														{product.name}
-													</span>
-												</LinkWithChannel>
+													thumbnails={thumbnails}
+													tagline={column.tagline}
+													onNavigate={closeMenu}
+												/>
 											</li>
 										))}
-										<li>
-											<LinkWithChannel
-												href={`/categories/${column.slug}`}
-												channel={channel}
-												prefetch={false}
-												className="block px-2 py-2 text-xs font-medium uppercase tracking-wide text-foreground"
-												onClick={closeMenu}
-											>
-												View all {column.name.toLowerCase()}
-											</LinkWithChannel>
-										</li>
 									</ul>
 								)}
 							</div>
 						);
 					})}
+					<div className="border-t border-white/50 px-4 py-4">
+						<LinkWithChannel
+							href="/products"
+							channel={channel}
+							prefetch={false}
+							className={cn(
+								"text-[14px] font-bold uppercase underline decoration-solid underline-offset-2",
+								MEGA.itemDefault,
+							)}
+							onClick={closeMenu}
+						>
+							Shop All
+						</LinkWithChannel>
+					</div>
 				</div>
 			)}
 		</div>

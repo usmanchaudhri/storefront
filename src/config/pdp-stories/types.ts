@@ -95,6 +95,24 @@ export type PdpStoryTrust = {
 	items: readonly PdpStoryTrustItem[];
 };
 
+/** Figma 2435:1486–2435:1485 — Real Reviews section (placeholder feed). */
+export type PdpStoryReviewItem = {
+	id: string;
+	badgeLabel: string;
+	ratingLabel: string;
+	title: string;
+	body: string;
+	author: string;
+};
+
+export type PdpStoryReviews = {
+	titlePrefix: string;
+	titleAccent: string;
+	intro: string;
+	items: readonly PdpStoryReviewItem[];
+	ctaLabel: string;
+};
+
 export type PdpStoryPack = {
 	slug: string;
 	blend: PdpStoryBlend;
@@ -103,5 +121,6 @@ export type PdpStoryPack = {
 	comparison: PdpStoryComparison;
 	faq: PdpStoryFaq;
 	trust: PdpStoryTrust;
+	reviews: PdpStoryReviews;
 	disclaimer: string;
 };

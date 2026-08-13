@@ -550,6 +550,75 @@ function TrustSection({ story }: { story: PdpStoryPack["trust"] }) {
 	);
 }
 
+/**
+ * Figma 2435:1088 band + 2435:1486 / 1488 / 1452 —
+ * REAL REVIEWS. REAL RESULTS. placeholder feed with SHOP NOW CTA.
+ */
+function ReviewsSection({ story }: { story: PdpStoryPack["reviews"] }) {
+	return (
+		<section className={cn(comparisonFont.className, "bg-white")} aria-labelledby="pdp-story-reviews-heading">
+			<div className="mx-auto w-full max-w-[1354px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+				<h2
+					id="pdp-story-reviews-heading"
+					className="text-center text-[clamp(1.75rem,1.2rem+2.2vw,3.227rem)] font-bold uppercase leading-none tracking-[-0.03em]"
+				>
+					<span className="text-[#073B35]">{story.titlePrefix}</span>{" "}
+					<span className="text-[#00A38C]">{story.titleAccent}</span>
+				</h2>
+
+				<p className="mx-auto mt-5 max-w-[56rem] text-center text-[clamp(0.875rem,0.85rem+0.12vw,0.968rem)] font-normal leading-[1.57] text-[#8A9A96]">
+					{story.intro}
+				</p>
+
+				<ul className="mt-10 list-none sm:mt-12" role="list">
+					{story.items.map((item) => (
+						<li
+							key={item.id}
+							className="flex flex-col gap-4 border-b border-[#E5E9E7] py-6 sm:flex-row sm:items-end sm:gap-[25px] sm:py-[24px]"
+						>
+							<div className="flex w-full shrink-0 flex-col items-center rounded-[8.37px] bg-[#EFFBF8] px-4 py-4 text-center sm:w-[237px]">
+								<p className="text-[clamp(0.9375rem,0.9rem+0.15vw,1.116rem)] font-bold leading-[1.47] text-[#17352F]">
+									{item.badgeLabel}
+								</p>
+								<p
+									className="text-[clamp(0.9375rem,0.9rem+0.15vw,1.116rem)] font-normal leading-[1.47] text-[#17352F]"
+									aria-label="5 out of 5 stars"
+								>
+									{item.ratingLabel}
+								</p>
+							</div>
+
+							<div className="flex min-w-0 flex-1 flex-col items-center gap-4 text-center">
+								<p className="text-[clamp(0.9375rem,0.9rem+0.15vw,1.081rem)] font-bold leading-[1.52] text-[#17352F]">
+									{item.title}
+								</p>
+								<p className="text-[clamp(0.9375rem,0.9rem+0.15vw,1.073rem)] font-normal leading-[1.53] text-[#17352F]">
+									{item.body}
+								</p>
+							</div>
+
+							<div className="flex w-full shrink-0 justify-center sm:w-[126px] sm:justify-center sm:pb-16">
+								<span className="text-[1.134rem] font-normal leading-[1.45] text-[#17352F]">
+									{item.author}
+								</span>
+							</div>
+						</li>
+					))}
+				</ul>
+
+				<div className="mt-8 flex justify-center sm:mt-10">
+					<a
+						href="#main"
+						className="inline-flex h-[55px] w-full max-w-[276px] items-center justify-center rounded-full bg-[#073B35] px-8 text-[clamp(0.9375rem,0.9rem+0.12vw,1.047rem)] font-bold uppercase leading-none tracking-wide text-white transition-opacity hover:opacity-90"
+					>
+						{story.ctaLabel}
+					</a>
+				</div>
+			</div>
+		</section>
+	);
+}
+
 export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 	return (
 		<div className="mt-10 sm:mt-14">
@@ -559,6 +628,7 @@ export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 			<ComparisonSection story={story.comparison} />
 			<FaqSection story={story.faq} />
 			<TrustSection story={story.trust} />
+			<ReviewsSection story={story.reviews} />
 		</div>
 	);
 }

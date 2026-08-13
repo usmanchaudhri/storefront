@@ -30,7 +30,7 @@ export const rootMetadata: Metadata = {
 			locale: seoConfig.locale,
 			images: [
 				{
-					url: "/kayapure-logo.png",
+					url: "/kayapure-logo-wordmark.png",
 					width: 1024,
 					height: 231,
 					alt: seoConfig.siteName,
