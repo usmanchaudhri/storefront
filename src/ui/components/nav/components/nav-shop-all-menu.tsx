@@ -315,7 +315,7 @@ function ShopAllMobileAccordion({
 	thumbnails: ShopAllProductThumbnailMap;
 }) {
 	const [open, setOpen] = useState(false);
-	const [openCategory, setOpenCategory] = useState<string | null>(headerShopAllMegaNav[0]?.slug ?? null);
+	const [openCategory, setOpenCategory] = useState<string | null>(null);
 
 	const closeMenu = () => {
 		setOpen(false);
