@@ -139,9 +139,10 @@ export function VariantNameSelector({
 									"relative flex w-full flex-col justify-between rounded-xl border-2 text-left transition-colors",
 									/\bBottle/i.test(primary) ? "min-h-[104px] p-2.5" : "min-h-[124px] p-4",
 									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+									// Figma 2435:1348 — selected bundle: Polar fill + Persian Green border
 									isSelected
-										? "border-teal-600 bg-teal-500/10 text-foreground"
-										: "bg-muted/15 hover:bg-muted/30 border-border text-foreground hover:border-teal-600/30",
+										? "border-[#00A38C] bg-[#EFFBF8] text-foreground"
+										: "bg-muted/15 hover:bg-muted/30 border-border text-foreground hover:border-[#00A38C]/30",
 									isOutOfStock && "cursor-not-allowed text-muted-foreground line-through opacity-60",
 								)}
 								title={isOutOfStock ? `${variant.name} - Out of stock` : undefined}

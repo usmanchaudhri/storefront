@@ -52,8 +52,9 @@ function ProductCardImage({ slug, thumbnails }: { slug: string; thumbnails: Shop
 					src={thumb.url}
 					alt={thumb.alt}
 					fill
+					quality={100}
 					className="object-contain p-3 sm:p-4"
-					sizes="(max-width: 1024px) 40vw, 220px"
+					sizes="(max-width: 1024px) 50vw, 512px"
 				/>
 			) : (
 				<div className="flex h-full w-full items-center justify-center text-[#66827D]" aria-hidden>

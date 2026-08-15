@@ -12,8 +12,6 @@ interface AddToCartProps {
 	discountPercent?: number | null;
 	disabled?: boolean;
 	disabledReason?: "no-selection" | "out-of-stock";
-	secureCheckoutLabel: string;
-	freeShippingTrustLabel?: string | null;
 }
 
 function AddToCartButton({
@@ -39,8 +37,9 @@ function AddToCartButton({
 			disabled={disabled || pending}
 			className={cn(
 				"h-14 w-full rounded-xl text-base font-semibold transition-all duration-200",
-				"bg-teal-600 text-white hover:bg-teal-700",
-				"disabled:bg-teal-600/50 disabled:text-white disabled:opacity-100",
+				// Figma 2435:1331 — Add to Cart button fill
+				"bg-[#0A584C] text-white hover:bg-[#084840]",
+				"disabled:bg-[#0A584C]/50 disabled:text-white disabled:opacity-100",
 				pending && "opacity-80",
 			)}
 		>
@@ -56,8 +55,6 @@ export function AddToCart({
 	discountPercent,
 	disabled = false,
 	disabledReason,
-	secureCheckoutLabel,
-	freeShippingTrustLabel,
 }: AddToCartProps) {
 	return (
 		<div className="space-y-4">
@@ -73,22 +70,29 @@ export function AddToCart({
 
 			<AddToCartButton disabled={disabled} disabledReason={disabledReason} />
 
-			<div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-xs text-muted-foreground">
-				<span className="flex items-center gap-1.5">
-					<svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-						<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-					</svg>
-					{secureCheckoutLabel}
-				</span>
-				{freeShippingTrustLabel ? (
-					<span className="flex items-center gap-1.5">
-						<svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-							<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-							<path d="M9 22V12h6v10" />
-						</svg>
-						{freeShippingTrustLabel}
-					</span>
-				) : null}
+			{/* Figma 2435:1336 — buy-box disclaimers */}
+			<div className="grid grid-cols-3 gap-2 pt-2 text-center text-[11px] leading-snug text-[#313131] sm:gap-4 sm:text-sm sm:leading-normal">
+				<p>
+					Free
+					<br />
+					Shipping For
+					<br />
+					Subscribers
+				</p>
+				<p>
+					60-Day
+					<br />
+					Satisfaction
+					<br />
+					Guarantee
+				</p>
+				<p>
+					Save 20%
+					<br />
+					When You
+					<br />
+					Subscribe
+				</p>
 			</div>
 		</div>
 	);

@@ -59,10 +59,11 @@ export function ButtonOption({
 					aria-disabled={isOutOfStock || isPending}
 					style={{ minWidth }}
 					className={cn(
-						"h-12 rounded-lg border px-4 text-sm font-medium transition-all",
+						"h-12 rounded-lg border-2 px-4 text-sm font-medium transition-all",
 						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+						// Figma 2435:1348 — selected size: Polar fill + Persian Green border
 						isSelected
-							? "border-foreground bg-foreground text-background"
+							? "border-[#00A38C] bg-[#EFFBF8] text-foreground"
 							: isIncompatible
 								? "hover:border-muted-foreground/40 border-border text-muted-foreground"
 								: "border-input bg-background text-foreground hover:border-foreground",

@@ -28,7 +28,7 @@
  * ============================================ */
 :root {
 	/* --- Backgrounds --- */
-	--background: oklch(0.98 0.005 90); /* Page background - warm off-white */
+	--background: #f7f7f7; /* Page background — Figma Kaya Pure main site BG */
 	--card: oklch(1 0 0); /* Card surfaces - pure white */
 	--popover: oklch(1 0 0); /* Popover/dropdown backgrounds */
 	--secondary: oklch(0.96 0.003 90); /* Secondary surfaces */

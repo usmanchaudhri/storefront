@@ -6,9 +6,17 @@ import { headerContentNav, shouldOmitNavbarCategory } from "@/config/nav";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { MenuGetBySlugDocument } from "@/gql/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
-import { fetchShopAllProductThumbnails } from "@/ui/components/nav/shop-all-nav-data";
+import {
+	SHOP_ALL_NAV_CACHE_VERSION,
+	SHOP_ALL_NAV_THUMBNAIL_SIZE,
+	fetchShopAllProductThumbnails,
+} from "@/ui/components/nav/shop-all-nav-data";
 
 export const NavLinks = async ({ channel }: { channel: string }) => {
+	return getCachedNavLinks(channel, SHOP_ALL_NAV_THUMBNAIL_SIZE, SHOP_ALL_NAV_CACHE_VERSION);
+};
+
+async function getCachedNavLinks(channel: string, shopAllThumbnailSize: number, cacheVersion: number) {
 	"use cache";
 	applyCacheProfile(CACHE_PROFILES.navigation);
 
@@ -16,8 +24,9 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 		executePublicGraphQL(MenuGetBySlugDocument, {
 			variables: { slug: "navbar", channel },
 			revalidate: 60 * 60, // 1 hour
+			tags: [CACHE_PROFILES.navigation.tagPattern],
 		}),
-		fetchShopAllProductThumbnails(channel),
+		fetchShopAllProductThumbnails(channel, shopAllThumbnailSize, cacheVersion),
 	]);
 
 	const headerContentPageSlugs = new Set(headerContentNav.map((item) => item.href.replace(/^\/pages\//, "")));
@@ -93,4 +102,4 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 			})}
 		</>
 	);
-};
+}

@@ -288,6 +288,7 @@ type GraphQLOptions<Variables> = {
 	headers?: HeadersInit;
 	cache?: RequestCache;
 	revalidate?: number;
+	tags?: string[];
 } & (Variables extends Record<string, never> ? { variables?: never } : { variables: Variables });
 
 type GraphQLResponse<T> = { data: T } | { errors: readonly { message: string }[] };
@@ -299,7 +300,7 @@ async function executeGraphQL<Result, Variables>(
 	operation: TypedDocumentString<Result, Variables>,
 	options: GraphQLOptions<Variables> & { withAuth: boolean },
 ): Promise<GraphQLResult<Result>> {
-	const { variables, headers, cache, revalidate, withAuth } = options;
+	const { variables, headers, cache, revalidate, withAuth, tags } = options;
 
 	const operationName = operation.toString().match(/(?:query|mutation)\s+(\w+)/)?.[1] || "UnknownOperation";
 	const variablesForLog = variables ? formatVariablesForLog(variables) : undefined;
@@ -318,7 +319,7 @@ async function executeGraphQL<Result, Variables>(
 			...(variables && { variables }),
 		}),
 		cache,
-		next: { revalidate },
+		next: { revalidate, tags },
 	};
 
 	const fetchResult = await requestQueue.enqueue(() =>

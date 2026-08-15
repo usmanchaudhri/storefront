@@ -141,6 +141,8 @@ export async function POST(request: NextRequest) {
 				if (slug) {
 					revalidateProfile(CACHE_PROFILES.products, targetChannel, slug, revalidatedTags, revalidatedPaths);
 				}
+				revalidateTag(CACHE_PROFILES.navigation.tagPattern, CACHE_PROFILES.navigation.cacheProfile);
+				revalidatedTags.push(CACHE_PROFILES.navigation.tagPattern);
 				revalidatePath(`/${targetChannel}/products`);
 				revalidatedPaths.push(`/${targetChannel}/products`);
 

@@ -2,11 +2,9 @@ import { revalidatePath } from "next/cache";
 
 import { formatMoney, formatMoneyRange } from "@/lib/utils";
 import { getDiscountInfo } from "@/lib/pricing";
-import { getStorefrontContent } from "@/lib/content/server";
 import { CheckoutAddLineDocument } from "@/gql/graphql";
 import { executeAuthenticatedGraphQL } from "@/lib/graphql";
 import * as Checkout from "@/lib/checkout";
-import { resolveChannelCurrencyFromProduct } from "@/lib/channels/resolve-channel-currency";
 
 import { AddToCart } from "./add-to-cart";
 import { VariantSelectionSection } from "./variant-selection";
@@ -29,8 +27,6 @@ interface VariantSectionDynamicProps {
  */
 export async function VariantSectionDynamic({ product, channel, searchParams }: VariantSectionDynamicProps) {
 	const { variant: variantParam } = await searchParams;
-	const [content] = await Promise.all([getStorefrontContent(channel)]);
-	const currency = resolveChannelCurrencyFromProduct(product);
 	const variants = product.variants || [];
 	const selectedVariantID = resolveSelectedVariantId(product, variantParam);
 	const selectedVariant = variants.find(({ id }) => id === selectedVariantID);
@@ -64,13 +60,6 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 					selectedVariant.pricing.priceUndiscounted.gross.currency,
 				)
 			: null;
-
-	const freeShippingThreshold = content.policies.shipping.freeShippingThreshold;
-	const freeShippingTrustLabel =
-		freeShippingThreshold != null
-			? `${content.surfaces.cart.trust.freeShippingPrefix} ${formatMoney(freeShippingThreshold, currency)}`
-			: null;
-	const secureCheckoutLabel = content.surfaces.checkout.trust.secureCheckout;
 
 	async function addToCart() {
 		"use server";
@@ -115,7 +104,11 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 	return (
 		<>
 			<div className="order-1 flex items-center gap-2">
-				{product.category && <span className="text-foreground/80 text-base">{product.category.name}</span>}
+				{product.category && (
+					<span className="text-[13px] font-bold uppercase leading-[19px] tracking-[2.34px] text-[#00A38C]">
+						{product.category.name}
+					</span>
+				)}
 				{isOnSale && <SaleBadge />}
 				{!isAvailable && (
 					<Badge variant="secondary" className="text-xs">
@@ -125,22 +118,23 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 			</div>
 
 			<form action={addToCart} className="order-3 mt-4 space-y-6">
-				<VariantSelectionSection
-					variants={variants}
-					selectedVariantId={selectedVariantID}
-					productSlug={product.slug}
-					channel={channel}
-				/>
+				{/* Figma 2435:1276 — buy box outline only (not full section restyle) */}
+				<div className="space-y-6 rounded-2xl bg-white p-5 sm:p-6">
+					<VariantSelectionSection
+						variants={variants}
+						selectedVariantId={selectedVariantID}
+						productSlug={product.slug}
+						channel={channel}
+					/>
 
-				<AddToCart
-					price={price}
-					compareAtPrice={compareAtPrice}
-					discountPercent={discountPercent}
-					disabled={isAddToCartDisabled}
-					disabledReason={disabledReason}
-					secureCheckoutLabel={secureCheckoutLabel}
-					freeShippingTrustLabel={freeShippingTrustLabel}
-				/>
+					<AddToCart
+						price={price}
+						compareAtPrice={compareAtPrice}
+						discountPercent={discountPercent}
+						disabled={isAddToCartDisabled}
+						disabledReason={disabledReason}
+					/>
+				</div>
 
 				<StickyBar productName={product.name} price={price} show={!isAddToCartDisabled} />
 			</form>
