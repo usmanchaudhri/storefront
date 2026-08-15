@@ -1,69 +1,54 @@
+import type { ReactNode } from "react";
 import { revalidatePath } from "next/cache";
 
-import { formatMoney, formatMoneyRange } from "@/lib/utils";
-import { getDiscountInfo } from "@/lib/pricing";
 import { CheckoutAddLineDocument } from "@/gql/graphql";
 import { executeAuthenticatedGraphQL } from "@/lib/graphql";
 import * as Checkout from "@/lib/checkout";
-
-import { AddToCart } from "./add-to-cart";
-import { VariantSelectionSection } from "./variant-selection";
-import { StickyBar } from "./sticky-bar";
-import { Badge } from "@/ui/components/ui/badge";
-import { SaleBadge } from "@/ui/components/ui/sale-label";
+import {
+	getSelectionsFromVariant,
+	groupVariantsByAttributes,
+	type SaleorVariant,
+} from "./variant-selection/utils";
 import { resolveSelectedVariantId, type Product } from "./gallery-utils";
+import { PdpVariantProvider } from "./pdp-variant-provider";
+import { VariantBuyBox } from "./variant-buy-box";
+import { VariantGalleryClient } from "./variant-gallery-client";
+import type { PdpLayoutClasses } from "./gallery-layout";
 
-interface VariantSectionDynamicProps {
+interface PdpInteractiveProps {
 	product: Product;
 	channel: string;
 	searchParams: Promise<{ variant?: string }>;
+	layout: PdpLayoutClasses;
+	productAttributesNode?: ReactNode;
 }
 
 /**
- * Dynamic variant section for PDP.
+ * PDP interactive region (gallery + buy box).
  *
- * Reads searchParams inside a Suspense boundary so the product shell
- * stays in the static prerender cache.
+ * Reads `searchParams` once for the initial variant, then selection is
+ * client-owned so size/bundle clicks do not trigger an RSC round-trip.
  */
-export async function VariantSectionDynamic({ product, channel, searchParams }: VariantSectionDynamicProps) {
+export async function PdpInteractive({
+	product,
+	channel,
+	searchParams,
+	layout,
+	productAttributesNode,
+}: PdpInteractiveProps) {
 	const { variant: variantParam } = await searchParams;
-	const variants = product.variants || [];
-	const selectedVariantID = resolveSelectedVariantId(product, variantParam);
-	const selectedVariant = variants.find(({ id }) => id === selectedVariantID);
+	const initialVariantId = resolveSelectedVariantId(product, variantParam);
+	const variants = (product.variants || []) as SaleorVariant[];
+	const attributeGroups = groupVariantsByAttributes(variants);
+	const initialSelections =
+		initialVariantId && attributeGroups.length > 0
+			? getSelectionsFromVariant(variants, initialVariantId)
+			: {};
 
-	const isAvailable = variants.some((variant) => variant.quantityAvailable);
-
-	const isAddToCartDisabled = !selectedVariantID || !selectedVariant?.quantityAvailable;
-	const disabledReason = !selectedVariantID
-		? ("no-selection" as const)
-		: !selectedVariant?.quantityAvailable
-			? ("out-of-stock" as const)
-			: undefined;
-
-	const price = selectedVariant?.pricing?.price?.gross
-		? selectedVariant.pricing.price.gross.amount === 0
-			? "FREE"
-			: formatMoney(selectedVariant.pricing.price.gross.amount, selectedVariant.pricing.price.gross.currency)
-		: formatMoneyRange({
-				start: product.pricing?.priceRange?.start?.gross,
-				stop: product.pricing?.priceRange?.stop?.gross,
-			}) || "";
-
-	const currentPrice = selectedVariant?.pricing?.price?.gross?.amount;
-	const undiscountedPrice = selectedVariant?.pricing?.priceUndiscounted?.gross?.amount;
-	const { isOnSale, discountPercent } = getDiscountInfo(currentPrice, undiscountedPrice);
-
-	const compareAtPrice =
-		isOnSale && selectedVariant?.pricing?.priceUndiscounted?.gross
-			? formatMoney(
-					selectedVariant.pricing.priceUndiscounted.gross.amount,
-					selectedVariant.pricing.priceUndiscounted.gross.currency,
-				)
-			: null;
-
-	async function addToCart() {
+	async function addToCart(formData: FormData) {
 		"use server";
 
+		const selectedVariantID = String(formData.get("variantId") ?? "");
 		if (!selectedVariantID) {
 			return;
 		}
@@ -102,43 +87,28 @@ export async function VariantSectionDynamic({ product, channel, searchParams }: 
 	}
 
 	return (
-		<>
-			<div className="order-1 flex items-center gap-2">
-				{product.category && (
-					<span className="text-[13px] font-bold uppercase leading-[19px] tracking-[2.34px] text-[#00A38C]">
-						{product.category.name}
-					</span>
-				)}
-				{isOnSale && <SaleBadge />}
-				{!isAvailable && (
-					<Badge variant="secondary" className="text-xs">
-						Out of stock
-					</Badge>
-				)}
+		<PdpVariantProvider
+			product={product}
+			channel={channel}
+			initialVariantId={initialVariantId}
+			initialSelections={initialSelections}
+		>
+			<div className={layout.galleryColumn}>
+				<VariantGalleryClient />
 			</div>
 
-			<form action={addToCart} className="order-3 mt-4 space-y-6">
-				{/* Figma 2435:1276 — buy box outline only (not full section restyle) */}
-				<div className="space-y-6 rounded-2xl bg-white p-5 sm:p-6">
-					<VariantSelectionSection
-						variants={variants}
-						selectedVariantId={selectedVariantID}
-						productSlug={product.slug}
-						channel={channel}
-					/>
+			<div className={layout.infoColumn}>
+				<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+					{product.name}
+				</h1>
 
-					<AddToCart
-						price={price}
-						compareAtPrice={compareAtPrice}
-						discountPercent={discountPercent}
-						disabled={isAddToCartDisabled}
-						disabledReason={disabledReason}
-					/>
-				</div>
+				<VariantBuyBox addToCartAction={addToCart} />
 
-				<StickyBar productName={product.name} price={price} show={!isAddToCartDisabled} />
-			</form>
-		</>
+				{layout.attributesPlacement === "info" && productAttributesNode ? (
+					<div className="order-4 mt-6">{productAttributesNode}</div>
+				) : null}
+			</div>
+		</PdpVariantProvider>
 	);
 }
 

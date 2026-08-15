@@ -35,6 +35,9 @@ export {
 // Cache Components - Dynamic PDP islands with Suspense support
 export { ProductRouteSkeleton } from "./product-route-skeleton";
 export { VariantGalleryDynamic, GallerySkeleton } from "./variant-gallery-dynamic";
-export { VariantSectionDynamic, VariantSectionSkeleton } from "./variant-section-dynamic";
+export { PdpInteractive, VariantSectionSkeleton } from "./variant-section-dynamic";
 export { VariantSectionError } from "./variant-section-error";
 export { getGalleryImages, getDefaultGalleryImages, resolveSelectedVariantId } from "./gallery-utils";
+export { PdpVariantProvider, usePdpVariant } from "./pdp-variant-provider";
+export { VariantGalleryClient } from "./variant-gallery-client";
+export { VariantBuyBox } from "./variant-buy-box";

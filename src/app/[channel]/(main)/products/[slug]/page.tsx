@@ -17,9 +17,8 @@ import { Breadcrumbs } from "@/ui/components/breadcrumbs";
 import {
 	ProductAttributes,
 	activeGalleryVariant,
-	VariantGalleryDynamic,
 	ProductRouteSkeleton,
-	VariantSectionDynamic,
+	PdpInteractive,
 	VariantSectionError,
 	VariantSectionSkeleton,
 	getDefaultGalleryImages,
@@ -203,31 +202,32 @@ async function ProductShell({
 				</div>
 
 				<div className={layout.grid}>
-					<div className={layout.galleryColumn}>
-						<Suspense fallback={galleryFallback}>
-							<VariantGalleryDynamic product={product} searchParams={searchParams} />
+					<ErrorBoundary FallbackComponent={VariantSectionError}>
+						<Suspense
+							fallback={
+								<>
+									<div className={layout.galleryColumn}>{galleryFallback}</div>
+									<div className={layout.infoColumn}>
+										<div className="order-2 h-10 w-3/4 max-w-md animate-pulse rounded bg-muted" />
+										<VariantSectionSkeleton />
+										{layout.attributesPlacement === "info" && (
+											<div className="order-4 mt-6">
+												<div className="h-5 w-32 animate-pulse rounded bg-muted" />
+											</div>
+										)}
+									</div>
+								</>
+							}
+						>
+							<PdpInteractive
+								product={product}
+								channel={params.channel}
+								searchParams={searchParams}
+								layout={layout}
+								productAttributesNode={productAttributesNode}
+							/>
 						</Suspense>
-					</div>
-
-					<div className={layout.infoColumn}>
-						<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
-							{product.name}
-						</h1>
-
-						<ErrorBoundary FallbackComponent={VariantSectionError}>
-							<Suspense fallback={<VariantSectionSkeleton />}>
-								<VariantSectionDynamic
-									product={product}
-									channel={params.channel}
-									searchParams={searchParams}
-								/>
-							</Suspense>
-						</ErrorBoundary>
-
-						{layout.attributesPlacement === "info" && (
-							<div className="order-4 mt-6">{productAttributesNode}</div>
-						)}
-					</div>
+					</ErrorBoundary>
 
 					{layout.attributesPlacement === "gallery" && layout.attributesGalleryBlock && (
 						<div className={layout.attributesGalleryBlock}>{productAttributesNode}</div>
