@@ -1,10 +1,10 @@
 import { homeFaq } from "@/config/home-faq";
-import { homeSignatureProductBanner } from "@/config/home-signature-product";
 
-/** Header navigation links after “Shop All” (Saleor CMS pages: `/pages/{slug}`). */
+/** Header navigation links after “Shop All” (Figma 2435:1427). */
 export const headerContentNav = [
-	{ name: "About us", href: "/pages/about" },
-	{ name: "Ingredients", href: `/#${homeSignatureProductBanner.sectionId}` },
+	{ name: "Find Your Fit", href: "/products" },
+	{ name: "About Us", href: "/pages/about" },
+	{ name: "Reviews", href: "/products/7-in-1-shilajit-gummies#pdp-story-reviews" },
 	{ name: "FAQs", href: `/#${homeFaq.sectionId}` },
 ] as const;
 

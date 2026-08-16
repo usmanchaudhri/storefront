@@ -556,7 +556,11 @@ function TrustSection({ story }: { story: PdpStoryPack["trust"] }) {
  */
 function ReviewsSection({ story }: { story: PdpStoryPack["reviews"] }) {
 	return (
-		<section className={cn(comparisonFont.className, "bg-white")} aria-labelledby="pdp-story-reviews-heading">
+		<section
+			id="pdp-story-reviews"
+			className={cn(comparisonFont.className, "bg-white")}
+			aria-labelledby="pdp-story-reviews-heading"
+		>
 			<div className="mx-auto w-full max-w-[1354px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
 				<h2
 					id="pdp-story-reviews-heading"

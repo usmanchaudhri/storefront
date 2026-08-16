@@ -30,31 +30,27 @@ const MEGA = {
 } as const;
 
 const triggerClass = cn(
-	"inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-lg font-medium tracking-tight transition-colors duration-200",
-	"text-muted-foreground outline-none",
-	"hover:bg-teal-500/18 hover:text-teal-700 dark:hover:text-teal-400",
+	// Match logo “Kaya” #09594D (kayapure-logo-wordmark.svg)
+	"inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-[18px] font-medium uppercase tracking-tight transition-colors duration-200",
+	"text-[#09594D] outline-none",
+	"hover:bg-teal-500/18",
 	"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-	"data-[state=open]:bg-teal-500/15 data-[state=open]:text-teal-700 dark:data-[state=open]:text-teal-400",
+	"data-[state=open]:bg-teal-500/15",
 );
 
 function ProductCardImage({ slug, thumbnails }: { slug: string; thumbnails: ShopAllProductThumbnailMap }) {
 	const thumb = thumbnails[slug];
 
 	return (
-		<div
-			className={cn(
-				"relative h-[140px] w-full overflow-hidden rounded-[22px] sm:h-[160px] lg:h-[190px]",
-				MEGA.imageGradient,
-			)}
-		>
+		<div className={cn("relative aspect-square w-full overflow-hidden rounded-[12px]", MEGA.imageGradient)}>
 			{thumb?.url ? (
 				<Image
 					src={thumb.url}
 					alt={thumb.alt}
 					fill
 					quality={100}
-					className="object-contain p-3 sm:p-4"
-					sizes="(max-width: 1024px) 50vw, 512px"
+					className="scale-[1.18] object-contain"
+					sizes="(max-width: 1024px) 50vw, 220px"
 				/>
 			) : (
 				<div className="flex h-full w-full items-center justify-center text-[#66827D]" aria-hidden>
@@ -85,18 +81,18 @@ function ShopAllProductCard({
 			prefetch={false}
 			onClick={onNavigate}
 			className={cn(
-				"flex flex-col gap-1.5 rounded-[28px] border bg-white px-3.5 pb-[18px] pt-3.5 transition-transform hover:-translate-y-0.5",
+				"flex w-[200px] shrink-0 flex-col gap-1 rounded-[16px] border bg-white px-1 pb-2.5 pt-1 transition-transform hover:-translate-y-0.5 sm:w-[220px]",
 				MEGA.cardBorder,
 				MEGA.cardShadow,
 			)}
 		>
 			<ProductCardImage slug={product.slug} thumbnails={thumbnails} />
-			<div className="min-w-0 pt-2">
-				<p className={cn("truncate text-[15px] font-bold leading-snug lg:text-[15.8px]", MEGA.title)}>
-					{product.name}
-				</p>
+			<div className="min-w-0 px-1 pt-1">
+				<p className={cn("truncate text-[13px] font-bold leading-snug", MEGA.title)}>{product.name}</p>
 				{tagline ? (
-					<p className={cn("mt-1 truncate text-[12px] font-normal leading-snug", MEGA.subtitle)}>{tagline}</p>
+					<p className={cn("mt-0.5 truncate text-[11px] font-normal leading-snug", MEGA.subtitle)}>
+						{tagline}
+					</p>
 				) : null}
 			</div>
 		</LinkWithChannel>
@@ -116,10 +112,7 @@ function ShopAllProductGrid({
 	onNavigate?: () => void;
 }) {
 	return (
-		<div
-			key={column.slug}
-			className="grid grid-cols-2 gap-[14px] duration-200 animate-in fade-in-0 sm:gap-[18px] lg:grid-cols-3 xl:grid-cols-4 xl:gap-[22px]"
-		>
+		<div key={column.slug} className="flex flex-wrap gap-3 duration-200 animate-in fade-in-0 sm:gap-3.5">
 			{column.products.map((product) => (
 				<ShopAllProductCard
 					key={product.slug}
@@ -154,13 +147,13 @@ function ShopAllMegaPanel({
 			{/* Left rail — Figma Aside (#D9F6F1) */}
 			<aside
 				className={cn(
-					"flex min-h-[420px] w-[220px] shrink-0 flex-col self-stretch px-6 pb-8 pt-10 sm:w-[260px] lg:min-h-[520px] lg:w-[280px] lg:px-[34px] lg:pb-12 lg:pt-[54px]",
+					"flex min-h-[360px] w-[200px] shrink-0 flex-col self-stretch px-5 pb-6 pt-8 sm:w-[220px] lg:min-h-[400px] lg:w-[240px] lg:px-6 lg:pb-8 lg:pt-10",
 					MEGA.sidebarBg,
 				)}
 			>
 				<p
 					className={cn(
-						"mb-5 text-[15px] font-bold uppercase leading-tight tracking-[1.7px] lg:mb-[29px] lg:text-[17px]",
+						"mb-4 text-[14px] font-bold uppercase leading-tight tracking-[1.7px] lg:mb-5 lg:text-[15px]",
 						MEGA.sidebarLabel,
 					)}
 				>
@@ -184,12 +177,12 @@ function ShopAllMegaPanel({
 									onClick={onNavigate}
 									aria-current={isActive ? "true" : undefined}
 									className={cn(
-										"flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-[15px] text-left transition-colors",
+										"flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-3 text-left transition-colors",
 										isActive ? cn(MEGA.itemActiveBg, MEGA.itemActive) : MEGA.itemDefault,
 									)}
 								>
-									<span className="text-[18px] font-bold leading-none lg:text-[23px]">{column.name}</span>
-									<span className="text-[18px] font-bold leading-none lg:text-[23px]" aria-hidden>
+									<span className="text-[16px] font-bold leading-none lg:text-[18px]">{column.name}</span>
+									<span className="text-[16px] font-bold leading-none lg:text-[18px]" aria-hidden>
 										›
 									</span>
 								</LinkWithChannel>
@@ -198,14 +191,14 @@ function ShopAllMegaPanel({
 					})}
 				</ul>
 
-				<div className="mt-auto pt-8 lg:pt-[33px]">
+				<div className="mt-auto pt-6 lg:pt-8">
 					<LinkWithChannel
 						href="/products"
 						channel={channel}
 						prefetch={false}
 						onClick={onNavigate}
 						className={cn(
-							"inline-block px-3 text-[14px] font-bold uppercase underline decoration-solid underline-offset-2 transition-opacity hover:opacity-80 lg:text-[16px]",
+							"inline-block px-3 text-[13px] font-bold uppercase underline decoration-solid underline-offset-2 transition-opacity hover:opacity-80 lg:text-[14px]",
 							MEGA.itemDefault,
 						)}
 					>
@@ -215,7 +208,7 @@ function ShopAllMegaPanel({
 			</aside>
 
 			{/* Right pane — product cards */}
-			<div className="min-w-0 flex-1 p-5 sm:p-6 lg:p-8">
+			<div className="min-w-0 flex-1 p-4 sm:p-5 lg:p-6">
 				{activeColumn && (
 					<ShopAllProductGrid
 						column={activeColumn}

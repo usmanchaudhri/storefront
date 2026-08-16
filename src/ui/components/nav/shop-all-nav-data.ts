@@ -12,7 +12,7 @@ export type ShopAllProductThumbnail = {
 export const SHOP_ALL_NAV_THUMBNAIL_SIZE = 512;
 
 /** Bump to invalidate leftover `"use cache"` entries that still hold old thumbnail URLs. */
-export const SHOP_ALL_NAV_CACHE_VERSION = 2;
+export const SHOP_ALL_NAV_CACHE_VERSION = 5;
 
 function withImageCacheBuster(url: string, updatedAt: string | null | undefined): string {
 	if (!updatedAt) {
