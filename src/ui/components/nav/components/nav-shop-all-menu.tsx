@@ -30,12 +30,12 @@ const MEGA = {
 } as const;
 
 const triggerClass = cn(
-	// Match logo “Kaya” #09594D (kayapure-logo-wordmark.svg)
+	// Match logo “Kaya” #09594D; hover wash matches header icons
 	"inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-[18px] font-medium uppercase tracking-tight transition-colors duration-200",
 	"text-[#09594D] outline-none",
-	"hover:bg-teal-500/18",
+	"hover:bg-[#D9F6F1]",
 	"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-	"data-[state=open]:bg-teal-500/15",
+	"data-[state=open]:bg-[#D9F6F1]",
 );
 
 function ProductCardImage({ slug, thumbnails }: { slug: string; thumbnails: ShopAllProductThumbnailMap }) {
@@ -272,7 +272,7 @@ function ShopAllDesktopHoverMenu({
 		>
 			<button
 				type="button"
-				className={cn(triggerClass, open && "bg-teal-500/15 text-teal-700 dark:text-teal-400")}
+				className={cn(triggerClass, open && "bg-[#D9F6F1]")}
 				aria-expanded={open}
 				aria-haspopup="true"
 			>

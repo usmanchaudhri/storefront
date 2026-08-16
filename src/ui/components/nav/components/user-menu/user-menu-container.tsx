@@ -32,7 +32,7 @@ export async function UserMenuContainer({ channel }: { channel: string }) {
 			<LinkWithChannel
 				href="/login"
 				channel={channel}
-				className="inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+				className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[#09594D] transition-colors duration-200 hover:bg-[#D9F6F1] hover:text-[#00A38C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 			>
 				<UserIcon className="h-5 w-5" aria-hidden="true" />
 				<span className="sr-only">Log in</span>

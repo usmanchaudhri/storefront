@@ -24,11 +24,11 @@ export function NavLink({
 				channel={channel}
 				prefetch={false}
 				className={clsx(
-					// Match logo “Kaya” #09594D; hover = logo “Pure” #00A38C
+					// Match logo “Kaya” #09594D; hover = logo “Pure” #00A38C (text only)
 					"inline-flex items-center rounded-lg px-3.5 py-2 text-[18px] font-medium uppercase tracking-tight text-[#09594D] transition-colors duration-200",
 					"hover:text-[#00A38C]",
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-					isActive ? "bg-teal-500/15 shadow-sm" : "hover:bg-teal-500/18",
+					isActive && "text-[#00A38C]",
 				)}
 			>
 				{children}

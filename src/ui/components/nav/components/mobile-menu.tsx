@@ -35,7 +35,7 @@ export const MobileMenu = ({ children, channel }: Props) => {
 			<SheetTrigger asChild>
 				<button
 					type="button"
-					className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent md:hidden"
+					className="flex h-10 w-10 items-center justify-center rounded-lg text-[#09594D] transition-colors duration-200 hover:bg-[#D9F6F1] hover:text-[#00A38C] md:hidden"
 					aria-label="Open menu"
 				>
 					<Menu className="h-5 w-5" />

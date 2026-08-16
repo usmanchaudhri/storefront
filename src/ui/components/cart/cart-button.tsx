@@ -15,14 +15,14 @@ export function CartButton({ itemCount }: CartButtonProps) {
 			type="button"
 			onClick={openCart}
 			data-testid="CartNavItem"
-			className="relative inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+			className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-[#09594D] transition-colors duration-200 hover:bg-[#D9F6F1] hover:text-[#00A38C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 		>
 			<ShoppingBagIcon className="h-5 w-5" aria-hidden="true" />
 			{itemCount > 0 && (
 				<span
 					// Key change remounts the element, restarting the CSS animation
 					key={itemCount}
-					className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-cart-badge-pop items-center justify-center rounded-full bg-foreground text-[10px] font-medium text-background"
+					className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-cart-badge-pop items-center justify-center rounded-full bg-[#09594D] text-[10px] font-medium text-white"
 				>
 					{itemCount > 9 ? "9+" : itemCount}
 				</span>
