@@ -120,6 +120,54 @@ function BlendSection({ story }: { story: PdpStoryPack["blend"] }) {
 	);
 }
 
+/** Figma 2435:901 — mint positioning strip under the blend banner. */
+function PositioningBannerSection({ story }: { story: PdpStoryPack["positioningBanner"] }) {
+	return (
+		<section className="w-full bg-[#EFFBF8] px-5 pb-[50px] pt-[30px]" aria-label="Product positioning">
+			<div className="mx-auto flex w-full max-w-[1039px] flex-col items-center gap-4">
+				<div className="relative h-[45px] w-[56px] shrink-0" aria-hidden>
+					<Image
+						src={story.icon.src}
+						alt=""
+						width={story.icon.width}
+						height={story.icon.height}
+						className="h-[45px] w-[56px] object-contain"
+						unoptimized={story.icon.src.endsWith(".svg")}
+					/>
+				</div>
+				<p className="max-w-[751px] text-center text-[clamp(1rem,0.95rem+0.2vw,1.375rem)] font-normal leading-[1.5] text-[#052F30]">
+					{story.body}
+				</p>
+			</div>
+		</section>
+	);
+}
+
+/** Figma 2492:408 — full-bleed “2 Gummies. Simple Routine.” artwork (copy is in the image). */
+function SimpleRoutineBannerSection({ story }: { story: PdpStoryPack["simpleRoutineBanner"] }) {
+	const bannerHeight = `calc(100vw * ${story.image.height} / ${story.image.width})`;
+
+	return (
+		<section
+			className="relative w-full overflow-hidden bg-[#073B35]"
+			aria-label={story.image.alt}
+			style={{ minHeight: bannerHeight }}
+		>
+			<div className="absolute inset-0">
+				<Image
+					src={story.image.src}
+					alt={story.image.alt}
+					width={story.image.width}
+					height={story.image.height}
+					className="h-full w-full object-cover object-center"
+					sizes="100vw"
+				/>
+			</div>
+			<div className="relative z-10" style={{ minHeight: bannerHeight }} aria-hidden />
+		</section>
+	);
+}
+
 function RoutineIconRow({ icon, label }: { icon: PdpStoryImage; label: string }) {
 	return (
 		<li className="flex items-center gap-[13px]">
@@ -627,6 +675,8 @@ export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 	return (
 		<div className="mt-10 sm:mt-14">
 			<BlendSection story={story.blend} />
+			<PositioningBannerSection story={story.positioningBanner} />
+			<SimpleRoutineBannerSection story={story.simpleRoutineBanner} />
 			<RoutineSection story={story.routine} />
 			<LookInsideSection story={story.lookInside} disclaimer={story.disclaimer} />
 			<ComparisonSection story={story.comparison} />

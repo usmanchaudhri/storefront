@@ -55,17 +55,38 @@ export interface PdpLayoutClasses {
 }
 
 /**
- * MoonBrew-style immersive hero frame — 631×490 display ratio (~1.29:1 landscape).
- * Images use `object-contain` so the full asset is visible inside the frame.
+ * Immersive hero frame — 1:1 square so typical product uploads (e.g. 2000×2000)
+ * fill the gallery column without cropping. Images use `object-contain` + center.
+ * Column width is unchanged (~605fr of the MoonBrew grid); only the height matches width.
  */
-export const PDP_IMMERSIVE_HERO_FRAME_CLASS = "aspect-[631/490] w-full";
+export const PDP_IMMERSIVE_HERO_FRAME_CLASS = "aspect-square w-full";
 
 /** Space between hero and thumbnail strip on desktop (MoonBrew: 50px). */
 export const PDP_IMMERSIVE_HERO_MARGIN_CLASS = "mb-0 lg:mb-[50px]";
 
-/** Thumbnail strip — hidden below 1200px (MoonBrew breakpoint). */
+/**
+ * Max thumbnails that fit in one hero-width row before the strip scrolls.
+ * Six 86px tiles use `justify-between` so they span the full hero width.
+ */
+export const PDP_IMMERSIVE_THUMB_FIT_COUNT = 6;
+
+/** Thumbnail strip base — full hero width; hidden below 1200px (MoonBrew breakpoint). */
 export const PDP_IMMERSIVE_THUMB_STRIP_CLASS =
-	"scrollbar-hide flex max-w-[calc(100%-3rem)] gap-2 overflow-x-auto px-1 py-1 max-[1200px]:hidden";
+	"scrollbar-hide flex w-full overflow-x-auto overscroll-x-contain py-1 max-[1200px]:hidden";
+
+/** Evenly space ≤{@link PDP_IMMERSIVE_THUMB_FIT_COUNT} thumbs across the hero. */
+export const PDP_IMMERSIVE_THUMB_STRIP_FIT_CLASS = "justify-between";
+
+/** Fixed gap + horizontal scroll when there are more than six images. */
+export const PDP_IMMERSIVE_THUMB_STRIP_SCROLL_CLASS = "gap-2";
+
+export function immersiveThumbStripClass(imageCount: number): string {
+	const fits = imageCount > 0 && imageCount <= PDP_IMMERSIVE_THUMB_FIT_COUNT;
+	return [
+		PDP_IMMERSIVE_THUMB_STRIP_CLASS,
+		fits ? PDP_IMMERSIVE_THUMB_STRIP_FIT_CLASS : PDP_IMMERSIVE_THUMB_STRIP_SCROLL_CLASS,
+	].join(" ");
+}
 
 /** Dot indicators when the thumbnail strip is hidden (≤1200px). */
 export const PDP_IMMERSIVE_MOBILE_DOTS_CLASS = "hidden max-[1200px]:flex justify-center gap-1.5";

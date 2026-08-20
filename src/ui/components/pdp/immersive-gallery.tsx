@@ -17,10 +17,10 @@ import {
 import { GalleryImageThumbTrigger } from "@/ui/components/shared/gallery-image-zoom-trigger";
 import { GalleryZoomLayer } from "./gallery-zoom-layer";
 import {
+	immersiveThumbStripClass,
 	PDP_IMMERSIVE_HERO_FRAME_CLASS,
 	PDP_IMMERSIVE_HERO_MARGIN_CLASS,
 	PDP_IMMERSIVE_MOBILE_DOTS_CLASS,
-	PDP_IMMERSIVE_THUMB_STRIP_CLASS,
 } from "./gallery-layout";
 import { useProductImageViewer } from "./use-product-image-viewer";
 
@@ -30,9 +30,11 @@ interface ImmersiveGalleryProps {
 }
 
 /**
- * Immersive PDP gallery — MoonBrew-style 631×490 hero frame with the full image
- * visible (`object-contain`), thumbnail strip below (86px squares, desktop only).
- * Mobile uses Embla swipe; desktop keeps hover arrows + thumbnails.
+ * Immersive PDP gallery — square hero frame sized to the gallery column so
+ * 1:1 product images (e.g. 2000×2000) show fully via `object-contain`.
+ * Thumbnail strip below spans the hero width (evenly spaced when ≤6 images;
+ * horizontally scrollable when there are more). Mobile uses Embla swipe;
+ * desktop keeps hover arrows + thumbnails.
  */
 export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps) {
 	const [api, setApi] = React.useState<CarouselApi>();
@@ -100,19 +102,23 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 					onMouseEnter={() => setIsHeroHovered(true)}
 					onMouseLeave={() => setIsHeroHovered(false)}
 				>
-					<Carousel
-						setApi={setApi}
-						opts={{
-							align: "start",
-							loop: hasMultiple,
-							dragFree: false,
-						}}
-						className="w-full"
-					>
-						<div className={cn("relative w-full overflow-hidden", PDP_IMMERSIVE_HERO_FRAME_CLASS)}>
-							<CarouselContent className="ml-0">
+					{/*
+					  Single aspect frame owns size; carousel fills it absolutely so Embla’s
+					  nested overflow viewport cannot clip square product images.
+					*/}
+					<div className={galleryImageFrameClass(PDP_IMMERSIVE_HERO_FRAME_CLASS)}>
+						<Carousel
+							setApi={setApi}
+							opts={{
+								align: "start",
+								loop: hasMultiple,
+								dragFree: false,
+							}}
+							className="absolute inset-0 size-full"
+						>
+							<CarouselContent className="ml-0 h-full" viewportClassName="size-full">
 								{images.map((image, index) => (
-									<CarouselItem key={image.url} className="pl-0">
+									<CarouselItem key={image.url} className="h-full pl-0">
 										{/*
 										  Div (not <button>) so Embla can own touch drag on mobile.
 										  Tap still opens the zoom viewer; drag does not.
@@ -127,10 +133,7 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 													openViewer(index);
 												}
 											}}
-											className={galleryImageZoomTriggerClass(
-												"h-full w-full",
-												PDP_IMMERSIVE_HERO_FRAME_CLASS,
-											)}
+											className={galleryImageZoomTriggerClass("size-full")}
 											aria-label={`${productName} - View ${index + 1}`}
 										>
 											<span className={PDP_GALLERY_IMAGE_CLIP_CLASS}>
@@ -139,7 +142,7 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 													alt={image.alt || `${productName} - View ${index + 1}`}
 													fill
 													draggable={false}
-													className="pointer-events-none object-contain"
+													className="pointer-events-none object-contain object-center"
 													sizes={PDP_IMMERSIVE_IMAGE_SIZES}
 													quality={PRODUCT_IMAGE_QUALITY}
 													priority={index === 0}
@@ -151,8 +154,8 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 									</CarouselItem>
 								))}
 							</CarouselContent>
-						</div>
-					</Carousel>
+						</Carousel>
+					</div>
 
 					{hasMultiple ? (
 						<div
@@ -196,7 +199,7 @@ export function ImmersiveGallery({ images, productName }: ImmersiveGalleryProps)
 				{hasMultiple ? (
 					<>
 						<div
-							className={PDP_IMMERSIVE_THUMB_STRIP_CLASS}
+							className={immersiveThumbStripClass(images.length)}
 							role="tablist"
 							aria-label={`${productName} images`}
 						>

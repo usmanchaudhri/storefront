@@ -3,10 +3,10 @@ import { PDP_IMMERSIVE_IMAGE_SIZES, PRODUCT_IMAGE_QUALITY } from "@/lib/images";
 import { cn } from "@/lib/utils";
 import { GalleryImageFrame, galleryImageFrameClass } from "@/ui/components/shared/gallery-image-frame";
 import {
+	immersiveThumbStripClass,
 	PDP_IMMERSIVE_HERO_FRAME_CLASS,
 	PDP_IMMERSIVE_HERO_MARGIN_CLASS,
 	PDP_IMMERSIVE_MOBILE_DOTS_CLASS,
-	PDP_IMMERSIVE_THUMB_STRIP_CLASS,
 } from "./gallery-layout";
 
 interface ImmersiveGalleryFallbackProps {
@@ -36,7 +36,7 @@ export function ImmersiveGalleryFallback({
 						src={src}
 						alt={alt}
 						fill
-						className="object-contain"
+						className="object-contain object-center"
 						sizes={PDP_IMMERSIVE_IMAGE_SIZES}
 						quality={PRODUCT_IMAGE_QUALITY}
 						priority
@@ -54,7 +54,7 @@ export function ImmersiveGalleryFallback({
 				) : null}
 			</div>
 			{showGalleryChrome ? (
-				<div className={PDP_IMMERSIVE_THUMB_STRIP_CLASS} aria-hidden>
+				<div className={immersiveThumbStripClass(imageCount)} aria-hidden>
 					{Array.from({ length: imageCount }).map((_, index) => (
 						<div
 							key={index}
@@ -77,7 +77,7 @@ export function ImmersiveGallerySkeleton() {
 			<div className={cn("w-full", PDP_IMMERSIVE_HERO_MARGIN_CLASS)}>
 				<div className={galleryImageFrameClass("animate-pulse bg-muted", PDP_IMMERSIVE_HERO_FRAME_CLASS)} />
 			</div>
-			<div className={PDP_IMMERSIVE_THUMB_STRIP_CLASS} aria-hidden>
+			<div className={immersiveThumbStripClass(4)} aria-hidden>
 				{Array.from({ length: 4 }).map((_, index) => (
 					<div
 						key={index}

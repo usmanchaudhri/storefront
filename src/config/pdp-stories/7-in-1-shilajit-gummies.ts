@@ -45,6 +45,18 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			809,
 		),
 	},
+	positioningBanner: {
+		body: "Premium natural supplement positioning with current Kaya Pure product and policy information used as the factual source.",
+		icon: img("positioning-check-icon.svg", "", 56, 45),
+	},
+	simpleRoutineBanner: {
+		image: img(
+			"simple-routine-banner.jpg",
+			"Kaya Pure two gummies simple routine banner with Shilajit jar and botanicals",
+			3000,
+			1500,
+		),
+	},
 	routine: {
 		title: "Can Kaya Pure fit your routine?",
 		intro: "For customers looking for a convenient daily supplement format:",

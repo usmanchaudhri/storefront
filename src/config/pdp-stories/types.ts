@@ -19,6 +19,17 @@ export type PdpStoryBlend = {
 	image: PdpStoryImage;
 };
 
+/** Full-bleed image banner placed under the blend section (Figma 2492:408). */
+export type PdpStorySimpleRoutineBanner = {
+	image: PdpStoryImage;
+};
+
+/** Figma 2435:901 — light mint positioning strip under the blend banner. */
+export type PdpStoryPositioningBanner = {
+	body: string;
+	icon: PdpStoryImage;
+};
+
 export type PdpStoryRoutine = {
 	title: string;
 	intro: string;
@@ -116,6 +127,8 @@ export type PdpStoryReviews = {
 export type PdpStoryPack = {
 	slug: string;
 	blend: PdpStoryBlend;
+	positioningBanner: PdpStoryPositioningBanner;
+	simpleRoutineBanner: PdpStorySimpleRoutineBanner;
 	routine: PdpStoryRoutine;
 	lookInside: PdpStoryLookInside;
 	comparison: PdpStoryComparison;
