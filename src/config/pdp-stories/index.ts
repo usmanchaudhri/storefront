@@ -2,6 +2,7 @@ import { shilajitGummiesStory } from "./7-in-1-shilajit-gummies";
 import type { PdpStoryPack } from "./types";
 
 export type { PdpStoryPack, PdpStoryImage } from "./types";
+export { shilajitGummiesStory };
 
 const PDP_STORIES: Record<string, PdpStoryPack> = {
 	[shilajitGummiesStory.slug]: shilajitGummiesStory,

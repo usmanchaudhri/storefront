@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Barlow, Inter } from "next/font/google";
 import type { PdpStoryImage, PdpStoryPack } from "@/config/pdp-stories";
 import { cn } from "@/lib/utils";
+import { BlendBanner } from "@/ui/components/shared/blend-banner";
 import { PdpStoryFaqAccordion } from "@/ui/components/pdp/story/pdp-story-faq-accordion";
 
 /**
@@ -35,90 +36,6 @@ const comparisonGridClass = "grid grid-cols-[minmax(0,2.726fr)_minmax(0,1fr)_min
 
 /** Figma Jagged Ice — Kaya Pure column highlight. */
 const kayaPureColumnClass = "bg-[#BCE8E5]";
-
-function BlendTileIcon({ icon }: { icon: PdpStoryImage }) {
-	return (
-		<div className="relative h-16 w-full max-w-[20rem]" aria-hidden>
-			<Image
-				src={icon.src}
-				alt=""
-				width={icon.width}
-				height={icon.height}
-				className="h-16 w-auto max-w-none object-contain object-left"
-				sizes="80px"
-			/>
-		</div>
-	);
-}
-
-function BlendCopy({ story }: { story: PdpStoryPack["blend"] }) {
-	return (
-		<div className="max-w-[700px]">
-			<h2
-				id="pdp-story-blend-heading"
-				className={cn(
-					blendTextClass,
-					"text-balance text-[clamp(1.75rem,1.15rem+2vw,2.875rem)] font-semibold uppercase leading-[1.2]",
-				)}
-			>
-				{story.title}
-			</h2>
-			<p
-				className={cn(
-					blendTextClass,
-					"mt-2.5 max-w-[519px] text-pretty text-[clamp(0.9375rem,0.88rem+0.25vw,1.25rem)] leading-[1.4]",
-				)}
-			>
-				{story.intro}
-			</p>
-			<ul
-				className="mt-6 grid max-w-[700px] grid-cols-1 gap-x-[51px] gap-y-10 pt-6 sm:grid-cols-2 sm:gap-y-[57px]"
-				role="list"
-			>
-				{story.tiles.map((tile) => (
-					<li key={tile.id} className="flex flex-col gap-4">
-						<BlendTileIcon icon={tile.icon} />
-						<p className={cn(blendTextClass, "text-[clamp(0.9375rem,0.9rem+0.12vw,1.125rem)] leading-[1.4]")}>
-							<span className="font-bold uppercase">{tile.title}</span> {tile.body}
-						</p>
-					</li>
-				))}
-			</ul>
-		</div>
-	);
-}
-
-function BlendSection({ story }: { story: PdpStoryPack["blend"] }) {
-	const bannerHeight = `calc(100vw * ${story.image.height} / ${story.image.width})`;
-
-	return (
-		<section
-			className="relative w-full overflow-hidden bg-[#073B35]"
-			aria-labelledby="pdp-story-blend-heading"
-			style={{ minHeight: bannerHeight }}
-		>
-			<div className="absolute inset-0">
-				<Image
-					src={story.image.src}
-					alt={story.image.alt}
-					width={story.image.width}
-					height={story.image.height}
-					className="h-full w-full object-cover object-center"
-					sizes="100vw"
-					priority
-				/>
-			</div>
-			<div
-				className="relative z-10 flex items-center py-10 sm:py-12 lg:py-[40px]"
-				style={{ minHeight: bannerHeight }}
-			>
-				<div className="mx-auto w-full max-w-[1255px] px-4 sm:px-6 lg:px-8">
-					<BlendCopy story={story} />
-				</div>
-			</div>
-		</section>
-	);
-}
 
 /** Figma 2435:901 — mint positioning strip under the blend banner. */
 function PositioningBannerSection({ story }: { story: PdpStoryPack["positioningBanner"] }) {
@@ -674,7 +591,7 @@ function ReviewsSection({ story }: { story: PdpStoryPack["reviews"] }) {
 export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 	return (
 		<div className="mt-10 sm:mt-14">
-			<BlendSection story={story.blend} />
+			<BlendBanner story={story.blend} headingId="pdp-story-blend-heading" priority />
 			<PositioningBannerSection story={story.positioningBanner} />
 			<SimpleRoutineBannerSection story={story.simpleRoutineBanner} />
 			<RoutineSection story={story.routine} />

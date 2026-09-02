@@ -18,7 +18,7 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 			<HomeHeroCarousel channel={channel} />
 
 			<HomeEnergyFocusSection />
-			<HomeSignatureProductBanner channel={channel} />
+			<HomeSignatureProductBanner />
 			<HomeFeaturedCategories channel={channel} />
 			<HomeVideoGallery channel={channel} />
 			<HomeFaq />

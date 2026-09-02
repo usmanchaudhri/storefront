@@ -1,8 +1,5 @@
-/** Homepage value-props section — sits below the hero carousel. */
+/** Homepage value-props pillars — sits below the hero carousel. */
 export const homeEnergyFocusSection = {
-	headline: ["Ancient Power.", "Everyday Ritual."],
-	intro:
-		"From Himalayan Shilajit gummies to immunity shots — Kaya Pure turns premium botanicals into simple, delicious rituals you'll actually enjoy.",
 	pillars: [
 		{
 			id: "steady-energy",
