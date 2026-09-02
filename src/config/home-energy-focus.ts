@@ -1,31 +1,32 @@
-/** Homepage “Sustained Energy / Enhanced Focus” section (MoonBrew-style value props). */
+/** Homepage value-props section — sits below the hero carousel. */
 export const homeEnergyFocusSection = {
-	headline: ["Sustained Energy.", "Enhanced Focus."],
+	headline: ["Ancient Power.", "Everyday Ritual."],
 	intro:
-		"KayaPure combines shilajit, adaptogens, and focus-friendly botanicals to help you feel alert, steady, and clear — without the crash.",
+		"From Himalayan Shilajit gummies to immunity shots — Kaya Pure turns premium botanicals into simple, delicious rituals you'll actually enjoy.",
 	pillars: [
 		{
 			id: "steady-energy",
-			title: "Energy that lasts",
+			title: "7-in-1 Shilajit strength",
 			description:
-				"A natural lift designed to carry you through the day — not spike and fade like sugary drinks.",
+				"Ancient Himalayan shilajit plus adaptogens — energy, stamina, and focus in one modern gummy.",
 		},
 		{
 			id: "mental-clarity",
-			title: "Clarity you can feel",
+			title: "Balance your day",
 			description:
-				"Botanicals like ginkgo biloba support calm concentration when work, training, or life demands more.",
+				"Apple cider, ashwagandha, and magnesium formulas that help you stay calm, clear, and steady.",
 		},
 		{
 			id: "daily-ritual",
-			title: "Built for daily ritual",
+			title: "Wellness in one shot",
 			description:
-				"Gummies, shots, and drops that fit real routines — simple, delicious, and easy to stay consistent.",
+				"Mango and elderberry complete shots — your daily boost without the hassle of powders or pills.",
 		},
 		{
 			id: "clean-quality",
-			title: "Clean ingredients",
-			description: "Thoughtfully sourced formulas so you know exactly what fuels your energy and focus.",
+			title: "Rituals you'll keep",
+			description:
+				"Gummies, shots, and drops designed to taste great — so consistency feels easy, not like a chore.",
 		},
 	],
 } as const;
