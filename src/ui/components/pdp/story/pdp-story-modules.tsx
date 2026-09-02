@@ -4,6 +4,7 @@ import type { PdpStoryImage, PdpStoryPack } from "@/config/pdp-stories";
 import { cn } from "@/lib/utils";
 import { BlendBanner } from "@/ui/components/shared/blend-banner";
 import { PdpStoryFaqAccordion } from "@/ui/components/pdp/story/pdp-story-faq-accordion";
+import { PdpSharingLoveSection } from "@/ui/components/pdp/story/pdp-sharing-love-section";
 
 /**
  * Figma comparison section typeface (nodes 2435:1089–2435:1135).
@@ -56,31 +57,6 @@ function PositioningBannerSection({ story }: { story: PdpStoryPack["positioningB
 					{story.body}
 				</p>
 			</div>
-		</section>
-	);
-}
-
-/** Figma 2492:408 — full-bleed “2 Gummies. Simple Routine.” artwork (copy is in the image). */
-function SimpleRoutineBannerSection({ story }: { story: PdpStoryPack["simpleRoutineBanner"] }) {
-	const bannerHeight = `calc(100vw * ${story.image.height} / ${story.image.width})`;
-
-	return (
-		<section
-			className="relative w-full overflow-hidden bg-[#073B35]"
-			aria-label={story.image.alt}
-			style={{ minHeight: bannerHeight }}
-		>
-			<div className="absolute inset-0">
-				<Image
-					src={story.image.src}
-					alt={story.image.alt}
-					width={story.image.width}
-					height={story.image.height}
-					className="h-full w-full object-cover object-center"
-					sizes="100vw"
-				/>
-			</div>
-			<div className="relative z-10" style={{ minHeight: bannerHeight }} aria-hidden />
 		</section>
 	);
 }
@@ -266,19 +242,20 @@ function LookInsideSection({ story, disclaimer }: { story: PdpStoryPack["lookIns
 }
 
 /**
- * Figma composite (nodes 2435:1089, 1091, 1092, 1093, 1135, 1523).
+ * Figma 2611:20 (nodes 2435:1089–2435:1523) — How Kaya Pure is different.
  *
  * Exact layout relative to table left (content width 1423.79):
  * - Heading + subline centered above
  * - Cyan protrusion #BCE8E5 at x=821 (Kaya Pure column), 301×169, overlaps table by ~17px
  * - Gummy 2435:1523 (204×136) as Kaya Pure column heading on the cyan tab
+ * - Kaya Pure wordmark 2435:1442 in table header cell
  * - Traditional bottle 2435:1135 at x=1210, 109×132, above Traditional column
  * - Table at y offset 152 below protrusion top, rounded 31.64, border rgba(0,163,140,0.5)
  */
 function ComparisonSection({ story }: { story: PdpStoryPack["comparison"] }) {
 	return (
 		<section
-			className={cn(comparisonFont.className, "bg-[#F7F1DF]")}
+			className={cn(comparisonFont.className, "bg-[#F7F7F7]")}
 			aria-labelledby="pdp-story-comparison-heading"
 		>
 			<div className="mx-auto w-full max-w-[1504px] px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
@@ -350,7 +327,21 @@ function ComparisonSection({ story }: { story: PdpStoryPack["comparison"] }) {
 								<div className="h-full" role="columnheader">
 									<span className="sr-only">Feature</span>
 								</div>
-								<div className={cn(kayaPureColumnClass, "relative z-10 h-full")} role="columnheader">
+								<div
+									className={cn(
+										kayaPureColumnClass,
+										"relative z-10 flex h-full items-end justify-center pb-2",
+									)}
+									role="columnheader"
+								>
+									<Image
+										src={story.kayaPureLogo.src}
+										alt=""
+										width={story.kayaPureLogo.width}
+										height={story.kayaPureLogo.height}
+										className="h-[clamp(1.75rem,1.5rem+0.5vw,2.875rem)] w-auto max-w-[205px] object-contain"
+										unoptimized={story.kayaPureLogo.src.endsWith(".svg")}
+									/>
 									<span className="sr-only">{story.kayaPureLabel}</span>
 								</div>
 								<div
@@ -593,8 +584,8 @@ export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 		<div className="mt-10 sm:mt-14">
 			<BlendBanner story={story.blend} headingId="pdp-story-blend-heading" priority />
 			<PositioningBannerSection story={story.positioningBanner} />
-			<SimpleRoutineBannerSection story={story.simpleRoutineBanner} />
 			<RoutineSection story={story.routine} />
+			<PdpSharingLoveSection story={story.sharingLove} />
 			<LookInsideSection story={story.lookInside} disclaimer={story.disclaimer} />
 			<ComparisonSection story={story.comparison} />
 			<FaqSection story={story.faq} />

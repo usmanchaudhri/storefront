@@ -19,11 +19,6 @@ export type PdpStoryBlend = {
 	image: PdpStoryImage;
 };
 
-/** Full-bleed image banner placed under the blend section (Figma 2492:408). */
-export type PdpStorySimpleRoutineBanner = {
-	image: PdpStoryImage;
-};
-
 /** Figma 2435:901 — light mint positioning strip under the blend banner. */
 export type PdpStoryPositioningBanner = {
 	body: string;
@@ -56,6 +51,28 @@ export type PdpStoryLookInside = {
 	ctaLabel: string;
 };
 
+/** Figma 2611:15 — Sharing love social clips + testimonials (above look inside). */
+export type PdpStorySocialClip = {
+	id: string;
+	poster: PdpStoryImage;
+	mp4Url: string;
+};
+
+export type PdpStorySocialTestimonial = {
+	id: string;
+	author: string;
+	quote: string;
+};
+
+export type PdpStorySharingLove = {
+	titlePrefix: string;
+	titleAccent: string;
+	titleSuffix: string;
+	clips: readonly PdpStorySocialClip[];
+	testimonials: readonly PdpStorySocialTestimonial[];
+	ctaLabel: string;
+};
+
 export type PdpStoryComparisonRow = {
 	feature: string;
 	kayaPure: boolean;
@@ -72,6 +89,8 @@ export type PdpStoryComparison = {
 	rows: readonly PdpStoryComparisonRow[];
 	/** Figma 2435:1523 — black gummy, Kaya Pure column heading. */
 	kayaPureImage: PdpStoryImage;
+	/** Figma 2435:1442 — Kaya Pure wordmark in comparison table header. */
+	kayaPureLogo: PdpStoryImage;
 	/** Figma 2435:1135 — traditional bottle, Traditional column heading. */
 	traditionalImage: PdpStoryImage;
 };
@@ -128,8 +147,8 @@ export type PdpStoryPack = {
 	slug: string;
 	blend: PdpStoryBlend;
 	positioningBanner: PdpStoryPositioningBanner;
-	simpleRoutineBanner: PdpStorySimpleRoutineBanner;
 	routine: PdpStoryRoutine;
+	sharingLove: PdpStorySharingLove;
 	lookInside: PdpStoryLookInside;
 	comparison: PdpStoryComparison;
 	faq: PdpStoryFaq;

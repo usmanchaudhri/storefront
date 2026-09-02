@@ -97,6 +97,25 @@ function success<T>(data: T): GraphQLSuccess<T> {
 	return { ok: true, data };
 }
 
+function parseGraphQLResponseBody<T>(text: string): GraphQLResult<T> {
+	if (!text.trim()) {
+		return graphqlError(["Empty response from GraphQL API"]);
+	}
+
+	let body: GraphQLResponse<T>;
+	try {
+		body = JSON.parse(text) as GraphQLResponse<T>;
+	} catch {
+		return graphqlError(["Invalid JSON response from GraphQL API"]);
+	}
+
+	if ("errors" in body) {
+		return graphqlError(body.errors.map((e) => e.message));
+	}
+
+	return success(body.data);
+}
+
 /** User-friendly message for each error type */
 export function getUserMessage(error: GraphQLError): string {
 	switch (error.type) {
@@ -337,13 +356,8 @@ async function executeGraphQL<Result, Variables>(
 		return httpError(response.status, `HTTP ${response.status}: ${response.statusText}\n${body}`);
 	}
 
-	const body = (await response.json()) as GraphQLResponse<Result>;
-
-	if ("errors" in body) {
-		return graphqlError(body.errors.map((e) => e.message));
-	}
-
-	return success(body.data);
+	const text = await response.text().catch(() => "");
+	return parseGraphQLResponseBody<Result>(text);
 }
 
 /**
@@ -432,13 +446,8 @@ export async function executeRawGraphQL<T = unknown>(options: RawGraphQLOptions)
 			return httpError(response.status, `HTTP ${response.status}: ${response.statusText}\n${body}`);
 		}
 
-		const body = (await response.json()) as GraphQLResponse<T>;
-
-		if ("errors" in body) {
-			return graphqlError(body.errors.map((e) => e.message));
-		}
-
-		return success(body.data);
+		const text = await response.text().catch(() => "");
+		return parseGraphQLResponseBody<T>(text);
 	} catch (error) {
 		return networkError(`${operationName}: Failed to execute`, error);
 	}

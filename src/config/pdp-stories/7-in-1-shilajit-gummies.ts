@@ -49,14 +49,6 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		body: "Premium natural supplement positioning with current Kaya Pure product and policy information used as the factual source.",
 		icon: img("positioning-check-icon.svg", "", 56, 45),
 	},
-	simpleRoutineBanner: {
-		image: img(
-			"simple-routine-banner.jpg",
-			"Kaya Pure two gummies simple routine banner with Shilajit jar and botanicals",
-			3000,
-			1500,
-		),
-	},
 	routine: {
 		title: "Can Kaya Pure fit your routine?",
 		intro: "For customers looking for a convenient daily supplement format:",
@@ -94,6 +86,53 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			1942,
 			809,
 		),
+	},
+	sharingLove: {
+		titlePrefix: "Sharing ",
+		titleAccent: "love",
+		titleSuffix: " from people you trust",
+		clips: [
+			{
+				id: "social-1",
+				poster: img("social/clip-1.png", "Customer sharing Kaya Pure gummy experience", 450, 800),
+				mp4Url: "/videos/section-video-2.mp4",
+			},
+			{
+				id: "social-2",
+				poster: img("social/clip-2.png", "Customer sharing stress relief gummy routine", 450, 800),
+				mp4Url: "/videos/section-video-3-1.mp4",
+			},
+			{
+				id: "social-3",
+				poster: img("social/clip-3.png", "Customer testimonial video", 450, 800),
+				mp4Url: "/videos/section-video-4-1.mp4",
+			},
+			{
+				id: "social-4",
+				poster: img("social/clip-1.png", "Kaya Pure in action", 450, 800),
+				mp4Url: "/videos/Video-9-1-1.mp4",
+			},
+			{
+				id: "social-5",
+				poster: img("social/clip-2.png", "Morning wellness routine", 450, 800),
+				mp4Url: "/videos/WhatsApp-Video-2025-06-12-at-12.34.25-AM-1.mp4",
+			},
+		],
+		testimonials: [
+			{
+				id: "hanzala-1",
+				author: "Hanzala",
+				quote:
+					"After just a week of using it, I've noticed I don't crash after work like I used to. I feel more steady, more active, and just better overall. Loving how effective it is without feeling too intense — it's exactly what I needed.",
+			},
+			{
+				id: "hanzala-2",
+				author: "Hanzala",
+				quote:
+					"After just a week of using it, I've noticed I don't crash after work like I used to. I feel more steady, more active, and just better overall. Loving how effective it is without feeling too intense — it's exactly what I needed.",
+			},
+		],
+		ctaLabel: "See reviews",
 	},
 	lookInside: {
 		titlePrefix: "A look ",
@@ -146,7 +185,8 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			"A visual comparison using objective format differences rather than unsupported superiority claims.",
 		kayaPureLabel: "Kaya Pure",
 		traditionalLabel: "Traditional\nRoutine",
-		kayaPureImage: img("comparison-gummy.png", "Kaya Pure 7-in-1 Shilajit Gummy", 204, 136),
+		kayaPureImage: img("comparison-gummy.png", "Kaya Pure 7-in-1 Shilajit Gummy", 754, 503),
+		kayaPureLogo: img("comparison-kayapure-logo.svg", "Kaya Pure", 205, 46),
 		traditionalImage: img("comparison-product.png", "Traditional supplement bottle and tablets", 190, 230),
 		rows: [
 			{
