@@ -1,22 +1,22 @@
 import type { PdpStoryImage, PdpStoryPack } from "./types";
 
-const BASE = "/pdp/7-in-1-shilajit-gummies";
+const BASE = "/pdp/apple-cider-ashwagandha-gummies";
 
 function img(file: string, alt: string, width: number, height: number): PdpStoryImage {
 	return { src: `${BASE}/${file}`, alt, width, height };
 }
 
-export const shilajitGummiesStory: PdpStoryPack = {
-	slug: "7-in-1-shilajit-gummies",
+export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
+	slug: "apple-cider-ashwagandha-gummies",
 	blend: {
-		title: "The Kaya Pure 7-in-1 Blend",
+		title: "The Kaya Pure Apple Cider & Ashwagandha Blend",
 		intro:
-			"A modern gummy format built around Shilajit and a multi-ingredient herbal formula, presented with the same visual storytelling rhythm as your reference template.",
+			"A modern gummy pairing apple cider vinegar with ashwagandha — balance your day with a simple, tasty daily ritual.",
 		tiles: [
 			{
 				id: "format",
-				title: "7-in-1 Format",
-				body: "One convenient gummy format with a multi-ingredient story.",
+				title: "Dual-Action Formula",
+				body: "Apple cider vinegar and ashwagandha in one convenient gummy.",
 				icon: img("blend-icon-format.png", "", 252, 256),
 			},
 			{
@@ -27,20 +27,20 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			},
 			{
 				id: "clarity",
-				title: "Mental Clarity & Focus",
-				body: "One of the benefit categories currently listed on Kaya Pure.",
+				title: "Balance & Calm",
+				body: "Support steady energy and stress balance throughout your day.",
 				icon: img("blend-icon-clarity.png", "", 264, 284),
 			},
 			{
 				id: "gummies",
 				title: "Convenient Gummies",
-				body: "No powders or complicated multi-step preparation in the page experience.",
+				body: "No harsh vinegar shots or complicated prep — just chew and go.",
 				icon: img("blend-icon-gummies.png", "", 232, 276),
 			},
 		],
 		image: img(
 			"blend-section-bg.png",
-			"Kaya Pure 7-in-1 Shilajit Gummies lifestyle banner with product benefits",
+			"Kaya Pure Apple Cider and Ashwagandha Gummies lifestyle banner",
 			1942,
 			809,
 		),
@@ -54,7 +54,7 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		intro: "For customers looking for a convenient daily supplement format:",
 		checkItems: [
 			"Simple gummy format",
-			"Multi-ingredient product story",
+			"Apple cider & adaptogen blend",
 			"Daily wellness positioning",
 			"Portable bottle format",
 		],
@@ -82,7 +82,7 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		],
 		image: img(
 			"routine-section-bg.png",
-			"Kaya Pure 7-in-1 Shilajit Gummies jar on Himalayan rock with botanicals",
+			"Kaya Pure Apple Cider and Ashwagandha Gummies jar with botanicals",
 			1942,
 			809,
 		),
@@ -139,22 +139,17 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		titlePrefix: "A look ",
 		titleAccent: "inside the gummy",
 		intro:
-			"Seven botanicals in every serving. Amounts match the Supplement Facts panel: two gummies, 15 servings, 30 gummies per jar.",
+			"Key botanicals in every serving. Amounts match the Supplement Facts panel on your jar — two gummies per serving.",
 		ingredients: [
 			{
-				name: "Shilajit",
-				benefit: "Enhances strength, stamina, and focus.",
-				image: img("ingredients/shilajit-circle.png", "Raw Himalayan shilajit resin", 1254, 1254),
+				name: "Apple Cider Vinegar",
+				benefit: "Traditional wellness support in a gummy you'll actually enjoy.",
+				image: img("ingredients/ginger.png", "Fresh apple cider vinegar with apples", 1024, 1024),
 			},
 			{
 				name: "Ashwagandha",
 				benefit: "Reduces stress and supports relaxation.",
 				image: img("ingredients/ashwagandha-circle.png", "Ashwagandha root, powder, and leaves", 1254, 1254),
-			},
-			{
-				name: "Black Seed",
-				benefit: "A traditional botanical for immune-friendly daily support.",
-				image: img("ingredients/black-seed.png", "Black seed in a wooden bowl", 1022, 1024),
 			},
 			{
 				name: "Ginger",
@@ -163,21 +158,21 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			},
 			{
 				name: "Black Pepper",
-				benefit: "Supports digestion and metabolism.",
+				benefit: "Supports digestion and nutrient absorption.",
 				image: img("ingredients/black-pepper.png", "Black peppercorns with a wooden scoop", 1024, 1024),
 			},
 			{
-				name: "Tongkat Ali",
-				benefit: "Stamina and vitality support, paired with maca in the formula.",
-				image: img("ingredients/tongkat-ali.png", "Tongkat Ali roots", 1024, 1022),
+				name: "Black Seed",
+				benefit: "A traditional botanical for immune-friendly daily support.",
+				image: img("ingredients/black-seed.png", "Black seed in a wooden bowl", 1022, 1024),
 			},
 			{
 				name: "Maca Root",
-				benefit: "Natural energy for daily performance, paired with Tongkat Ali.",
+				benefit: "Natural energy for daily performance.",
 				image: img("ingredients/maca.png", "Maca roots and maca powder", 1024, 1024),
 			},
 		],
-		ctaLabel: "Shop 7-in-1 Gummies",
+		ctaLabel: "Shop Apple Cider Gummies",
 	},
 	comparison: {
 		titlePrefix: "How Kaya Pure",
@@ -186,7 +181,7 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			"A visual comparison using objective format differences rather than unsupported superiority claims.",
 		kayaPureLabel: "Kaya Pure",
 		traditionalLabel: "Traditional\nRoutine",
-		kayaPureImage: img("comparison-gummy.png", "Kaya Pure 7-in-1 Shilajit Gummy", 754, 503),
+		kayaPureImage: img("comparison-gummy.png", "Kaya Pure Apple Cider and Ashwagandha Gummy", 754, 503),
 		kayaPureLogo: img("comparison-kayapure-logo.svg", "Kaya Pure", 205, 46),
 		traditionalImage: img("comparison-product.png", "Traditional supplement bottle and tablets", 190, 230),
 		rows: [
@@ -223,45 +218,46 @@ export const shilajitGummiesStory: PdpStoryPack = {
 			"We offer a 60-day satisfaction guarantee. If you're not satisfied, email info@kayapure.com and we'll take care of you.",
 		image: img(
 			"faq-product.png",
-			"Kaya Pure Himalayan Shilajit 7-in-1 Gummies bottle with ginger, shilajit resin, and herbs",
+			"Kaya Pure Apple Cider and Ashwagandha Gummies bottle with botanicals",
 			1024,
 			1536,
 		),
 		items: [
 			{
 				id: "what-is",
-				question: "What is Kaya Pure 7-in-1 Shilajit Gummies?",
+				question: "What are Apple Cider & Ashwagandha Gummies?",
 				answer:
-					"A convenient gummy format built around Shilajit and a multi-ingredient herbal blend, designed as a simple addition to a daily wellness routine.",
+					"A convenient gummy format combining apple cider vinegar with ashwagandha and supporting botanicals — designed as a simple addition to a daily wellness routine.",
 			},
 			{
 				id: "how-to-use",
 				question: "How should I use it?",
 				answer:
-					"Take 2 gummies in the morning or before workout for best results. Most people start feeling increased energy and focus within 30-45 minutes, with peak effects lasting 4-6 hours. The adaptogenic benefits build over time, so you’ll notice even better stress resilience and energy stability after 2-3 weeks of consistent use.",
+					"Take 2 gummies daily with food, preferably in the morning or early afternoon. Consistency over 2–3 weeks helps you get the most from the adaptogenic ingredients.",
 			},
 			{
 				id: "side-effects",
 				question: "Are there any side effects?",
 				answer:
-					"Our supplement is made with natural ingredients and is generally well-tolerated. Some people may experience mild digestive upset. If you’re sensitive start with 1 gummy to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
+					"Our supplement is made with natural ingredients and is generally well-tolerated. Some people may experience mild digestive upset. If you're sensitive, start with 1 gummy to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
 			},
 			{
 				id: "sugar",
 				question: "Do these gummies contain sugar?",
-				answer: "Yes, KayaPure gummmies contain only 3 grams of sugar. You can consume it without any guilt.",
+				answer:
+					"Yes, Kaya Pure gummies contain only 3 grams of sugar per serving. You can enjoy them without guilt.",
 			},
 			{
 				id: "usage-with-other-supplements",
 				question: "Can I take this with other supplements or medications?",
 				answer:
-					"While our ingredients are natural, they can interact with certain medications, especially blood thinners or medications for anxiety/depression. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications. Avoid taking with other caffeine sources to prevent overstimulation.",
+					"While our ingredients are natural, they can interact with certain medications, especially blood thinners or medications for anxiety/depression. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications.",
 			},
 			{
 				id: "how-made",
 				question: "Are the ingredients organic and tested for quality?",
 				answer:
-					"All our ingredients are sourced from reputable suppliers and undergo third-party testing for purity and potency. While not all ingredients are certified organic, they are all natural and free from pesticides, heavy metals, and contaminants. We manufacture in an FDA-approved facility following strict GMP guidelines.",
+					"All our ingredients are sourced from reputable suppliers and undergo third-party testing for purity and potency. We manufacture in an FDA-approved facility following strict GMP guidelines.",
 			},
 		],
 		accordionIcons: {

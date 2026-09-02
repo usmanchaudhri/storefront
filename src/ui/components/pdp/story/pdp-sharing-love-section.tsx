@@ -188,13 +188,13 @@ export function PdpSharingLoveSection({ story }: { story: PdpStorySharingLove })
 									{testimonial.author}
 								</p>
 								<Image
-									src="/pdp/7-in-1-shilajit-gummies/social/stars.svg"
+									src={story.starsIcon.src}
 									alt=""
-									width={120}
-									height={30}
+									width={story.starsIcon.width}
+									height={story.starsIcon.height}
 									className="h-[30px] w-[120px]"
 									aria-hidden
-									unoptimized
+									unoptimized={story.starsIcon.src.endsWith(".svg")}
 								/>
 							</div>
 							<blockquote className="mx-auto mt-4 max-w-[28rem] text-pretty text-base leading-[1.4] text-[#073B35]">

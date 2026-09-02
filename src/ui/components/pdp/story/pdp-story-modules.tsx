@@ -439,7 +439,14 @@ function FaqSection({ story }: { story: PdpStoryPack["faq"] }) {
 				</div>
 
 				<div className="min-w-0 lg:pt-[7.5rem]">
-					<PdpStoryFaqAccordion items={story.items} defaultOpenId={story.items[0]?.id} />
+					<PdpStoryFaqAccordion
+						items={story.items}
+						accordionIcons={{
+							plus: story.accordionIcons.plus.src,
+							minus: story.accordionIcons.minus.src,
+						}}
+						defaultOpenId={story.items[0]?.id}
+					/>
 				</div>
 			</div>
 		</section>

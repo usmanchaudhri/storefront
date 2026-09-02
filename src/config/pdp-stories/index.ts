@@ -1,11 +1,13 @@
 import { shilajitGummiesStory } from "./7-in-1-shilajit-gummies";
+import { appleCiderAshwagandhaGummiesStory } from "./apple-cider-ashwagandha-gummies";
 import type { PdpStoryPack } from "./types";
 
 export type { PdpStoryPack, PdpStoryImage } from "./types";
-export { shilajitGummiesStory };
+export { shilajitGummiesStory, appleCiderAshwagandhaGummiesStory };
 
 const PDP_STORIES: Record<string, PdpStoryPack> = {
 	[shilajitGummiesStory.slug]: shilajitGummiesStory,
+	[appleCiderAshwagandhaGummiesStory.slug]: appleCiderAshwagandhaGummiesStory,
 };
 
 /** Homepage and older links may still use this slug. */

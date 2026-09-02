@@ -5,11 +5,12 @@ import { useState } from "react";
 import type { PdpStoryFaqItem } from "@/config/pdp-stories/types";
 import { cn } from "@/lib/utils";
 
-const PLUS_ICON = "/pdp/7-in-1-shilajit-gummies/faq-icon-plus.svg";
-const MINUS_ICON = "/pdp/7-in-1-shilajit-gummies/faq-icon-minus.svg";
-
 type PdpStoryFaqAccordionProps = {
 	items: readonly PdpStoryFaqItem[];
+	accordionIcons: {
+		plus: string;
+		minus: string;
+	};
 	/** Figma shows the first item in the open (minus) state. */
 	defaultOpenId?: string;
 };
@@ -17,7 +18,7 @@ type PdpStoryFaqAccordionProps = {
 /**
  * Figma 2435:996 FAQ accordion — teal circular +/- controls, #00A38C bottom borders.
  */
-export function PdpStoryFaqAccordion({ items, defaultOpenId }: PdpStoryFaqAccordionProps) {
+export function PdpStoryFaqAccordion({ items, accordionIcons, defaultOpenId }: PdpStoryFaqAccordionProps) {
 	const [openId, setOpenId] = useState<string | null>(defaultOpenId ?? null);
 
 	return (
@@ -40,7 +41,7 @@ export function PdpStoryFaqAccordion({ items, defaultOpenId }: PdpStoryFaqAccord
 								aria-hidden
 							>
 								<Image
-									src={isOpen ? MINUS_ICON : PLUS_ICON}
+									src={isOpen ? accordionIcons.minus : accordionIcons.plus}
 									alt=""
 									width={17}
 									height={17}

@@ -70,6 +70,7 @@ export type PdpStorySharingLove = {
 	titleSuffix: string;
 	clips: readonly PdpStorySocialClip[];
 	testimonials: readonly PdpStorySocialTestimonial[];
+	starsIcon: PdpStoryImage;
 	ctaLabel: string;
 };
 
@@ -107,6 +108,10 @@ export type PdpStoryFaq = {
 	intro: string;
 	image: PdpStoryImage;
 	items: readonly PdpStoryFaqItem[];
+	accordionIcons: {
+		plus: PdpStoryImage;
+		minus: PdpStoryImage;
+	};
 };
 
 /** Figma node 2435:1040 — teal trust / benefit bar. */
