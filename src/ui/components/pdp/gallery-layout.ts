@@ -38,7 +38,7 @@ export interface PdpLayoutClasses {
 	/** Product info / buy-box column wrapper. */
 	infoColumn: string;
 	/**
-	 * Where the `ProductAttributes` accordion (description / details / shipping)
+	 * Where the `ProductAttributes` accordion (details / shipping)
 	 * renders.
 	 * - `"info"`: under the buy box in the info column (classic split layout).
 	 * - `"gallery"`: below the images in the wide column, keeping the sticky buy

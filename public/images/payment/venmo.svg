@@ -1,0 +1,37 @@
+<svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="38" height="24" fill="#E9E8DE"/>
+<g id="Kaya Pure New Landing Page Design" clip-path="url(#clip0_0_1)">
+<rect width="1920" height="10575" transform="translate(-1405.41 -10409.2)" fill="white"/>
+<rect width="1920" height="10575" transform="translate(-1405.41 -10409.2)" fill="#F7F7F7"/>
+<g id="sections: footer-group &#226;&#134;&#146; Footer">
+<rect width="1920" height="1063.17" transform="translate(-1405.41 -890.17)" fill="#005449"/>
+<g id="Container">
+<g id="HorizontalBorder">
+<mask id="path-1-inside-1_0_1" fill="white">
+<path d="M-1072.91 -72H182.09V43H-1072.91V-72Z"/>
+</mask>
+<path d="M-1072.91 -72V-71H182.09V-72V-73H-1072.91V-72Z" fill="#F7F1DF" mask="url(#path-1-inside-1_0_1)"/>
+<g id="List">
+<g id="Item">
+<g id="Img" clip-path="url(#clip1_0_1)">
+<g id="Group">
+<path id="Vector" d="M35 0H3C1.34315 0 0 1.34315 0 3V21C0 22.6569 1.34315 24 3 24H35C36.6569 24 38 22.6569 38 21V3C38 1.34315 36.6569 0 35 0Z" fill="black" fill-opacity="0.07"/>
+<path id="Vector_2" fill-rule="evenodd" clip-rule="evenodd" d="M35 1C36.1 1 37 1.9 37 3V21C37 22.1 36.1 23 35 23H3C1.9 23 1 22.1 1 21V3C1 1.9 1.9 1 3 1H35Z" fill="#3D95CE"/>
+<path id="Vector_3" d="M24.6754 8.36039C24.6754 11.4244 22.1184 15.4054 20.0424 18.2004H15.3024L13.4004 6.57039L17.5514 6.16839L18.5564 14.4434C19.4964 12.8774 20.6554 10.4184 20.6554 8.74139C20.6554 7.82339 20.5014 7.19839 20.2614 6.68339L24.0414 5.90039C24.4784 6.63839 24.6754 7.39939 24.6754 8.36039Z" fill="white"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_1">
+<rect width="1920" height="10575" fill="white" transform="translate(-1405.41 -10409.2)"/>
+</clipPath>
+<clipPath id="clip1_0_1">
+<rect width="38" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg>

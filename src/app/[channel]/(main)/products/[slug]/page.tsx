@@ -184,7 +184,6 @@ async function ProductShell({
 
 	const productAttributesNode = (
 		<ProductAttributes
-			descriptionHtml={descriptionHtml}
 			attributes={productAttributes}
 			careInstructions={careInstructions}
 			policyLabels={policyLabels}
@@ -208,7 +207,11 @@ async function ProductShell({
 								<>
 									<div className={layout.galleryColumn}>{galleryFallback}</div>
 									<div className={layout.infoColumn}>
-										<div className="order-2 h-10 w-3/4 max-w-md animate-pulse rounded bg-muted" />
+										<div className="order-2 space-y-2">
+											<div className="h-10 w-3/4 max-w-md animate-pulse rounded bg-muted" />
+											<div className="h-[20px] w-48 animate-pulse rounded bg-muted" />
+											<div className="h-16 w-full max-w-lg animate-pulse rounded bg-muted" />
+										</div>
 										<VariantSectionSkeleton />
 										{layout.attributesPlacement === "info" && (
 											<div className="order-4 mt-6">
@@ -224,6 +227,7 @@ async function ProductShell({
 								channel={params.channel}
 								searchParams={searchParams}
 								layout={layout}
+								descriptionHtml={descriptionHtml}
 								productAttributesNode={productAttributesNode}
 							/>
 						</Suspense>

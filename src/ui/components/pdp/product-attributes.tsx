@@ -17,7 +17,6 @@ interface Attribute {
 }
 
 interface ProductAttributesProps {
-	descriptionHtml?: string[] | null;
 	attributes?: Attribute[];
 	careInstructions?: string | null;
 	policyLabels: PolicyLabelValues;
@@ -44,7 +43,6 @@ function interpolatePolicyCopy(template: string, policyLabels: PolicyLabelValues
 }
 
 export function ProductAttributes({
-	descriptionHtml,
 	attributes = [],
 	careInstructions,
 	policyLabels,
@@ -69,7 +67,6 @@ export function ProductAttributes({
 	const displayAttributes = attributes.filter((attr) => !["Size", "Color", "Bundle"].includes(attr.name));
 
 	const hasContent =
-		(descriptionHtml && descriptionHtml.length > 0) ||
 		displayAttributes.length > 0 ||
 		careInstructions ||
 		policyLabels.freeShippingThreshold ||
@@ -80,22 +77,7 @@ export function ProductAttributes({
 	}
 
 	return (
-		<Accordion type="multiple" defaultValue={["description"]} className={className}>
-			{descriptionHtml && descriptionHtml.length > 0 && (
-				<AccordionItemWithContext value="description" className="border-border">
-					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
-						Description
-					</AccordionTrigger>
-					<AccordionContent>
-						<div className="prose max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground prose-a:text-foreground prose-strong:text-foreground">
-							{descriptionHtml.map((html) => (
-								<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
-							))}
-						</div>
-					</AccordionContent>
-				</AccordionItemWithContext>
-			)}
-
+		<Accordion type="multiple" className={className}>
 			{displayAttributes.length > 0 && (
 				<AccordionItemWithContext value="details" className="border-border">
 					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">

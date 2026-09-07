@@ -13,6 +13,7 @@ import { resolveSelectedVariantId, type Product } from "./gallery-utils";
 import { PdpVariantProvider } from "./pdp-variant-provider";
 import { VariantBuyBox } from "./variant-buy-box";
 import { VariantGalleryClient } from "./variant-gallery-client";
+import { PdpReviewRating } from "./pdp-review-rating";
 import type { PdpLayoutClasses } from "./gallery-layout";
 
 interface PdpInteractiveProps {
@@ -20,6 +21,7 @@ interface PdpInteractiveProps {
 	channel: string;
 	searchParams: Promise<{ variant?: string }>;
 	layout: PdpLayoutClasses;
+	descriptionHtml?: string[] | null;
 	productAttributesNode?: ReactNode;
 }
 
@@ -34,6 +36,7 @@ export async function PdpInteractive({
 	channel,
 	searchParams,
 	layout,
+	descriptionHtml,
 	productAttributesNode,
 }: PdpInteractiveProps) {
 	const { variant: variantParam } = await searchParams;
@@ -98,9 +101,20 @@ export async function PdpInteractive({
 			</div>
 
 			<div className={layout.infoColumn}>
-				<h1 className="order-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
-					{product.name}
-				</h1>
+				<div className="order-2">
+					<h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+						{product.name}
+					</h1>
+					{/* Figma 2435:843 — review rating under product title */}
+					<PdpReviewRating />
+					{descriptionHtml && descriptionHtml.length > 0 ? (
+						<div className="text-foreground/80 prose-p:text-foreground/80 prose mt-3 max-w-none text-base leading-relaxed prose-headings:text-foreground prose-p:my-0 prose-a:text-foreground prose-strong:text-foreground">
+							{descriptionHtml.map((html) => (
+								<div key={html} dangerouslySetInnerHTML={{ __html: html }} />
+							))}
+						</div>
+					) : null}
+				</div>
 
 				<VariantBuyBox addToCartAction={addToCart} />
 

@@ -1,16 +1,13 @@
-import Link from "next/link";
 import { LinkWithChannel } from "../atoms/link-with-channel";
 import { ChannelSelect } from "./channel-select";
 import { ChannelsListDocument } from "@/gql/graphql";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { footerLearnMoreNav, footerProductSections } from "@/config/footer";
-import { channelHref } from "@/lib/channel-path";
 import { cn } from "@/lib/utils";
-import { CopyrightText } from "./copyright-text";
+import { FooterLegalBar } from "./footer-legal-bar";
 import { FooterNewsletter } from "./footer-newsletter";
 import { homeSignatureBannerSurfaceClass } from "./home/home-section-styles";
-import { Logo } from "./shared/logo";
 
 const footerLinkClass = "text-base text-white/80 transition-colors hover:text-white";
 
@@ -91,14 +88,6 @@ export async function Footer({ channel }: { channel: string }) {
 					</div>
 				</div>
 
-				{/* Figma 2435:1490 wordmark — after menu columns */}
-				<Link href={channelHref(channel, "/")} prefetch={false} className="mt-10 block lg:mt-12">
-					<Logo
-						className="mx-auto h-auto max-h-28 w-full max-w-md object-contain object-center lg:max-h-36 lg:max-w-xl"
-						variant="footer"
-					/>
-				</Link>
-
 				{/* Channel selector */}
 				{channels?.channels && (
 					<div className="mt-8 text-white/80">
@@ -109,28 +98,8 @@ export async function Footer({ channel }: { channel: string }) {
 					</div>
 				)}
 
-				{/* Bottom bar */}
-				<div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/20 pt-8 sm:flex-row">
-					<p className="text-sm text-white/70">
-						<CopyrightText />
-					</p>
-					<div className="flex items-center gap-6">
-						<Link
-							href="/privacy"
-							prefetch={false}
-							className="text-sm text-white/70 transition-colors hover:text-white"
-						>
-							Privacy Policy
-						</Link>
-						<Link
-							href="/terms"
-							prefetch={false}
-							className="text-sm text-white/70 transition-colors hover:text-white"
-						>
-							Terms of Service
-						</Link>
-					</div>
-				</div>
+				{/* Figma 2435:1192 — legal strip + payment badges */}
+				<FooterLegalBar />
 			</div>
 		</footer>
 	);

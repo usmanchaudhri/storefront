@@ -63,7 +63,11 @@ export function ProductRouteSkeleton({ surface = "page" }: ProductRouteSkeletonP
 					</div>
 
 					<div className={layout.infoColumn}>
-						<div className="order-2 h-10 w-3/4 max-w-md animate-pulse rounded bg-muted" />
+						<div className="order-2 space-y-2">
+							<div className="h-10 w-3/4 max-w-md animate-pulse rounded bg-muted" />
+							<div className="h-[20px] w-48 animate-pulse rounded bg-muted" />
+							<div className="h-16 w-full max-w-lg animate-pulse rounded bg-muted" />
+						</div>
 						<VariantSectionSkeleton />
 						{layout.attributesPlacement === "info" && (
 							<div className="order-4 mt-6">
