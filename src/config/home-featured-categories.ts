@@ -1,9 +1,0 @@
-import { headerShopAllMegaNav } from "@/config/nav";
-
-/** Homepage shop sections — one row per product family (Gummies / Shots / Drops). */
-export const homeFeaturedCategories = headerShopAllMegaNav.map((column) => ({
-	title: column.name,
-	slug: column.slug,
-	tagline: column.tagline,
-	productSlugOrder: column.products.map((product) => product.slug),
-}));

@@ -1,9 +1,10 @@
-import { homeFeaturedCategories } from "@/config/home-featured-categories";
 import {
-	HomeFeaturedProductsBySlugDocument,
-	ProductListByCategoryDocument,
-	type ProductListItemFragment,
-} from "@/gql/graphql";
+	SHOP_ALL_NAV_CACHE_VERSION,
+	SHOP_ALL_NAV_PRODUCTS_PER_CATEGORY,
+	SHOP_ALL_NAV_THUMBNAIL_SIZE,
+	fetchShopAllMegaNav,
+} from "@/ui/components/nav/shop-all-nav-data";
+import { ProductListByCategoryDocument, type ProductListItemFragment } from "@/gql/graphql";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { executePublicGraphQL } from "@/lib/graphql";
 import { FEATURED_COLLECTION_IMAGE_SIZES } from "@/lib/images";
@@ -14,51 +15,6 @@ import {
 } from "@/ui/components/home/home-section-styles";
 
 const PRODUCTS_PER_CATEGORY = 12;
-
-function sortProductsBySlugOrder(
-	products: readonly ProductListItemFragment[],
-	slugOrder: readonly string[],
-): ProductListItemFragment[] {
-	const order = new Map(slugOrder.map((slug, index) => [slug, index]));
-
-	return [...products].sort((a, b) => {
-		const aIndex = order.get(a.slug) ?? Number.MAX_SAFE_INTEGER;
-		const bIndex = order.get(b.slug) ?? Number.MAX_SAFE_INTEGER;
-		return aIndex - bIndex;
-	});
-}
-
-async function getProductsBySlugs(slugs: readonly string[], channel: string) {
-	"use cache";
-
-	if (slugs.length === 0) {
-		return [];
-	}
-
-	applyCacheProfile(CACHE_PROFILES.products, `home-slugs-${slugs.join(",")}`);
-
-	const result = await executePublicGraphQL(HomeFeaturedProductsBySlugDocument, {
-		variables: { channel, slugs: [...slugs] },
-		revalidate: 300,
-	});
-
-	if (!result.ok) {
-		console.warn(`[HomeFeaturedCategories] Failed to fetch products by slug:`, result.error.message);
-		return [];
-	}
-
-	return result.data.products?.edges.map(({ node }) => node) ?? [];
-}
-
-async function getCategoryProducts(slug: string, channel: string, productSlugOrder: readonly string[]) {
-	const fromCategory = await fetchCategoryProducts(slug, channel);
-
-	if (fromCategory.length > 0) {
-		return fromCategory;
-	}
-
-	return getProductsBySlugs(productSlugOrder, channel);
-}
 
 async function fetchCategoryProducts(slug: string, channel: string) {
 	"use cache";
@@ -71,7 +27,7 @@ async function fetchCategoryProducts(slug: string, channel: string) {
 
 	if (!result.ok) {
 		console.warn(`[HomeFeaturedCategories] Failed to fetch category ${slug}:`, result.error.message);
-		return [];
+		return [] as ProductListItemFragment[];
 	}
 
 	return result.data.category?.products?.edges.map(({ node }) => node) ?? [];
@@ -82,8 +38,8 @@ export function HomeFeaturedCategoriesSkeleton() {
 		<section aria-hidden>
 			<div className={homeFeaturedShopShellClass}>
 				<div className="space-y-10">
-					{homeFeaturedCategories.map((category) => (
-						<div key={category.slug}>
+					{Array.from({ length: 3 }).map((_, categoryIndex) => (
+						<div key={categoryIndex}>
 							<div className="mb-6 h-7 w-32 animate-pulse rounded bg-secondary" />
 							<div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
 								{Array.from({ length: 3 }).map((_, index) => (
@@ -103,14 +59,22 @@ export function HomeFeaturedCategoriesSkeleton() {
 }
 
 export async function HomeFeaturedCategories({ channel }: { channel: string }) {
+	const shopAllNav = await fetchShopAllMegaNav(
+		channel,
+		undefined,
+		SHOP_ALL_NAV_THUMBNAIL_SIZE,
+		SHOP_ALL_NAV_PRODUCTS_PER_CATEGORY,
+		SHOP_ALL_NAV_CACHE_VERSION,
+	);
+
 	const categoryProducts = await Promise.all(
-		homeFeaturedCategories.map(async (category) => {
-			const products = await getCategoryProducts(category.slug, channel, category.productSlugOrder);
-			const sorted = sortProductsBySlugOrder(products, category.productSlugOrder);
+		shopAllNav.columns.map(async (category) => {
+			const products = await fetchCategoryProducts(category.slug, channel);
 
 			return {
-				...category,
-				productCards: sorted.map((product) => transformToProductCard(product, channel)),
+				title: category.name,
+				slug: category.slug,
+				productCards: products.map((product) => transformToProductCard(product, channel)),
 			};
 		}),
 	);

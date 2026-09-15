@@ -1,0 +1,32 @@
+# Single round-trip for Shop All mega menu: root category → child categories → products + thumbnails.
+query ShopAllNavMegaMenu($slug: String!, $channel: String!, $firstProducts: Int!, $thumbnailSize: Int!) {
+	category(slug: $slug) {
+		id
+		slug
+		name
+		children(first: 20) {
+			edges {
+				node {
+					id
+					name
+					slug
+					description
+					seoDescription
+					products(first: $firstProducts, channel: $channel) {
+						edges {
+							node {
+								slug
+								name
+								updatedAt
+								thumbnail(size: $thumbnailSize, format: WEBP) {
+									url
+									alt
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

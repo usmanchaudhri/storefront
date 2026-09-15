@@ -5,11 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Package } from "lucide-react";
 import { LinkWithChannel } from "@/ui/atoms/link-with-channel";
-import {
-	headerShopAllMegaNav,
-	type ShopAllCategoryColumn,
-	type ShopAllProductThumbnailMap,
-} from "@/config/nav";
+import type { ShopAllCategoryColumn } from "@/config/nav";
 import { cn } from "@/lib/utils";
 
 const HOVER_CLOSE_DELAY_MS = 200;
@@ -38,8 +34,8 @@ const triggerClass = cn(
 	"data-[state=open]:bg-[#D9F6F1]",
 );
 
-function ProductCardImage({ slug, thumbnails }: { slug: string; thumbnails: ShopAllProductThumbnailMap }) {
-	const thumb = thumbnails[slug];
+function ProductCardImage({ product }: { product: ShopAllCategoryColumn["products"][number] }) {
+	const thumb = product.thumbnail;
 
 	return (
 		<div className={cn("relative aspect-square w-full overflow-hidden rounded-[12px]", MEGA.imageGradient)}>
@@ -64,13 +60,11 @@ function ProductCardImage({ slug, thumbnails }: { slug: string; thumbnails: Shop
 function ShopAllProductCard({
 	product,
 	channel,
-	thumbnails,
 	tagline,
 	onNavigate,
 }: {
 	product: ShopAllCategoryColumn["products"][number];
 	channel: string;
-	thumbnails: ShopAllProductThumbnailMap;
 	tagline: string;
 	onNavigate?: () => void;
 }) {
@@ -86,7 +80,7 @@ function ShopAllProductCard({
 				MEGA.cardShadow,
 			)}
 		>
-			<ProductCardImage slug={product.slug} thumbnails={thumbnails} />
+			<ProductCardImage product={product} />
 			<div className="min-w-0 px-1 pt-1">
 				<p className={cn("truncate text-[13px] font-bold leading-snug", MEGA.title)}>{product.name}</p>
 				{tagline ? (
@@ -103,12 +97,10 @@ function ShopAllProductCard({
 function ShopAllProductGrid({
 	column,
 	channel,
-	thumbnails,
 	onNavigate,
 }: {
 	column: ShopAllCategoryColumn;
 	channel: string;
-	thumbnails: ShopAllProductThumbnailMap;
 	onNavigate?: () => void;
 }) {
 	return (
@@ -118,7 +110,6 @@ function ShopAllProductGrid({
 					key={product.slug}
 					product={product}
 					channel={channel}
-					thumbnails={thumbnails}
 					tagline={column.tagline}
 					onNavigate={onNavigate}
 				/>
@@ -129,18 +120,21 @@ function ShopAllProductGrid({
 
 function ShopAllMegaPanel({
 	channel,
-	thumbnails,
+	columns,
 	className,
 	onNavigate,
 }: {
 	channel: string;
-	thumbnails: ShopAllProductThumbnailMap;
+	columns: readonly ShopAllCategoryColumn[];
 	className?: string;
 	onNavigate?: () => void;
 }) {
-	const [activeSlug, setActiveSlug] = useState<string>(headerShopAllMegaNav[0]?.slug ?? "");
-	const activeColumn =
-		headerShopAllMegaNav.find((column) => column.slug === activeSlug) ?? headerShopAllMegaNav[0];
+	const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+	const activeSlug =
+		selectedSlug && columns.some((column) => column.slug === selectedSlug)
+			? selectedSlug
+			: columns[0]?.slug ?? "";
+	const activeColumn = columns.find((column) => column.slug === activeSlug) ?? columns[0] ?? null;
 
 	return (
 		<div className={cn("flex w-full overflow-hidden bg-white", className)}>
@@ -163,7 +157,7 @@ function ShopAllMegaPanel({
 				</p>
 
 				<ul className="flex flex-col" role="list">
-					{headerShopAllMegaNav.map((column) => {
+					{columns.map((column) => {
 						const isActive = column.slug === activeColumn?.slug;
 
 						return (
@@ -172,8 +166,8 @@ function ShopAllMegaPanel({
 									href={`/categories/${column.slug}`}
 									channel={channel}
 									prefetch={false}
-									onMouseEnter={() => setActiveSlug(column.slug)}
-									onFocus={() => setActiveSlug(column.slug)}
+									onMouseEnter={() => setSelectedSlug(column.slug)}
+									onFocus={() => setSelectedSlug(column.slug)}
 									onClick={onNavigate}
 									aria-current={isActive ? "true" : undefined}
 									className={cn(
@@ -210,12 +204,7 @@ function ShopAllMegaPanel({
 			{/* Right pane — product cards */}
 			<div className="min-w-0 flex-1 p-4 sm:p-5 lg:p-6">
 				{activeColumn && (
-					<ShopAllProductGrid
-						column={activeColumn}
-						channel={channel}
-						thumbnails={thumbnails}
-						onNavigate={onNavigate}
-					/>
+					<ShopAllProductGrid column={activeColumn} channel={channel} onNavigate={onNavigate} />
 				)}
 			</div>
 		</div>
@@ -255,10 +244,10 @@ function useHoverMenuState() {
 
 function ShopAllDesktopHoverMenu({
 	channel,
-	thumbnails,
+	columns,
 }: {
 	channel: string;
-	thumbnails: ShopAllProductThumbnailMap;
+	columns: readonly ShopAllCategoryColumn[];
 }) {
 	const { open, openMenu, scheduleClose, closeMenu } = useHoverMenuState();
 
@@ -292,7 +281,7 @@ function ShopAllDesktopHoverMenu({
 					<div className="absolute -top-3 left-0 right-0 h-3" aria-hidden />
 					<div className={cn("w-full border-b border-[#E5EFED] bg-white", MEGA.panelShadow)}>
 						<div className="mx-auto max-w-[1600px]">
-							<ShopAllMegaPanel channel={channel} thumbnails={thumbnails} onNavigate={closeMenu} />
+							<ShopAllMegaPanel channel={channel} columns={columns} onNavigate={closeMenu} />
 						</div>
 					</div>
 				</div>
@@ -303,10 +292,10 @@ function ShopAllDesktopHoverMenu({
 
 function ShopAllMobileAccordion({
 	channel,
-	thumbnails,
+	columns,
 }: {
 	channel: string;
-	thumbnails: ShopAllProductThumbnailMap;
+	columns: readonly ShopAllCategoryColumn[];
 }) {
 	const [open, setOpen] = useState(false);
 	const [openCategory, setOpenCategory] = useState<string | null>(null);
@@ -339,7 +328,7 @@ function ShopAllMobileAccordion({
 					>
 						Shop by collection
 					</p>
-					{headerShopAllMegaNav.map((column) => {
+					{columns.map((column) => {
 						const isCatOpen = openCategory === column.slug;
 						return (
 							<div key={column.slug} className="px-2">
@@ -362,7 +351,6 @@ function ShopAllMobileAccordion({
 												<ShopAllProductCard
 													product={product}
 													channel={channel}
-													thumbnails={thumbnails}
 													tagline={column.tagline}
 													onNavigate={closeMenu}
 												/>
@@ -395,18 +383,22 @@ function ShopAllMobileAccordion({
 
 export function NavShopAllMenu({
 	channel,
-	productThumbnails = {},
+	columns,
 }: {
 	channel: string;
-	productThumbnails?: ShopAllProductThumbnailMap;
+	columns: readonly ShopAllCategoryColumn[];
 }) {
 	const pathname = usePathname();
 
+	if (columns.length === 0) {
+		return null;
+	}
+
 	return (
 		<>
-			<ShopAllDesktopHoverMenu key={pathname} channel={channel} thumbnails={productThumbnails} />
+			<ShopAllDesktopHoverMenu key={pathname} channel={channel} columns={columns} />
 			<li className="w-full lg:hidden">
-				<ShopAllMobileAccordion key={pathname} channel={channel} thumbnails={productThumbnails} />
+				<ShopAllMobileAccordion key={pathname} channel={channel} columns={columns} />
 			</li>
 		</>
 	);

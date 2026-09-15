@@ -120,10 +120,11 @@ export function HomeHeroDigestiveTextOverlay({
 				{BENEFITS.map((benefit, index) => (
 					<li
 						key={benefit.label}
-						className={cn(
-							"flex flex-1 flex-col items-center",
-							index < BENEFITS.length - 1 && "border-white/22 border-r",
-						)}
+						className={
+							index < BENEFITS.length - 1
+								? "border-white/22 flex flex-1 flex-col items-center border-r"
+								: "flex flex-1 flex-col items-center"
+						}
 					>
 						<span
 							className="flex items-center justify-center rounded-full border-solid"

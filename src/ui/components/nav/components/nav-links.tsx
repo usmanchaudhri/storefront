@@ -5,16 +5,25 @@ import { NavShopAllMenu } from "./nav-shop-all-menu";
 import { headerContentNav, shouldOmitNavbarCategory } from "@/config/nav";
 import {
 	SHOP_ALL_NAV_CACHE_VERSION,
+	SHOP_ALL_NAV_PRODUCTS_PER_CATEGORY,
 	SHOP_ALL_NAV_THUMBNAIL_SIZE,
-	fetchShopAllProductThumbnails,
+	fetchShopAllMegaNav,
 } from "@/ui/components/nav/shop-all-nav-data";
 import { fetchNavbarMenuItems } from "@/ui/components/nav/nav-menu-data";
 
 export const NavLinks = async ({ channel }: { channel: string }) => {
-	const [productThumbnails, menuItems] = await Promise.all([
-		fetchShopAllProductThumbnails(channel, SHOP_ALL_NAV_THUMBNAIL_SIZE, SHOP_ALL_NAV_CACHE_VERSION),
+	const [shopAllNav, menuItems] = await Promise.all([
+		fetchShopAllMegaNav(
+			channel,
+			undefined,
+			SHOP_ALL_NAV_THUMBNAIL_SIZE,
+			SHOP_ALL_NAV_PRODUCTS_PER_CATEGORY,
+			SHOP_ALL_NAV_CACHE_VERSION,
+		),
 		fetchNavbarMenuItems(channel),
 	]);
+
+	const shopAllCategorySlugs = new Set(shopAllNav.categorySlugs);
 
 	const contentLinks = headerContentNav.map((item) => (
 		<NavLink key={item.href} href={item.href} channel={channel}>
@@ -31,7 +40,7 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 	if (!menuItems) {
 		return (
 			<>
-				<NavShopAllMenu channel={channel} productThumbnails={productThumbnails} />
+				<NavShopAllMenu channel={channel} columns={shopAllNav.columns} />
 				{contentLinks}
 			</>
 		);
@@ -39,11 +48,11 @@ export const NavLinks = async ({ channel }: { channel: string }) => {
 
 	return (
 		<>
-			<NavShopAllMenu channel={channel} productThumbnails={productThumbnails} />
+			<NavShopAllMenu channel={channel} columns={shopAllNav.columns} />
 			{contentLinks}
 			{menuItems.map((item) => {
 				if (item.category) {
-					if (shouldOmitNavbarCategory(item.category.slug)) {
+					if (shouldOmitNavbarCategory(item.category.slug, shopAllCategorySlugs)) {
 						return null;
 					}
 					return (
