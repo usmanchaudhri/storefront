@@ -1,22 +1,22 @@
 import type { PdpStoryImage, PdpStoryPack } from "./types";
 
-const BASE = "/pdp/apple-cider-ashwagandha-gummies";
+const BASE = "/pdp/pure-shilajit-liquid-drops";
 
 function img(file: string, alt: string, width: number, height: number): PdpStoryImage {
 	return { src: `${BASE}/${file}`, alt, width, height };
 }
 
-export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
-	slug: "apple-cider-ashwagandha-gummies",
+export const pureShilajitLiquidDropsStory: PdpStoryPack = {
+	slug: "pure-shilajit-liquid-drops",
 	blend: {
-		title: "The Kaya Pure Apple Cider & Ashwagandha Blend",
+		title: "The Kaya Pure Shilajit Liquid Drops Blend",
 		intro:
-			"A modern gummy pairing apple cider vinegar with ashwagandha — balance your day with a simple, tasty daily ritual.",
+			"Pure Himalayan shilajit in a liquid drop format — a simple daily ritual for energy, vitality, and wellness.",
 		tiles: [
 			{
 				id: "format",
-				title: "Dual-Action Formula",
-				body: "Apple cider vinegar and ashwagandha in one convenient gummy.",
+				title: "Liquid Shilajit",
+				body: "Traditional Himalayan shilajit delivered in an easy liquid drop format.",
 				icon: img("blend-icon-format.png", "", 252, 256),
 			},
 			{
@@ -27,20 +27,20 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			},
 			{
 				id: "clarity",
-				title: "Balance & Calm",
-				body: "Support steady energy and stress balance throughout your day.",
+				title: "Energy & Focus",
+				body: "Support steady energy and daily vitality with each serving.",
 				icon: img("blend-icon-clarity.png", "", 264, 284),
 			},
 			{
 				id: "gummies",
-				title: "Convenient Gummies",
-				body: "No harsh vinegar shots or complicated prep — just chew and go.",
+				title: "Convenient Drops",
+				body: "No messy resin prep — just add drops to water or take under the tongue.",
 				icon: img("blend-icon-gummies.png", "", 232, 276),
 			},
 		],
 		image: img(
 			"blend-section-bg.png",
-			"Hands holding Kaya Pure Apple Cider and Ashwagandha Gummies jar against mountain sunset",
+			"Hands holding Kaya Pure Pure Shilajit Liquid Drops bottle",
 			1942,
 			809,
 		),
@@ -51,17 +51,17 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 	},
 	routine: {
 		title: "Can Kaya Pure fit your routine?",
-		intro: "For customers looking for a convenient daily supplement format:",
+		intro: "For customers looking for a convenient daily shilajit ritual:",
 		checkItems: [
-			"Simple gummy format",
-			"Apple cider & adaptogen blend",
+			"Simple liquid drop format",
+			"Pure Himalayan shilajit",
 			"Daily wellness positioning",
 			"Portable bottle format",
 		],
 		iconItems: [
 			{
 				id: "convenient",
-				label: "Convenient gummy format",
+				label: "Convenient drop format",
 				icon: img("routine-icon-convenient.svg", "", 48, 48),
 			},
 			{
@@ -82,7 +82,7 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 		],
 		image: img(
 			"routine-section-bg.png",
-			"Kaya Pure Apple Cider and Ashwagandha Gummies jar with apple and botanicals on marble",
+			"Kaya Pure Pure Shilajit Liquid Drops bottle with resin against mountain landscape",
 			1942,
 			809,
 		),
@@ -94,12 +94,12 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 		clips: [
 			{
 				id: "social-1",
-				poster: img("social/clip-1.png", "Customer sharing Kaya Pure gummy experience", 450, 800),
+				poster: img("social/clip-1.png", "Customer sharing Kaya Pure experience", 450, 800),
 				mp4Url: "/videos/section-video-2.mp4",
 			},
 			{
 				id: "social-2",
-				poster: img("social/clip-2.png", "Customer sharing stress relief gummy routine", 450, 800),
+				poster: img("social/clip-2.png", "Customer sharing wellness routine", 450, 800),
 				mp4Url: "/videos/section-video-3-1.mp4",
 			},
 			{
@@ -137,42 +137,21 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 	},
 	lookInside: {
 		titlePrefix: "A look ",
-		titleAccent: "inside the gummy",
-		intro:
-			"Key botanicals in every serving. Amounts match the Supplement Facts panel on your jar — two gummies per serving.",
+		titleAccent: "inside",
+		intro: "A pure liquid formula. Amounts match the Supplement Facts panel on your bottle.",
 		ingredients: [
 			{
-				name: "Apple Cider Vinegar",
-				benefit: "Traditional wellness support in a gummy you'll actually enjoy.",
-				image: img("ingredients/ginger.png", "Fresh apple cider vinegar with apples", 1024, 1024),
+				name: "Shilajit",
+				benefit: "Enhances strength, stamina, and focus.",
+				image: img("ingredients/shilajit.png", "Raw Himalayan shilajit resin", 1254, 1254),
 			},
 			{
-				name: "Ashwagandha",
-				benefit: "Reduces stress and supports relaxation.",
-				image: img("ingredients/ashwagandha-circle.png", "Ashwagandha root, powder, and leaves", 1254, 1254),
-			},
-			{
-				name: "Ginger",
-				benefit: "Supports digestion and antioxidant balance.",
-				image: img("ingredients/ginger.png", "Fresh ginger root and slices", 1024, 1024),
-			},
-			{
-				name: "Black Pepper",
-				benefit: "Supports digestion and nutrient absorption.",
-				image: img("ingredients/black-pepper.png", "Black peppercorns with a wooden scoop", 1024, 1024),
-			},
-			{
-				name: "Black Seed",
-				benefit: "A traditional botanical for immune-friendly daily support.",
-				image: img("ingredients/black-seed.png", "Black seed in a wooden bowl", 1022, 1024),
-			},
-			{
-				name: "Maca Root",
-				benefit: "Natural energy for daily performance.",
-				image: img("ingredients/maca.png", "Maca roots and maca powder", 1024, 1024),
+				name: "Distilled Water",
+				benefit: "A clean liquid base for easy daily dosing.",
+				image: img("ingredients/distilled-water.png", "Distilled water droplets", 1254, 1254),
 			},
 		],
-		ctaLabel: "Shop Apple Cider Gummies",
+		ctaLabel: "Shop Pure Shilajit Liquid Drops",
 	},
 	comparison: {
 		titlePrefix: "How Kaya Pure",
@@ -181,17 +160,17 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			"A visual comparison using objective format differences rather than unsupported superiority claims.",
 		kayaPureLabel: "Kaya Pure",
 		traditionalLabel: "Traditional\nRoutine",
-		kayaPureImage: img("comparison-gummy.png", "Kaya Pure Apple Cider and Ashwagandha Gummy", 754, 503),
+		kayaPureImage: img("comparison-gummy.png", "Kaya Pure Pure Shilajit Liquid Drops", 754, 503),
 		kayaPureLogo: img("comparison-kayapure-logo.svg", "Kaya Pure", 205, 46),
 		traditionalImage: img("comparison-product.png", "Traditional supplement bottle and tablets", 190, 230),
 		rows: [
 			{
-				feature: "Multiple ingredients in one format",
+				feature: "Liquid drop format",
 				kayaPure: true,
 				traditional: false,
 			},
 			{
-				feature: "Gummy format",
+				feature: "Pure shilajit formula",
 				kayaPure: true,
 				traditional: false,
 			},
@@ -216,42 +195,37 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 		title: "Got questions?",
 		intro:
 			"We offer a 60-day satisfaction guarantee. If you're not satisfied, email info@kayapure.com and we'll take care of you.",
-		image: img(
-			"faq-product.png",
-			"Kaya Pure Apple Cider and Ashwagandha Gummies bottle with botanicals",
-			1024,
-			1536,
-		),
+		image: img("faq-product.png", "Kaya Pure Pure Shilajit Liquid Drops bottle with resin", 1024, 1536),
 		items: [
 			{
 				id: "what-is",
-				question: "What are Apple Cider & Ashwagandha Gummies?",
+				question: "What are Pure Shilajit Liquid Drops?",
 				answer:
-					"A convenient gummy format combining apple cider vinegar with ashwagandha and supporting botanicals — designed as a simple addition to a daily wellness routine.",
+					"A convenient liquid drop format of pure Himalayan shilajit — designed as a simple addition to a daily wellness routine.",
 			},
 			{
 				id: "how-to-use",
 				question: "How should I use it?",
 				answer:
-					"Take 2 gummies daily with food, preferably in the morning or early afternoon. Consistency over 2–3 weeks helps you get the most from the adaptogenic ingredients.",
+					"Take the recommended number of drops daily as directed on the label. Consistency over 2–3 weeks helps you get the most from shilajit.",
 			},
 			{
 				id: "side-effects",
 				question: "Are there any side effects?",
 				answer:
-					"Our supplement is made with natural ingredients and is generally well-tolerated. Some people may experience mild digestive upset. If you're sensitive, start with 1 gummy to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
+					"Our supplement is made with natural ingredients and is generally well-tolerated. If you're sensitive, start with a smaller serving to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
 			},
 			{
 				id: "sugar",
-				question: "Do these gummies contain sugar?",
+				question: "Do these drops contain sugar?",
 				answer:
-					"Yes, Kaya Pure gummies contain only 3 grams of sugar per serving. You can enjoy them without guilt.",
+					"Pure Shilajit Liquid Drops are formulated without added sugar. Check the Supplement Facts panel on your bottle for full details.",
 			},
 			{
 				id: "usage-with-other-supplements",
 				question: "Can I take this with other supplements or medications?",
 				answer:
-					"While our ingredients are natural, they can interact with certain medications, especially blood thinners or medications for anxiety/depression. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications.",
+					"While our ingredients are natural, they can interact with certain medications. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications.",
 			},
 			{
 				id: "how-made",

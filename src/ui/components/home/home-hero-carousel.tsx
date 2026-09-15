@@ -7,6 +7,7 @@ import { homeHeroBannerSlides, type HomeHeroBannerSlide } from "@/config/home-he
 import { PLP_HERO_IMAGE_SIZES, PRODUCT_IMAGE_QUALITY } from "@/lib/images";
 import { channelHref } from "@/lib/channel-path";
 import { cn } from "@/lib/utils";
+import { HomeHeroShilajitTextOverlay } from "@/ui/components/home/home-hero-shilajit-text-overlay";
 import {
 	Carousel,
 	CarouselContent,
@@ -30,7 +31,7 @@ type HomeHeroCarouselProps = {
 };
 
 /**
- * Full-bleed homepage hero carousel — 2:1 banners (Figma 3000×1500).
+ * Full-bleed homepage hero carousel — Figma banners ~2018×841 (~2.4:1).
  * Height follows width so the full artwork is visible (no top/bottom crop).
  */
 export function HomeHeroCarousel({
@@ -50,8 +51,8 @@ export function HomeHeroCarousel({
 		>
 			<h1 className="sr-only">Kaya Pure — Premium natural supplements</h1>
 
-			{/* Full viewport width — height scales from 2:1 aspect ratio */}
-			<div className="relative aspect-[2/1] w-full">
+			{/* Full viewport width — height scales from Figma banner aspect ratio */}
+			<div className="relative aspect-[2018/841] w-full">
 				<Carousel opts={{ loop: true, align: "start" }} className="absolute inset-0 size-full">
 					<CarouselContent className="ml-0 h-full" viewportClassName="size-full">
 						{slides.map((slide, index) => {
@@ -73,6 +74,7 @@ export function HomeHeroCarousel({
 											quality={PRODUCT_IMAGE_QUALITY}
 											className="object-contain object-center"
 										/>
+										{slide.textOverlay === "shilajit-gummies" ? <HomeHeroShilajitTextOverlay /> : null}
 									</Link>
 								</CarouselItem>
 							);

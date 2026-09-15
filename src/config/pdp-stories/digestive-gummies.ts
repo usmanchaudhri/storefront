@@ -1,22 +1,21 @@
 import type { PdpStoryImage, PdpStoryPack } from "./types";
 
-const BASE = "/pdp/apple-cider-ashwagandha-gummies";
+const BASE = "/pdp/digestive-gummies";
 
 function img(file: string, alt: string, width: number, height: number): PdpStoryImage {
 	return { src: `${BASE}/${file}`, alt, width, height };
 }
 
-export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
-	slug: "apple-cider-ashwagandha-gummies",
+export const digestiveGummiesStory: PdpStoryPack = {
+	slug: "digestive-gummies",
 	blend: {
-		title: "The Kaya Pure Apple Cider & Ashwagandha Blend",
-		intro:
-			"A modern gummy pairing apple cider vinegar with ashwagandha — balance your day with a simple, tasty daily ritual.",
+		title: "The Kaya Pure Digestive Gummies Blend",
+		intro: "Natural digestive wellness in a convenient gummy — crafted for everyday comfort and balance.",
 		tiles: [
 			{
 				id: "format",
-				title: "Dual-Action Formula",
-				body: "Apple cider vinegar and ashwagandha in one convenient gummy.",
+				title: "Digestive Support",
+				body: "A daily gummy formula designed for gut comfort and digestive balance.",
 				icon: img("blend-icon-format.png", "", 252, 256),
 			},
 			{
@@ -27,20 +26,20 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			},
 			{
 				id: "clarity",
-				title: "Balance & Calm",
-				body: "Support steady energy and stress balance throughout your day.",
+				title: "Everyday Comfort",
+				body: "Support digestive ease and balance throughout your day.",
 				icon: img("blend-icon-clarity.png", "", 264, 284),
 			},
 			{
 				id: "gummies",
 				title: "Convenient Gummies",
-				body: "No harsh vinegar shots or complicated prep — just chew and go.",
+				body: "No messy powders or complicated prep — just chew and go.",
 				icon: img("blend-icon-gummies.png", "", 232, 276),
 			},
 		],
 		image: img(
 			"blend-section-bg.png",
-			"Hands holding Kaya Pure Apple Cider and Ashwagandha Gummies jar against mountain sunset",
+			"Hand holding a Digestive Gummy above Kaya Pure Digestive Gummies jar with ginger and spices",
 			1942,
 			809,
 		),
@@ -51,11 +50,11 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 	},
 	routine: {
 		title: "Can Kaya Pure fit your routine?",
-		intro: "For customers looking for a convenient daily supplement format:",
+		intro: "For customers looking for a convenient daily digestive supplement:",
 		checkItems: [
 			"Simple gummy format",
-			"Apple cider & adaptogen blend",
-			"Daily wellness positioning",
+			"Digestive wellness blend",
+			"Daily comfort positioning",
 			"Portable bottle format",
 		],
 		iconItems: [
@@ -82,7 +81,7 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 		],
 		image: img(
 			"routine-section-bg.png",
-			"Kaya Pure Apple Cider and Ashwagandha Gummies jar with apple and botanicals on marble",
+			"Kaya Pure Digestive Gummies jar with ginger and spices against mountain landscape",
 			1942,
 			809,
 		),
@@ -99,7 +98,7 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			},
 			{
 				id: "social-2",
-				poster: img("social/clip-2.png", "Customer sharing stress relief gummy routine", 450, 800),
+				poster: img("social/clip-2.png", "Customer sharing wellness gummy routine", 450, 800),
 				mp4Url: "/videos/section-video-3-1.mp4",
 			},
 			{
@@ -142,37 +141,47 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			"Key botanicals in every serving. Amounts match the Supplement Facts panel on your jar — two gummies per serving.",
 		ingredients: [
 			{
-				name: "Apple Cider Vinegar",
-				benefit: "Traditional wellness support in a gummy you'll actually enjoy.",
-				image: img("ingredients/ginger.png", "Fresh apple cider vinegar with apples", 1024, 1024),
-			},
-			{
-				name: "Ashwagandha",
-				benefit: "Reduces stress and supports relaxation.",
-				image: img("ingredients/ashwagandha-circle.png", "Ashwagandha root, powder, and leaves", 1254, 1254),
-			},
-			{
 				name: "Ginger",
 				benefit: "Supports digestion and antioxidant balance.",
-				image: img("ingredients/ginger.png", "Fresh ginger root and slices", 1024, 1024),
+				image: img("ingredients/ginger.png", "Fresh ginger root and slices", 1254, 1254),
+			},
+			{
+				name: "Cumin",
+				benefit: "Traditional spice used to support comfortable digestion.",
+				image: img("ingredients/cumin.png", "Cumin seeds in a wooden bowl", 1254, 1254),
+			},
+			{
+				name: "Senna Leaf",
+				benefit: "A botanical traditionally used for digestive regularity.",
+				image: img("ingredients/senna-leaf.png", "Senna leaves", 1254, 1254),
+			},
+			{
+				name: "Pink Salt",
+				benefit: "Mineral-rich salt for everyday electrolyte balance.",
+				image: img("ingredients/pink-salt.png", "Pink Himalayan salt crystals", 1254, 1254),
+			},
+			{
+				name: "Long Pepper",
+				benefit: "A warming spice traditionally used to support digestion.",
+				image: img("ingredients/long-pepper.png", "Dried long pepper pods", 1254, 1254),
+			},
+			{
+				name: "Mango Powder",
+				benefit: "Tangy fruit powder that adds flavor and botanical support.",
+				image: img("ingredients/mango-powder.png", "Mango powder with fresh mango", 1254, 1254),
+			},
+			{
+				name: "Sea Salt",
+				benefit: "Natural salt to complement daily mineral intake.",
+				image: img("ingredients/sea-salt.png", "Flaky sea salt", 1254, 1254),
 			},
 			{
 				name: "Black Pepper",
 				benefit: "Supports digestion and nutrient absorption.",
-				image: img("ingredients/black-pepper.png", "Black peppercorns with a wooden scoop", 1024, 1024),
-			},
-			{
-				name: "Black Seed",
-				benefit: "A traditional botanical for immune-friendly daily support.",
-				image: img("ingredients/black-seed.png", "Black seed in a wooden bowl", 1022, 1024),
-			},
-			{
-				name: "Maca Root",
-				benefit: "Natural energy for daily performance.",
-				image: img("ingredients/maca.png", "Maca roots and maca powder", 1024, 1024),
+				image: img("ingredients/black-pepper.png", "Black peppercorns with a wooden scoop", 1254, 1254),
 			},
 		],
-		ctaLabel: "Shop Apple Cider Gummies",
+		ctaLabel: "Shop Digestive Gummies",
 	},
 	comparison: {
 		titlePrefix: "How Kaya Pure",
@@ -181,7 +190,7 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			"A visual comparison using objective format differences rather than unsupported superiority claims.",
 		kayaPureLabel: "Kaya Pure",
 		traditionalLabel: "Traditional\nRoutine",
-		kayaPureImage: img("comparison-gummy.png", "Kaya Pure Apple Cider and Ashwagandha Gummy", 754, 503),
+		kayaPureImage: img("comparison-gummy.png", "Kaya Pure Digestive Gummy", 754, 503),
 		kayaPureLogo: img("comparison-kayapure-logo.svg", "Kaya Pure", 205, 46),
 		traditionalImage: img("comparison-product.png", "Traditional supplement bottle and tablets", 190, 230),
 		rows: [
@@ -218,28 +227,28 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 			"We offer a 60-day satisfaction guarantee. If you're not satisfied, email info@kayapure.com and we'll take care of you.",
 		image: img(
 			"faq-product.png",
-			"Kaya Pure Apple Cider and Ashwagandha Gummies bottle with botanicals",
+			"Kaya Pure Digestive Gummies jar with ginger, spices, and botanicals",
 			1024,
 			1536,
 		),
 		items: [
 			{
 				id: "what-is",
-				question: "What are Apple Cider & Ashwagandha Gummies?",
+				question: "What are Digestive Gummies?",
 				answer:
-					"A convenient gummy format combining apple cider vinegar with ashwagandha and supporting botanicals — designed as a simple addition to a daily wellness routine.",
+					"A convenient gummy format crafted for everyday digestive comfort and balance — designed as a simple addition to a daily wellness routine.",
 			},
 			{
 				id: "how-to-use",
 				question: "How should I use it?",
 				answer:
-					"Take 2 gummies daily with food, preferably in the morning or early afternoon. Consistency over 2–3 weeks helps you get the most from the adaptogenic ingredients.",
+					"Take 2 gummies daily with food, preferably with a meal. Consistency over 2–3 weeks helps you get the most from the botanicals.",
 			},
 			{
 				id: "side-effects",
 				question: "Are there any side effects?",
 				answer:
-					"Our supplement is made with natural ingredients and is generally well-tolerated. Some people may experience mild digestive upset. If you're sensitive, start with 1 gummy to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
+					"Our supplement is made with natural ingredients and is generally well-tolerated. Some people may experience mild digestive changes when starting. If you're sensitive, start with 1 gummy to assess tolerance. Always consult your healthcare provider before starting any new supplement.",
 			},
 			{
 				id: "sugar",
@@ -251,7 +260,7 @@ export const appleCiderAshwagandhaGummiesStory: PdpStoryPack = {
 				id: "usage-with-other-supplements",
 				question: "Can I take this with other supplements or medications?",
 				answer:
-					"While our ingredients are natural, they can interact with certain medications, especially blood thinners or medications for anxiety/depression. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications.",
+					"While our ingredients are natural, they can interact with certain medications. We strongly recommend consulting with your healthcare provider before combining with other supplements or medications.",
 			},
 			{
 				id: "how-made",
