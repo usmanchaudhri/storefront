@@ -5,8 +5,8 @@ import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Figma Group 114 (2814:739) — text overlay for Shilajit gummies hero.
- * Banner artboard 2018×841 (2814:679); overlay frame 820×718 at (139, 45).
+ * Figma Group 116 (2814:803) — text overlay for Apple Cider & Ashwagandha hero.
+ * Banner artboard 2018×841 (2814:613); overlay frame 820×754 at (139, 45).
  * Typography scales with overlay width via cqi; tweak with `textScale`.
  */
 const montserrat = Montserrat({
@@ -20,26 +20,26 @@ const CTA_TEXT = "#073b3d";
 
 const BENEFITS = [
 	{
-		label: "Energy Support",
-		iconSrc: "/images/home-hero-banners/shilajit-text-icons/energy.svg",
-		iconWidth: 23,
+		label: "Stress Relief",
+		iconSrc: "/images/home-hero-banners/apple-cider-text-icons/stress.svg",
+		iconWidth: 35,
 		iconHeight: 36,
 	},
 	{
-		label: "Vitality Boost",
-		iconSrc: "/images/home-hero-banners/shilajit-text-icons/vitality.svg",
-		iconWidth: 33,
-		iconHeight: 32,
+		label: "Better Sleep",
+		iconSrc: "/images/home-hero-banners/apple-cider-text-icons/sleep.svg",
+		iconWidth: 36,
+		iconHeight: 34,
 	},
 	{
-		label: "Daily Wellness",
-		iconSrc: "/images/home-hero-banners/shilajit-text-icons/wellness.svg",
-		iconWidth: 39,
-		iconHeight: 35,
+		label: "Digestive Balance",
+		iconSrc: "/images/home-hero-banners/apple-cider-text-icons/digestive.svg",
+		iconWidth: 36,
+		iconHeight: 34,
 	},
 ] as const;
 
-type HomeHeroShilajitTextOverlayProps = {
+type HomeHeroAppleCiderTextOverlayProps = {
 	className?: string;
 	/**
 	 * Multiplier for all overlay type sizes relative to Figma (1 = exact).
@@ -56,7 +56,10 @@ function scaled(cqi: number, property?: keyof CSSProperties): CSSProperties {
 	return { [property]: value } as CSSProperties;
 }
 
-export function HomeHeroShilajitTextOverlay({ className, textScale = 1 }: HomeHeroShilajitTextOverlayProps) {
+export function HomeHeroAppleCiderTextOverlay({
+	className,
+	textScale = 1,
+}: HomeHeroAppleCiderTextOverlayProps) {
 	return (
 		<div
 			className={cn(
@@ -79,11 +82,11 @@ export function HomeHeroShilajitTextOverlay({ className, textScale = 1 }: HomeHe
 					letterSpacing: "0.005em",
 				}}
 			>
-				<span className="block text-white">PURE</span>
-				<span className="block text-white">HIMALAYAN</span>
+				<span className="block text-white">APPLE CIDER &amp;</span>
 				<span className="block" style={{ color: ACCENT }}>
-					SHILAJIT
+					ASHWAGANDHA
 				</span>
+				<span className="block text-white">GUMMIES</span>
 			</h2>
 
 			<div
@@ -104,7 +107,7 @@ export function HomeHeroShilajitTextOverlay({ className, textScale = 1 }: HomeHe
 					maxWidth: "94%",
 				}}
 			>
-				7-IN-1 gummies for your daily wellness ritual
+				Support for daily wellness
 			</p>
 
 			<ul

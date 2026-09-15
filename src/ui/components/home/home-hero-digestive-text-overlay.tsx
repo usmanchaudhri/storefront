@@ -5,8 +5,8 @@ import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Figma Group 114 (2814:739) — text overlay for Shilajit gummies hero.
- * Banner artboard 2018×841 (2814:679); overlay frame 820×718 at (139, 45).
+ * Figma Group 118 (2814:863) — text overlay for Digestive gummies hero.
+ * Banner artboard 2018×841 (2814:551); overlay frame 820×754 at (139, 44).
  * Typography scales with overlay width via cqi; tweak with `textScale`.
  */
 const montserrat = Montserrat({
@@ -20,26 +20,26 @@ const CTA_TEXT = "#073b3d";
 
 const BENEFITS = [
 	{
-		label: "Energy Support",
-		iconSrc: "/images/home-hero-banners/shilajit-text-icons/energy.svg",
-		iconWidth: 23,
-		iconHeight: 36,
+		label: "Digestive Support",
+		iconSrc: "/images/home-hero-banners/digestive-text-icons/digestive-support.svg",
+		iconWidth: 35,
+		iconHeight: 34,
 	},
 	{
-		label: "Vitality Boost",
-		iconSrc: "/images/home-hero-banners/shilajit-text-icons/vitality.svg",
-		iconWidth: 33,
-		iconHeight: 32,
+		label: "Gut Comfort",
+		iconSrc: "/images/home-hero-banners/digestive-text-icons/gut-comfort.svg",
+		iconWidth: 32,
+		iconHeight: 42,
 	},
 	{
 		label: "Daily Wellness",
-		iconSrc: "/images/home-hero-banners/shilajit-text-icons/wellness.svg",
-		iconWidth: 39,
+		iconSrc: "/images/home-hero-banners/digestive-text-icons/daily-wellness.svg",
+		iconWidth: 41,
 		iconHeight: 35,
 	},
 ] as const;
 
-type HomeHeroShilajitTextOverlayProps = {
+type HomeHeroDigestiveTextOverlayProps = {
 	className?: string;
 	/**
 	 * Multiplier for all overlay type sizes relative to Figma (1 = exact).
@@ -56,14 +56,17 @@ function scaled(cqi: number, property?: keyof CSSProperties): CSSProperties {
 	return { [property]: value } as CSSProperties;
 }
 
-export function HomeHeroShilajitTextOverlay({ className, textScale = 1 }: HomeHeroShilajitTextOverlayProps) {
+export function HomeHeroDigestiveTextOverlay({
+	className,
+	textScale = 1,
+}: HomeHeroDigestiveTextOverlayProps) {
 	return (
 		<div
 			className={cn(
 				montserrat.className,
 				"pointer-events-none absolute z-[1] text-white [container-type:inline-size]",
-				// Figma: left 139/2018, top 45/841, width 820/2018
-				"left-[6.89%] top-[5.35%] w-[40.63%]",
+				// Figma: left 139/2018, top 44/841, width 820/2018
+				"left-[6.89%] top-[5.23%] w-[40.63%]",
 				className,
 			)}
 			style={{ ["--hero-text-scale" as string]: String(textScale) }}
@@ -79,11 +82,11 @@ export function HomeHeroShilajitTextOverlay({ className, textScale = 1 }: HomeHe
 					letterSpacing: "0.005em",
 				}}
 			>
-				<span className="block text-white">PURE</span>
-				<span className="block text-white">HIMALAYAN</span>
+				<span className="block text-white">NATURAL</span>
 				<span className="block" style={{ color: ACCENT }}>
-					SHILAJIT
+					DIGESTIVE
 				</span>
+				<span className="block text-white">WELLNESS</span>
 			</h2>
 
 			<div
@@ -104,7 +107,7 @@ export function HomeHeroShilajitTextOverlay({ className, textScale = 1 }: HomeHe
 					maxWidth: "94%",
 				}}
 			>
-				7-IN-1 gummies for your daily wellness ritual
+				Crafted for everyday comfort &amp; balance
 			</p>
 
 			<ul

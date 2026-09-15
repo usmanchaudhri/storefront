@@ -7,7 +7,11 @@ import { homeHeroBannerSlides, type HomeHeroBannerSlide } from "@/config/home-he
 import { PLP_HERO_IMAGE_SIZES, PRODUCT_IMAGE_QUALITY } from "@/lib/images";
 import { channelHref } from "@/lib/channel-path";
 import { cn } from "@/lib/utils";
+import { HomeHeroAppleCiderTextOverlay } from "@/ui/components/home/home-hero-apple-cider-text-overlay";
+import { HomeHeroDigestiveTextOverlay } from "@/ui/components/home/home-hero-digestive-text-overlay";
+import { HomeHeroShilajitDropsTextOverlay } from "@/ui/components/home/home-hero-shilajit-drops-text-overlay";
 import { HomeHeroShilajitTextOverlay } from "@/ui/components/home/home-hero-shilajit-text-overlay";
+import { HomeHeroWeightLossTextOverlay } from "@/ui/components/home/home-hero-weight-loss-text-overlay";
 import {
 	Carousel,
 	CarouselContent,
@@ -74,7 +78,21 @@ export function HomeHeroCarousel({
 											quality={PRODUCT_IMAGE_QUALITY}
 											className="object-contain object-center"
 										/>
-										{slide.textOverlay === "shilajit-gummies" ? <HomeHeroShilajitTextOverlay /> : null}
+										{slide.textOverlay === "shilajit-gummies" ? (
+											<HomeHeroShilajitTextOverlay textScale={slide.textScale} />
+										) : null}
+										{slide.textOverlay === "weight-loss-slimming" ? (
+											<HomeHeroWeightLossTextOverlay textScale={slide.textScale} />
+										) : null}
+										{slide.textOverlay === "apple-cider-ashwagandha" ? (
+											<HomeHeroAppleCiderTextOverlay textScale={slide.textScale} />
+										) : null}
+										{slide.textOverlay === "shilajit-liquid-drops" ? (
+											<HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} />
+										) : null}
+										{slide.textOverlay === "digestive-gummies" ? (
+											<HomeHeroDigestiveTextOverlay textScale={slide.textScale} />
+										) : null}
 									</Link>
 								</CarouselItem>
 							);
