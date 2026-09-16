@@ -35,8 +35,8 @@ type HomeHeroCarouselProps = {
 };
 
 /**
- * Full-bleed homepage hero carousel — Figma banners ~2018×841 (~2.4:1).
- * Height follows width so the full artwork is visible (no top/bottom crop).
+ * Full-bleed homepage hero carousel — default Figma artboard ~2018×841 (~2.4:1).
+ * Each slide uses object-contain so wider/taller banners (e.g. 2537×886) stay fully visible.
  */
 export function HomeHeroCarousel({
 	channel,
@@ -55,7 +55,7 @@ export function HomeHeroCarousel({
 		>
 			<h1 className="sr-only">Kaya Pure — Premium natural supplements</h1>
 
-			{/* Full viewport width — height scales from Figma banner aspect ratio */}
+			{/* Full viewport width — height scales from the default Figma banner aspect ratio */}
 			<div className="relative aspect-[2018/841] w-full">
 				<Carousel opts={{ loop: true, align: "start" }} className="absolute inset-0 size-full">
 					<CarouselContent className="ml-0 h-full" viewportClassName="size-full">
@@ -69,30 +69,43 @@ export function HomeHeroCarousel({
 										className="focus-visible:outline-hidden relative block size-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 										aria-label={slide.alt}
 									>
-										<Image
-											src={slide.imageSrc}
-											alt={slide.alt}
-											fill
-											priority={index === 0}
-											sizes={PLP_HERO_IMAGE_SIZES}
-											quality={PRODUCT_IMAGE_QUALITY}
-											className="object-contain object-center"
-										/>
-										{slide.textOverlay === "shilajit-gummies" ? (
-											<HomeHeroShilajitTextOverlay textScale={slide.textScale} />
-										) : null}
-										{slide.textOverlay === "weight-loss-slimming" ? (
-											<HomeHeroWeightLossTextOverlay textScale={slide.textScale} />
-										) : null}
-										{slide.textOverlay === "apple-cider-ashwagandha" ? (
-											<HomeHeroAppleCiderTextOverlay textScale={slide.textScale} />
-										) : null}
-										{slide.textOverlay === "shilajit-liquid-drops" ? (
-											<HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} />
-										) : null}
-										{slide.textOverlay === "digestive-gummies" ? (
-											<HomeHeroDigestiveTextOverlay textScale={slide.textScale} />
-										) : null}
+										{/*
+										  Fit Figma artboard inside the shared hero frame without cropping.
+										  Wider slides (2537×886) letterbox vertically; standard slides fill the frame.
+										*/}
+										<div className="absolute inset-0 flex items-center justify-center">
+											<div
+												className="relative h-auto max-h-full w-full max-w-full"
+												style={{
+													aspectRatio: `${slide.imageWidth} / ${slide.imageHeight}`,
+												}}
+											>
+												<Image
+													src={slide.imageSrc}
+													alt={slide.alt}
+													fill
+													priority={index === 0}
+													sizes={PLP_HERO_IMAGE_SIZES}
+													quality={PRODUCT_IMAGE_QUALITY}
+													className="object-contain object-center"
+												/>
+												{slide.textOverlay === "shilajit-gummies" ? (
+													<HomeHeroShilajitTextOverlay textScale={slide.textScale} />
+												) : null}
+												{slide.textOverlay === "weight-loss-slimming" ? (
+													<HomeHeroWeightLossTextOverlay textScale={slide.textScale} />
+												) : null}
+												{slide.textOverlay === "apple-cider-ashwagandha" ? (
+													<HomeHeroAppleCiderTextOverlay textScale={slide.textScale} />
+												) : null}
+												{slide.textOverlay === "shilajit-liquid-drops" ? (
+													<HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} />
+												) : null}
+												{slide.textOverlay === "digestive-gummies" ? (
+													<HomeHeroDigestiveTextOverlay textScale={slide.textScale} />
+												) : null}
+											</div>
+										</div>
 									</Link>
 								</CarouselItem>
 							);

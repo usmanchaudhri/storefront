@@ -23,19 +23,19 @@ const BENEFITS = [
 		label: "Energy Support",
 		iconSrc: "/images/home-hero-banners/shilajit-text-icons/energy.svg",
 		iconWidth: 23,
-		iconHeight: 36,
+		iconHeight: 36, // Figma 2814:722 — 22.8×35.7
 	},
 	{
 		label: "Vitality Boost",
 		iconSrc: "/images/home-hero-banners/shilajit-text-icons/vitality.svg",
 		iconWidth: 33,
-		iconHeight: 32,
+		iconHeight: 32, // Figma 2814:727 — 32.8×32.1
 	},
 	{
 		label: "Daily Wellness",
 		iconSrc: "/images/home-hero-banners/shilajit-text-icons/wellness.svg",
 		iconWidth: 39,
-		iconHeight: 35,
+		iconHeight: 35, // Figma 2814:732 — 38.6×35.1
 	},
 ] as const;
 
