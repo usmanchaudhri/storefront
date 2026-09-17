@@ -34,18 +34,18 @@ type HomeHeroCarouselProps = {
 	className?: string;
 };
 
-function HeroSlideOverlays({ slide }: { slide: HomeHeroBannerSlide }) {
+function HeroSlideOverlay({ slide, variant }: { slide: HomeHeroBannerSlide; variant: "mobile" | "desktop" }) {
 	switch (slide.textOverlay) {
 		case "shilajit-gummies":
-			return <HomeHeroShilajitTextOverlay textScale={slide.textScale} />;
+			return <HomeHeroShilajitTextOverlay textScale={slide.textScale} variant={variant} />;
 		case "weight-loss-slimming":
-			return <HomeHeroWeightLossTextOverlay textScale={slide.textScale} />;
+			return <HomeHeroWeightLossTextOverlay textScale={slide.textScale} variant={variant} />;
 		case "apple-cider-ashwagandha":
-			return <HomeHeroAppleCiderTextOverlay textScale={slide.textScale} />;
+			return <HomeHeroAppleCiderTextOverlay textScale={slide.textScale} variant={variant} />;
 		case "shilajit-liquid-drops":
-			return <HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} />;
+			return <HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} variant={variant} />;
 		case "digestive-gummies":
-			return <HomeHeroDigestiveTextOverlay textScale={slide.textScale} />;
+			return <HomeHeroDigestiveTextOverlay textScale={slide.textScale} variant={variant} />;
 		default:
 			return null;
 	}
@@ -53,8 +53,8 @@ function HeroSlideOverlays({ slide }: { slide: HomeHeroBannerSlide }) {
 
 /**
  * Full-bleed homepage hero carousel — default Figma artboard ~2018×841 (~2.4:1).
- * Mobile uses a taller frame so the Shilajit gummies HTML overlay (2814:739) stays readable;
- * other slides letterbox via object-contain. Desktop keeps the Figma banner ratio.
+ * Mobile: taller frame + full-bleed cover + shared HTML overlay sizes (Figma text groups).
+ * Desktop: contain artboard + left-band overlays.
  */
 export function HomeHeroCarousel({
 	channel,
@@ -73,13 +73,12 @@ export function HomeHeroCarousel({
 		>
 			<h1 className="sr-only">Kaya Pure — Premium natural supplements</h1>
 
-			{/* Taller on mobile for Shilajit overlay; desktop matches Figma 2018×841 */}
 			<div className="relative aspect-[3/4] w-full sm:aspect-[4/5] md:aspect-[2018/841]">
 				<Carousel opts={{ loop: true, align: "start" }} className="absolute inset-0 size-full">
 					<CarouselContent className="ml-0 h-full" viewportClassName="size-full">
 						{slides.map((slide, index) => {
 							const href = channelHref(channel, `/products/${slide.productSlug}`);
-							const isShilajitGummies = slide.textOverlay === "shilajit-gummies";
+							const hasHtmlOverlay = Boolean(slide.textOverlay);
 
 							return (
 								<CarouselItem key={slide.id} className="h-full basis-full pl-0">
@@ -89,12 +88,8 @@ export function HomeHeroCarousel({
 										className="focus-visible:outline-hidden relative block size-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 										aria-label={slide.alt}
 									>
-										{isShilajitGummies ? (
+										{hasHtmlOverlay ? (
 											<>
-												{/*
-												  Mobile: full-bleed cover (product biased right) + Figma 2814:739 stack.
-												  Desktop: contain artboard + left-band overlay.
-												*/}
 												<div className="absolute inset-0 md:hidden">
 													<Image
 														src={slide.imageSrc}
@@ -105,7 +100,7 @@ export function HomeHeroCarousel({
 														quality={PRODUCT_IMAGE_QUALITY}
 														className="object-cover object-[72%_center]"
 													/>
-													<HomeHeroShilajitTextOverlay textScale={slide.textScale} variant="mobile" />
+													<HeroSlideOverlay slide={slide} variant="mobile" />
 												</div>
 												<div className="absolute inset-0 hidden items-center justify-center md:flex">
 													<div
@@ -123,7 +118,7 @@ export function HomeHeroCarousel({
 															quality={PRODUCT_IMAGE_QUALITY}
 															className="object-contain object-center"
 														/>
-														<HomeHeroShilajitTextOverlay textScale={slide.textScale} variant="desktop" />
+														<HeroSlideOverlay slide={slide} variant="desktop" />
 													</div>
 												</div>
 											</>
@@ -144,7 +139,6 @@ export function HomeHeroCarousel({
 														quality={PRODUCT_IMAGE_QUALITY}
 														className="object-contain object-center"
 													/>
-													<HeroSlideOverlays slide={slide} />
 												</div>
 											</div>
 										)}

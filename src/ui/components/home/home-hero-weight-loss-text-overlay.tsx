@@ -3,11 +3,17 @@ import { Montserrat } from "next/font/google";
 import type { CSSProperties } from "react";
 
 import { cn } from "@/lib/utils";
+import {
+	HOME_HERO_OVERLAY_ACCENT,
+	HOME_HERO_OVERLAY_CTA_TEXT,
+	homeHeroMobileOverlayStyles,
+	type HomeHeroOverlayVariant,
+} from "@/ui/components/home/home-hero-overlay-mobile-styles";
 
 /**
  * Figma Group 115 (2814:771) — text overlay for Weight Loss Slimming hero.
- * Banner artboard 2018×841 (2814:646); overlay frame 820×743 at (139, 39).
- * Typography scales with overlay width via cqi; tweak with `textScale`.
+ * Desktop: banner 2018×841 (2814:646); overlay 820×743 at (139, 39).
+ * Mobile: shared responsive stack sizes with other hero banners.
  */
 const montserrat = Montserrat({
 	subsets: ["latin"],
@@ -15,8 +21,9 @@ const montserrat = Montserrat({
 	display: "swap",
 });
 
-const ACCENT = "#f3bf8e";
-const CTA_TEXT = "#073b3d";
+const ACCENT = HOME_HERO_OVERLAY_ACCENT;
+const CTA_TEXT = HOME_HERO_OVERLAY_CTA_TEXT;
+const m = homeHeroMobileOverlayStyles;
 
 const BENEFITS = [
 	{
@@ -41,11 +48,8 @@ const BENEFITS = [
 
 type HomeHeroWeightLossTextOverlayProps = {
 	className?: string;
-	/**
-	 * Multiplier for all overlay type sizes relative to Figma (1 = exact).
-	 * Example: `0.9` slightly smaller, `1.1` slightly larger.
-	 */
 	textScale?: number;
+	variant?: HomeHeroOverlayVariant;
 };
 
 function scaled(cqi: number, property?: keyof CSSProperties): CSSProperties {
@@ -56,31 +60,40 @@ function scaled(cqi: number, property?: keyof CSSProperties): CSSProperties {
 	return { [property]: value } as CSSProperties;
 }
 
-export function HomeHeroWeightLossTextOverlay({
-	className,
-	textScale = 1,
-}: HomeHeroWeightLossTextOverlayProps) {
+function OverlayContent({ variant }: { variant: "mobile" | "desktop" }) {
+	const isMobile = variant === "mobile";
+
 	return (
-		<div
-			className={cn(
-				montserrat.className,
-				"pointer-events-none absolute z-[1] text-white [container-type:inline-size]",
-				// Figma: left 139/2018, top 39/841, width 820/2018
-				"left-[6.89%] top-[4.64%] w-[40.63%]",
-				className,
-			)}
-			style={{ ["--hero-text-scale" as string]: String(textScale) }}
-			aria-hidden="true"
-		>
-			{/* Title — 97.92 / 820 */}
+		<>
+			<p
+				className="font-bold uppercase"
+				style={
+					isMobile
+						? m.eyebrow
+						: {
+								paddingTop: "calc(4.146cqi * var(--hero-text-scale, 1))",
+								color: ACCENT,
+								letterSpacing: "0.22em",
+								lineHeight: 1,
+								...scaled(3.395),
+							}
+				}
+			>
+				KAYA PURE
+			</p>
+
 			<h2
 				className="font-bold uppercase"
-				style={{
-					paddingTop: "calc(4.146cqi * var(--hero-text-scale, 1))",
-					...scaled(11.941),
-					lineHeight: 0.96,
-					letterSpacing: "0.005em",
-				}}
+				style={
+					isMobile
+						? m.title
+						: {
+								marginTop: "calc(2.8cqi * var(--hero-text-scale, 1))",
+								...scaled(11.941),
+								lineHeight: 0.96,
+								letterSpacing: "0.005em",
+							}
+				}
 			>
 				<span className="block text-white">WEIGHT LOSS</span>
 				<span className="block text-white">SLIMMING</span>
@@ -90,32 +103,44 @@ export function HomeHeroWeightLossTextOverlay({
 			</h2>
 
 			<div
-				style={{
-					marginTop: "calc(3.17cqi * var(--hero-text-scale, 1))",
-					width: "calc(11.22cqi * var(--hero-text-scale, 1))",
-					height: "calc(0.366cqi * var(--hero-text-scale, 1))",
-					backgroundColor: ACCENT,
-				}}
+				style={
+					isMobile
+						? m.rule
+						: {
+								marginTop: "calc(3.17cqi * var(--hero-text-scale, 1))",
+								width: "calc(11.22cqi * var(--hero-text-scale, 1))",
+								height: "calc(0.366cqi * var(--hero-text-scale, 1))",
+								backgroundColor: ACCENT,
+							}
+				}
 			/>
 
 			<p
 				className="font-normal text-white"
-				style={{
-					marginTop: "calc(2.2cqi * var(--hero-text-scale, 1))",
-					...scaled(3.629),
-					lineHeight: 1.35,
-					maxWidth: "94%",
-				}}
+				style={
+					isMobile
+						? m.sub
+						: {
+								marginTop: "calc(2.2cqi * var(--hero-text-scale, 1))",
+								...scaled(3.629),
+								lineHeight: 1.35,
+								maxWidth: "94%",
+							}
+				}
 			>
-				Daily support for metabolism & wellness
+				Daily support for metabolism &amp; wellness
 			</p>
 
 			<ul
 				className="flex list-none items-start p-0"
-				style={{
-					marginTop: "calc(3.3cqi * var(--hero-text-scale, 1))",
-					width: "79.27%",
-				}}
+				style={
+					isMobile
+						? m.benefitsList
+						: {
+								marginTop: "calc(3.3cqi * var(--hero-text-scale, 1))",
+								width: "79.27%",
+							}
+				}
 			>
 				{BENEFITS.map((benefit, index) => (
 					<li
@@ -128,12 +153,16 @@ export function HomeHeroWeightLossTextOverlay({
 					>
 						<span
 							className="flex items-center justify-center rounded-full border-solid"
-							style={{
-								width: "calc(10.244cqi * var(--hero-text-scale, 1))",
-								height: "calc(10.244cqi * var(--hero-text-scale, 1))",
-								borderWidth: "calc(0.341cqi * var(--hero-text-scale, 1))",
-								borderColor: ACCENT,
-							}}
+							style={
+								isMobile
+									? m.benefitIcon
+									: {
+											width: "calc(10.244cqi * var(--hero-text-scale, 1))",
+											height: "calc(10.244cqi * var(--hero-text-scale, 1))",
+											borderWidth: "calc(0.341cqi * var(--hero-text-scale, 1))",
+											borderColor: ACCENT,
+										}
+							}
 						>
 							<Image
 								src={benefit.iconSrc}
@@ -146,11 +175,15 @@ export function HomeHeroWeightLossTextOverlay({
 						</span>
 						<span
 							className="text-center font-medium text-white"
-							style={{
-								marginTop: "calc(1.22cqi * var(--hero-text-scale, 1))",
-								...scaled(2.576),
-								lineHeight: 1.2,
-							}}
+							style={
+								isMobile
+									? m.benefitLabel
+									: {
+											marginTop: "calc(1.22cqi * var(--hero-text-scale, 1))",
+											...scaled(2.576),
+											lineHeight: 1.2,
+										}
+							}
 						>
 							{benefit.label}
 						</span>
@@ -160,23 +193,75 @@ export function HomeHeroWeightLossTextOverlay({
 
 			<span
 				className="inline-flex items-center justify-between font-bold shadow-[0px_14px_18px_rgba(0,0,0,0.18)]"
-				style={{
-					marginTop: "calc(3.9cqi * var(--hero-text-scale, 1))",
-					width: "38.39%",
-					height: "calc(10.2cqi * var(--hero-text-scale, 1))",
-					borderRadius: "calc(1.463cqi * var(--hero-text-scale, 1))",
-					paddingInline: "calc(4.15cqi * var(--hero-text-scale, 1))",
-					backgroundColor: ACCENT,
-					color: CTA_TEXT,
-					letterSpacing: "0.09em",
-					...scaled(3.415),
-				}}
+				style={
+					isMobile
+						? m.cta
+						: {
+								marginTop: "calc(3.9cqi * var(--hero-text-scale, 1))",
+								width: "38.39%",
+								height: "calc(10.2cqi * var(--hero-text-scale, 1))",
+								borderRadius: "calc(1.463cqi * var(--hero-text-scale, 1))",
+								paddingInline: "calc(4.15cqi * var(--hero-text-scale, 1))",
+								backgroundColor: ACCENT,
+								color: CTA_TEXT,
+								letterSpacing: "0.09em",
+								...scaled(3.415),
+							}
+				}
 			>
 				<span>SHOP NOW</span>
-				<span style={{ fontSize: "calc(3.93cqi * var(--hero-text-scale, 1))" }} aria-hidden>
+				<span
+					style={
+						isMobile ? { fontSize: "1.05em" } : { fontSize: "calc(3.93cqi * var(--hero-text-scale, 1))" }
+					}
+					aria-hidden
+				>
 					→
 				</span>
 			</span>
-		</div>
+		</>
+	);
+}
+
+export function HomeHeroWeightLossTextOverlay({
+	className,
+	textScale = 1,
+	variant = "responsive",
+}: HomeHeroWeightLossTextOverlayProps) {
+	const showMobile = variant === "responsive" || variant === "mobile";
+	const showDesktop = variant === "responsive" || variant === "desktop";
+
+	return (
+		<>
+			{showMobile ? (
+				<div
+					className={cn(
+						montserrat.className,
+						m.shell.className,
+						variant === "responsive" && "md:hidden",
+						className,
+					)}
+					aria-hidden="true"
+				>
+					<OverlayContent variant="mobile" />
+				</div>
+			) : null}
+
+			{showDesktop ? (
+				<div
+					className={cn(
+						montserrat.className,
+						"pointer-events-none absolute z-[1] text-white [container-type:inline-size]",
+						variant === "responsive" ? "hidden md:block" : "block",
+						"left-[6.89%] top-[4.64%] w-[40.63%]",
+						className,
+					)}
+					style={{ ["--hero-text-scale" as string]: String(textScale) }}
+					aria-hidden="true"
+				>
+					<OverlayContent variant="desktop" />
+				</div>
+			) : null}
+		</>
 	);
 }
