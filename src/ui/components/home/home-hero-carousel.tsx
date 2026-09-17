@@ -34,9 +34,27 @@ type HomeHeroCarouselProps = {
 	className?: string;
 };
 
+function HeroSlideOverlays({ slide }: { slide: HomeHeroBannerSlide }) {
+	switch (slide.textOverlay) {
+		case "shilajit-gummies":
+			return <HomeHeroShilajitTextOverlay textScale={slide.textScale} />;
+		case "weight-loss-slimming":
+			return <HomeHeroWeightLossTextOverlay textScale={slide.textScale} />;
+		case "apple-cider-ashwagandha":
+			return <HomeHeroAppleCiderTextOverlay textScale={slide.textScale} />;
+		case "shilajit-liquid-drops":
+			return <HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} />;
+		case "digestive-gummies":
+			return <HomeHeroDigestiveTextOverlay textScale={slide.textScale} />;
+		default:
+			return null;
+	}
+}
+
 /**
  * Full-bleed homepage hero carousel — default Figma artboard ~2018×841 (~2.4:1).
- * Each slide uses object-contain so wider/taller banners (e.g. 2537×886) stay fully visible.
+ * Mobile uses a taller frame so the Shilajit gummies HTML overlay (2814:739) stays readable;
+ * other slides letterbox via object-contain. Desktop keeps the Figma banner ratio.
  */
 export function HomeHeroCarousel({
 	channel,
@@ -55,12 +73,14 @@ export function HomeHeroCarousel({
 		>
 			<h1 className="sr-only">Kaya Pure — Premium natural supplements</h1>
 
-			{/* Full viewport width — height scales from the default Figma banner aspect ratio */}
-			<div className="relative aspect-[2018/841] w-full">
+			{/* Taller on mobile for Shilajit overlay; desktop matches Figma 2018×841 */}
+			<div className="relative aspect-[3/4] w-full sm:aspect-[4/5] md:aspect-[2018/841]">
 				<Carousel opts={{ loop: true, align: "start" }} className="absolute inset-0 size-full">
 					<CarouselContent className="ml-0 h-full" viewportClassName="size-full">
 						{slides.map((slide, index) => {
 							const href = channelHref(channel, `/products/${slide.productSlug}`);
+							const isShilajitGummies = slide.textOverlay === "shilajit-gummies";
+
 							return (
 								<CarouselItem key={slide.id} className="h-full basis-full pl-0">
 									<Link
@@ -69,43 +89,65 @@ export function HomeHeroCarousel({
 										className="focus-visible:outline-hidden relative block size-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 										aria-label={slide.alt}
 									>
-										{/*
-										  Fit Figma artboard inside the shared hero frame without cropping.
-										  Wider slides (2537×886) letterbox vertically; standard slides fill the frame.
-										*/}
-										<div className="absolute inset-0 flex items-center justify-center">
-											<div
-												className="relative h-auto max-h-full w-full max-w-full"
-												style={{
-													aspectRatio: `${slide.imageWidth} / ${slide.imageHeight}`,
-												}}
-											>
-												<Image
-													src={slide.imageSrc}
-													alt={slide.alt}
-													fill
-													priority={index === 0}
-													sizes={PLP_HERO_IMAGE_SIZES}
-													quality={PRODUCT_IMAGE_QUALITY}
-													className="object-contain object-center"
-												/>
-												{slide.textOverlay === "shilajit-gummies" ? (
-													<HomeHeroShilajitTextOverlay textScale={slide.textScale} />
-												) : null}
-												{slide.textOverlay === "weight-loss-slimming" ? (
-													<HomeHeroWeightLossTextOverlay textScale={slide.textScale} />
-												) : null}
-												{slide.textOverlay === "apple-cider-ashwagandha" ? (
-													<HomeHeroAppleCiderTextOverlay textScale={slide.textScale} />
-												) : null}
-												{slide.textOverlay === "shilajit-liquid-drops" ? (
-													<HomeHeroShilajitDropsTextOverlay textScale={slide.textScale} />
-												) : null}
-												{slide.textOverlay === "digestive-gummies" ? (
-													<HomeHeroDigestiveTextOverlay textScale={slide.textScale} />
-												) : null}
+										{isShilajitGummies ? (
+											<>
+												{/*
+												  Mobile: full-bleed cover (product biased right) + Figma 2814:739 stack.
+												  Desktop: contain artboard + left-band overlay.
+												*/}
+												<div className="absolute inset-0 md:hidden">
+													<Image
+														src={slide.imageSrc}
+														alt={slide.alt}
+														fill
+														priority={index === 0}
+														sizes="100vw"
+														quality={PRODUCT_IMAGE_QUALITY}
+														className="object-cover object-[72%_center]"
+													/>
+													<HomeHeroShilajitTextOverlay textScale={slide.textScale} variant="mobile" />
+												</div>
+												<div className="absolute inset-0 hidden items-center justify-center md:flex">
+													<div
+														className="relative h-auto max-h-full w-full max-w-full"
+														style={{
+															aspectRatio: `${slide.imageWidth} / ${slide.imageHeight}`,
+														}}
+													>
+														<Image
+															src={slide.imageSrc}
+															alt={slide.alt}
+															fill
+															priority={index === 0}
+															sizes={PLP_HERO_IMAGE_SIZES}
+															quality={PRODUCT_IMAGE_QUALITY}
+															className="object-contain object-center"
+														/>
+														<HomeHeroShilajitTextOverlay textScale={slide.textScale} variant="desktop" />
+													</div>
+												</div>
+											</>
+										) : (
+											<div className="absolute inset-0 flex items-center justify-center">
+												<div
+													className="relative h-auto max-h-full w-full max-w-full"
+													style={{
+														aspectRatio: `${slide.imageWidth} / ${slide.imageHeight}`,
+													}}
+												>
+													<Image
+														src={slide.imageSrc}
+														alt={slide.alt}
+														fill
+														priority={index === 0}
+														sizes={PLP_HERO_IMAGE_SIZES}
+														quality={PRODUCT_IMAGE_QUALITY}
+														className="object-contain object-center"
+													/>
+													<HeroSlideOverlays slide={slide} />
+												</div>
 											</div>
-										</div>
+										)}
 									</Link>
 								</CarouselItem>
 							);
