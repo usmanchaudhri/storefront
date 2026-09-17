@@ -114,6 +114,24 @@ export type PdpStoryFaq = {
 	};
 };
 
+/**
+ * Optional full-bleed lifestyle banner (e.g. Figma 2538:58 — Made to Fit Your Lifestyle).
+ * Rendered immediately above the FAQ section when present.
+ */
+export type PdpStoryLifestyleBanner = PdpStoryImage;
+
+/**
+ * Optional 2×2 image gallery under the lifestyle banner
+ * (Figma Shilajit Drops: 2543:146, 2538:54, 2538:55, 2538:56 — 1500×1500).
+ */
+export type PdpStoryLifestyleGallery = readonly PdpStoryImage[];
+
+/**
+ * Optional full-bleed banner carousel under the lifestyle gallery
+ * (Figma Shilajit Drops: 2538:60, 2538:61, 2538:57 — 3000×1500).
+ */
+export type PdpStoryLifestyleCarousel = readonly PdpStoryImage[];
+
 /** Figma node 2435:1040 — teal trust / benefit bar. */
 export type PdpStoryTrustItem = {
 	id: "shipping" | "customers" | "guarantee";
@@ -156,6 +174,14 @@ export type PdpStoryPack = {
 	sharingLove: PdpStorySharingLove;
 	lookInside: PdpStoryLookInside;
 	comparison: PdpStoryComparison;
+	/** Optional — placed above the lifestyle gallery when set (e.g. Made to Fit). */
+	lifestyleBanner?: PdpStoryLifestyleBanner;
+	/** Optional — 2×2 gallery placed directly under lifestyleBanner. */
+	lifestyleGallery?: PdpStoryLifestyleGallery;
+	/** Optional — banner carousel placed under lifestyleGallery. */
+	lifestyleCarousel?: PdpStoryLifestyleCarousel;
+	/** Optional — full-bleed banner under carousel, above FAQ (e.g. Figma 2538:59). */
+	lifestyleFooterBanner?: PdpStoryLifestyleBanner;
 	faq: PdpStoryFaq;
 	trust: PdpStoryTrust;
 	reviews: PdpStoryReviews;

@@ -3,6 +3,7 @@ import { Barlow, Inter } from "next/font/google";
 import type { PdpStoryImage, PdpStoryPack } from "@/config/pdp-stories";
 import { cn } from "@/lib/utils";
 import { BlendBanner } from "@/ui/components/shared/blend-banner";
+import { PdpLifestyleBannerCarousel } from "@/ui/components/pdp/story/pdp-lifestyle-banner-carousel";
 import { PdpStoryFaqAccordion } from "@/ui/components/pdp/story/pdp-story-faq-accordion";
 import { PdpSharingLoveSection } from "@/ui/components/pdp/story/pdp-sharing-love-section";
 
@@ -405,6 +406,54 @@ function ComparisonSection({ story }: { story: PdpStoryPack["comparison"] }) {
 }
 
 /**
+ * Figma 2538:58 — Made to Fit Your Lifestyle (full-bleed image banner).
+ * Placed immediately above Got Questions? when `story.lifestyleBanner` is set.
+ */
+function LifestyleBannerSection({ story }: { story: NonNullable<PdpStoryPack["lifestyleBanner"]> }) {
+	return (
+		<section className="relative w-full overflow-hidden bg-[#0a1a16]" aria-label={story.alt}>
+			<Image
+				src={story.src}
+				alt={story.alt}
+				width={story.width}
+				height={story.height}
+				className="h-auto w-full object-cover object-center"
+				sizes="100vw"
+			/>
+		</section>
+	);
+}
+
+/**
+ * Figma 2543:146 / 2538:54 / 2538:55 / 2538:56 — 2×2 product gallery under lifestyle banner.
+ * Artboards are 1500×1500 with ~40px gutters (~1.3% of the 3040 row).
+ */
+function LifestyleGallerySection({ images }: { images: NonNullable<PdpStoryPack["lifestyleGallery"]> }) {
+	if (images.length === 0) {
+		return null;
+	}
+
+	return (
+		<section className="w-full bg-white" aria-label="Product lifestyle gallery">
+			<ul className="grid grid-cols-2 gap-[clamp(0.5rem,1.3vw,2.5rem)]" role="list">
+				{images.map((image) => (
+					<li key={image.src} className="relative aspect-square overflow-hidden bg-[#f7f7f7]">
+						<Image
+							src={image.src}
+							alt={image.alt}
+							width={image.width}
+							height={image.height}
+							className="size-full object-cover object-center"
+							sizes="(max-width: 768px) 50vw, 50vw"
+						/>
+					</li>
+				))}
+			</ul>
+		</section>
+	);
+}
+
+/**
  * Figma 2435:996 — Got Questions?
  * Left: Barlow heading + intro + rounded product image.
  * Right: accordion FAQ with teal +/- controls.
@@ -595,6 +644,10 @@ export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 			<PdpSharingLoveSection story={story.sharingLove} />
 			<LookInsideSection story={story.lookInside} disclaimer={story.disclaimer} />
 			<ComparisonSection story={story.comparison} />
+			{story.lifestyleBanner ? <LifestyleBannerSection story={story.lifestyleBanner} /> : null}
+			{story.lifestyleGallery ? <LifestyleGallerySection images={story.lifestyleGallery} /> : null}
+			{story.lifestyleCarousel ? <PdpLifestyleBannerCarousel slides={story.lifestyleCarousel} /> : null}
+			{story.lifestyleFooterBanner ? <LifestyleBannerSection story={story.lifestyleFooterBanner} /> : null}
 			<FaqSection story={story.faq} />
 			<TrustSection story={story.trust} />
 			<ReviewsSection story={story.reviews} />

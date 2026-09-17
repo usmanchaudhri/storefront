@@ -13,6 +13,7 @@ import { getStorefrontContent, buildPolicyLabelValues } from "@/lib/content/serv
 import { resolveChannelCurrencyFromProduct } from "@/lib/channels/resolve-channel-currency";
 import { CACHE_PROFILES, applyCacheProfile } from "@/lib/cache-manifest";
 import { getPdpStory } from "@/config/pdp-stories";
+import { getPdpBannerPack } from "@/config/pdp-banner-carousels";
 import { Breadcrumbs } from "@/ui/components/breadcrumbs";
 import {
 	ProductAttributes,
@@ -25,6 +26,8 @@ import {
 	PDP_GALLERY_LAYOUT,
 	PDP_LAYOUT_CLASSES,
 } from "@/ui/components/pdp";
+import { PdpFullBleedBanner } from "@/ui/components/pdp/story/pdp-full-bleed-banner";
+import { PdpLifestyleBannerCarousel } from "@/ui/components/pdp/story/pdp-lifestyle-banner-carousel";
 import { PdpStoryModules } from "@/ui/components/pdp/story/pdp-story-modules";
 
 // ============================================================================
@@ -172,6 +175,7 @@ async function ProductShell({
 	const showGalleryChrome = defaultImages.length > 1;
 	const layout = PDP_LAYOUT_CLASSES[PDP_GALLERY_LAYOUT];
 	const pdpStory = getPdpStory(product.slug) ?? getPdpStory(params.slug);
+	const pdpBannerPack = getPdpBannerPack(product.slug) ?? getPdpBannerPack(params.slug);
 	const { Fallback: GalleryFallback } = activeGalleryVariant();
 	const galleryFallback = lcpImage ? (
 		<GalleryFallback
@@ -238,6 +242,8 @@ async function ProductShell({
 					)}
 				</div>
 			</main>
+			{pdpBannerPack?.lifestyleBanner ? <PdpFullBleedBanner banner={pdpBannerPack.lifestyleBanner} /> : null}
+			{pdpBannerPack?.carousel ? <PdpLifestyleBannerCarousel slides={pdpBannerPack.carousel} /> : null}
 			{pdpStory ? <PdpStoryModules story={pdpStory} /> : null}
 		</div>
 	);

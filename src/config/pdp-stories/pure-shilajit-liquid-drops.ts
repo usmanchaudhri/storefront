@@ -191,6 +191,64 @@ export const pureShilajitLiquidDropsStory: PdpStoryPack = {
 			},
 		],
 	},
+	lifestyleBanner: img(
+		"lifestyle-made-to-fit.webp",
+		"Made to fit your lifestyle — Pure Himalayan Shilajit Liquid Drops with premium quality, daily wellness, and Himalayan sourced benefits",
+		3000,
+		1500,
+	),
+	lifestyleGallery: [
+		img(
+			"lifestyle-gallery-1.webp",
+			"Kaya Pure Pure Shilajit Liquid Drops bottle with raw shilajit resin and leaves on white",
+			1500,
+			1500,
+		),
+		img(
+			"lifestyle-gallery-2.webp",
+			"Kaya Pure Pure Shilajit Liquid Drops bottle with ginger and resin against Himalayan mountains",
+			1500,
+			1500,
+		),
+		img(
+			"lifestyle-gallery-3.webp",
+			"Kaya Pure Pure Shilajit Liquid Drops bottle in a backpack for on-the-go wellness",
+			1500,
+			1500,
+		),
+		img(
+			"lifestyle-gallery-4.webp",
+			"Kaya Pure Pure Shilajit Liquid Drops bottle in a cozy home lifestyle setting",
+			1500,
+			1500,
+		),
+	],
+	lifestyleCarousel: [
+		img(
+			"lifestyle-carousel-1.webp",
+			"2–6 drops. Simple daily routine — Pure Himalayan Shilajit Liquid Drops for natural energy, mental clarity, and premium quality",
+			3000,
+			1500,
+		),
+		img(
+			"lifestyle-carousel-2.webp",
+			"Quality you can trust — third-party tested Pure Himalayan Shilajit Liquid Drops with 85+ trace minerals",
+			3000,
+			1500,
+		),
+		img(
+			"lifestyle-carousel-3.webp",
+			"Pure Himalayan Shilajit Drops — liquid support for your daily wellness ritual",
+			3000,
+			1500,
+		),
+	],
+	lifestyleFooterBanner: img(
+		"lifestyle-footer-banner.webp",
+		"Why Kaya Pure? Premium natural shilajit drops crafted for your daily wellness routine — lab-tested, 75% fulvic acid, 30ml bottle, 2–6 drops daily",
+		3000,
+		1500,
+	),
 	faq: {
 		title: "Got questions?",
 		intro:
