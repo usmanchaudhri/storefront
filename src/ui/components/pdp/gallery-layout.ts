@@ -57,9 +57,13 @@ export interface PdpLayoutClasses {
 /**
  * Immersive hero frame — 1:1 square so typical product uploads (e.g. 2000×2000)
  * fill the gallery column without cropping. Images use `object-contain` + center.
- * Column width is unchanged (~605fr of the MoonBrew grid); only the height matches width.
+ *
+ * Mobile / tablet (`max-lg`): break out of `container-content` side padding so the
+ * hero is edge-to-edge (larger, clearer product shot). Desktop (`lg+`) stays the
+ * MoonBrew gallery column width — do not change the `lg:` resets below.
  */
-export const PDP_IMMERSIVE_HERO_FRAME_CLASS = "aspect-square w-full";
+export const PDP_IMMERSIVE_HERO_FRAME_CLASS =
+	"aspect-square w-full max-lg:-mx-4 max-lg:w-[calc(100%+2rem)] max-lg:rounded-none sm:max-lg:-mx-6 sm:max-lg:w-[calc(100%+3rem)] lg:mx-0 lg:w-full";
 
 /** Space between hero and thumbnail strip on desktop (MoonBrew: 50px). */
 export const PDP_IMMERSIVE_HERO_MARGIN_CLASS = "mb-0 lg:mb-[50px]";
