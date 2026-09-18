@@ -41,8 +41,8 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		image: img(
 			"blend-section-bg.png",
 			"Kaya Pure 7-in-1 Shilajit Gummies lifestyle banner with product benefits",
-			1942,
-			809,
+			2018,
+			841,
 		),
 	},
 	positioningBanner: {
@@ -83,8 +83,8 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		image: img(
 			"routine-section-bg.png",
 			"Kaya Pure 7-in-1 Shilajit Gummies jar on Himalayan rock with botanicals",
-			1942,
-			809,
+			2018,
+			841,
 		),
 	},
 	sharingLove: {
