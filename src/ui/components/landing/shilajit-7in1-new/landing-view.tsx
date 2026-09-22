@@ -1,0 +1,583 @@
+"use client";
+
+import Image from "next/image";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Check, ChevronDown, Shield } from "lucide-react";
+
+import { shilajit7in1Landing, type LandingImage } from "@/config/landing/shilajit-7in1-new";
+import { cn } from "@/lib/utils";
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+	useCarousel,
+} from "@/ui/components/ui/carousel";
+
+const accent = "text-[#C46A3A]";
+const forest = "text-[#0B3D36]";
+
+function Eyebrow({ children }: { children: ReactNode }) {
+	return <p className={cn("text-[12px] font-bold uppercase tracking-[0.22em]", accent)}>{children}</p>;
+}
+
+function SectionHeading({
+	eyebrow,
+	title,
+	intro,
+	align = "left",
+}: {
+	eyebrow: string;
+	title: string;
+	intro?: string;
+	align?: "left" | "center";
+}) {
+	return (
+		<div className={cn(align === "center" && "mx-auto max-w-3xl text-center")}>
+			<Eyebrow>{eyebrow}</Eyebrow>
+			<h2 className={cn("mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl", forest)}>
+				{title}
+			</h2>
+			{intro ? (
+				<p
+					className={cn(
+						"text-foreground/70 mt-3 max-w-2xl text-base leading-relaxed",
+						align === "center" && "mx-auto",
+					)}
+				>
+					{intro}
+				</p>
+			) : null}
+		</div>
+	);
+}
+
+function SoftImage({
+	image,
+	className,
+	priority = false,
+	sizes = "(max-width: 768px) 100vw, 50vw",
+}: {
+	image: LandingImage;
+	className?: string;
+	priority?: boolean;
+	sizes?: string;
+}) {
+	return (
+		<Image
+			src={image.src}
+			alt={image.alt}
+			width={image.width}
+			height={image.height}
+			priority={priority}
+			sizes={sizes}
+			className={cn("h-auto w-full object-cover", className)}
+		/>
+	);
+}
+
+type SocialClip = (typeof shilajit7in1Landing.social.clips)[number];
+
+/** Autoplay muted clip in the new-PDP card size (aspect 9/14). */
+function SocialClipVideo({ clip }: { clip: SocialClip }) {
+	const containerRef = useRef<HTMLDivElement>(null);
+	const videoRef = useRef<HTMLVideoElement>(null);
+	const [{ isVisible, isActivated }, setPlayback] = useState({
+		isVisible: false,
+		isActivated: false,
+	});
+
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) {
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				setPlayback((prev) => ({
+					isVisible: entry.isIntersecting,
+					isActivated: prev.isActivated || entry.isIntersecting,
+				}));
+			},
+			{ rootMargin: "80px", threshold: 0.25 },
+		);
+
+		observer.observe(container);
+		return () => observer.disconnect();
+	}, []);
+
+	const videoSrc = isActivated ? clip.mp4Url : null;
+
+	useEffect(() => {
+		const video = videoRef.current;
+		if (!video || !videoSrc) {
+			return;
+		}
+
+		if (!isVisible) {
+			video.pause();
+			return;
+		}
+
+		const play = () => {
+			void video.play().catch(() => undefined);
+		};
+
+		video.addEventListener("loadeddata", play);
+		if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+			play();
+		}
+
+		return () => video.removeEventListener("loadeddata", play);
+	}, [isVisible, videoSrc]);
+
+	return (
+		<div ref={containerRef} className="relative aspect-[9/14]">
+			<Image
+				src={clip.poster.src}
+				alt={clip.poster.alt}
+				width={clip.poster.width}
+				height={clip.poster.height}
+				sizes="(max-width: 640px) 100vw, 33vw"
+				className={cn(
+					"absolute inset-0 h-full w-full object-cover transition-opacity",
+					videoSrc ? "opacity-0" : "opacity-100",
+				)}
+			/>
+			{videoSrc ? (
+				<video
+					ref={videoRef}
+					className="absolute inset-0 size-full object-cover"
+					poster={clip.poster.src}
+					muted
+					playsInline
+					loop
+					preload={isVisible ? "metadata" : "none"}
+					src={videoSrc}
+					aria-label={clip.poster.alt}
+				/>
+			) : null}
+		</div>
+	);
+}
+
+const socialCarouselArrowClassName = cn(
+	"static shrink-0 translate-y-0",
+	"size-11 rounded-full border-0 !bg-[#00A38C] !text-white shadow-none",
+	"hover:!bg-[#00967f] hover:!text-white disabled:opacity-40",
+	"[&_svg]:size-5",
+);
+
+function SocialGalleryDots({ clipIds }: { clipIds: readonly string[] }) {
+	const { selectedIndex, scrollTo } = useCarousel();
+
+	return (
+		<div className="flex justify-center gap-2" role="tablist" aria-label="Social video slides">
+			{clipIds.map((id, index) => (
+				<button
+					key={id}
+					type="button"
+					role="tab"
+					aria-selected={selectedIndex === index}
+					aria-label={`Go to slide ${index + 1}`}
+					onClick={() => scrollTo(index)}
+					className={cn(
+						"size-2.5 rounded-full transition-colors",
+						selectedIndex === index ? "bg-[#0B3D36]" : "bg-[#0B3D36]/30 hover:bg-[#0B3D36]/50",
+					)}
+				/>
+			))}
+		</div>
+	);
+}
+
+function FaqAccordion() {
+	const { faq } = shilajit7in1Landing;
+	const [openId, setOpenId] = useState<string | null>(faq.items[0]?.id ?? null);
+
+	return (
+		<div className="space-y-3">
+			{faq.items.map((item) => {
+				const open = openId === item.id;
+				return (
+					<div key={item.id} className="rounded-2xl border border-border bg-white px-4 py-1 sm:px-5">
+						<button
+							type="button"
+							aria-expanded={open}
+							onClick={() => setOpenId(open ? null : item.id)}
+							className="flex w-full items-center justify-between gap-4 py-4 text-left"
+						>
+							<span className={cn("text-base font-semibold sm:text-lg", forest)}>{item.question}</span>
+							<ChevronDown
+								className={cn(
+									"text-foreground/50 h-5 w-5 shrink-0 transition-transform duration-200",
+									open && "rotate-180",
+								)}
+							/>
+						</button>
+						{open ? (
+							<p className="text-foreground/70 pb-4 text-sm leading-relaxed sm:text-base">{item.answer}</p>
+						) : null}
+					</div>
+				);
+			})}
+		</div>
+	);
+}
+
+interface Shilajit7in1LandingViewProps {
+	buyIsland: ReactNode;
+}
+
+export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewProps) {
+	const c = shilajit7in1Landing;
+
+	return (
+		<div className="shilajit-landing bg-[#F7F7F7] text-foreground">
+			{/* SECTION 1 — Hero purchase engine (same gallery size as original PDP) */}
+			<section id="offer" className="scroll-mt-24 bg-white">
+				<div className="container-content py-4 sm:py-6">{buyIsland}</div>
+			</section>
+
+			{/* SECTION 2 — Origin banner */}
+			<section className="relative overflow-hidden bg-[#0B3D36] text-white">
+				<div
+					aria-hidden
+					className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_50%,rgba(196,106,58,0.18),transparent_55%)]"
+				/>
+				<div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:py-16">
+					<div>
+						<h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
+							{c.origin.title} <span className="text-[#F0A070]">{c.origin.titleAccent}</span>
+						</h2>
+						<p className="mt-4 max-w-xl text-base leading-relaxed text-white/80">{c.origin.body}</p>
+						<dl className="mt-8 grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
+							{c.origin.stats.map((stat) => (
+								<div key={stat.label}>
+									<dt className="text-2xl font-bold text-[#F0A070] sm:text-3xl">{stat.value}</dt>
+									<dd className="mt-1 text-xs text-white/70 sm:text-sm">{stat.label}</dd>
+								</div>
+							))}
+						</dl>
+					</div>
+					<div className="overflow-hidden rounded-2xl ring-1 ring-white/10">
+						<SoftImage image={c.origin.image} sizes="(max-width: 1024px) 100vw, 42vw" />
+					</div>
+				</div>
+			</section>
+
+			{/* SECTION 3 — Botanicals + look inside the gummy */}
+			<section className="bg-white py-14 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<div className="grid gap-4 lg:grid-cols-2">
+						<div className="overflow-hidden rounded-2xl bg-[#0B3D36]">
+							<SoftImage image={c.botanicals.diagram} sizes="(max-width: 1024px) 100vw, 50vw" />
+						</div>
+						<div className="overflow-hidden rounded-2xl bg-[#0B3D36]">
+							<SoftImage image={c.botanicals.facts} sizes="(max-width: 1024px) 100vw, 50vw" />
+						</div>
+					</div>
+				</div>
+
+				<div className="mt-10 bg-[linear-gradient(108.38deg,#0B4C42_7.07%,#02917D_91.12%)]">
+					<div className="mx-auto max-w-[1255px] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
+						<h2 className="text-center text-[clamp(1.75rem,1.15rem+2vw,2.875rem)] font-semibold uppercase tracking-[0.5px]">
+							<span className="text-[#F7F1DF]">{c.botanicals.lookInside.titlePrefix}</span>
+							<span className="font-extrabold text-[#43E8D1]">{c.botanicals.lookInside.titleAccent}</span>
+						</h2>
+						<p className="mx-auto mt-5 max-w-[1094px] text-pretty text-center text-[clamp(0.9375rem,0.88rem+0.25vw,1.25rem)] leading-[1.4] text-[#F7F1DF]">
+							{c.botanicals.lookInside.intro}
+						</p>
+						<ul
+							className="mt-10 grid grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4"
+							role="list"
+						>
+							{c.botanicals.lookInside.ingredients.map((ingredient) => (
+								<li key={ingredient.name} className="flex flex-col items-center gap-[11px] text-center">
+									<div className="relative mx-auto size-[clamp(9rem,8rem+4vw,12.5rem)] overflow-hidden rounded-full">
+										<Image
+											src={ingredient.image.src}
+											alt={ingredient.image.alt}
+											width={ingredient.image.width}
+											height={ingredient.image.height}
+											className="size-full object-cover"
+											sizes="(min-width: 1024px) 12.5rem, 36vw"
+										/>
+									</div>
+									<p className="text-[clamp(1rem,0.95rem+0.15vw,1.25rem)] font-semibold uppercase leading-normal text-[#43E8D1]">
+										{ingredient.name}
+									</p>
+									<p className="text-[clamp(1.125rem,1rem+0.3vw,1.375rem)] font-bold tabular-nums text-white">
+										{ingredient.dose}
+									</p>
+									<p className="max-w-[236px] text-pretty text-[clamp(0.9375rem,0.9rem+0.12vw,1.125rem)] leading-[1.4] text-[#F7F1DF]">
+										{ingredient.benefit}
+									</p>
+								</li>
+							))}
+						</ul>
+						<div className="mt-12 flex justify-center">
+							<a
+								href="#offer"
+								className="inline-flex min-h-[51px] items-center justify-center rounded-full bg-[#43E8D1] px-10 py-3 text-[clamp(1rem,0.95rem+0.2vw,1.375rem)] font-bold uppercase tracking-[0.5px] text-[#0B554B] transition-opacity hover:opacity-90"
+							>
+								{c.botanicals.lookInside.ctaLabel}
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<div className="mt-10 flex flex-col items-start justify-between gap-5 rounded-2xl bg-[#0B3D36] px-6 py-6 sm:flex-row sm:items-center sm:px-8 sm:py-7">
+						<p className="text-base font-semibold leading-snug text-white sm:text-lg md:text-xl">
+							{c.botanicals.cleanBar}
+						</p>
+						<div className="flex flex-wrap gap-2.5">
+							{c.botanicals.pills.map((pill) => (
+								<span
+									key={pill}
+									className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#0B3D36]"
+								>
+									{pill}
+								</span>
+							))}
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* SECTION 4 — Lifestyle cards */}
+			<section className="bg-[#F7F7F7] py-14 sm:py-20">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<SectionHeading
+						eyebrow={c.lifestyle.eyebrow}
+						title={c.lifestyle.title}
+						intro={c.lifestyle.intro}
+						align="center"
+					/>
+					<ul className="mt-10 grid gap-6 lg:grid-cols-3">
+						{c.lifestyle.cards.map((card) => (
+							<li
+								key={card.id}
+								className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white"
+							>
+								<div className="overflow-hidden bg-[#0B3D36]">
+									<SoftImage
+										image={card.image}
+										sizes="(max-width: 1024px) 100vw, 33vw"
+										className="aspect-square"
+									/>
+								</div>
+								<div className="flex flex-1 flex-col p-5 sm:p-6">
+									<Eyebrow>{card.eyebrow}</Eyebrow>
+									<h3 className={cn("mt-2 text-xl font-semibold", forest)}>{card.title}</h3>
+									<p className="text-foreground/70 mt-2 flex-1 text-sm leading-relaxed">{card.body}</p>
+									<ul className="mt-4 space-y-2">
+										{card.points.map((point) => (
+											<li key={point} className="text-foreground/80 flex items-center gap-2 text-sm">
+												<span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C46A3A] text-white">
+													<Check className="h-3 w-3" strokeWidth={3} />
+												</span>
+												{point}
+											</li>
+										))}
+									</ul>
+								</div>
+							</li>
+						))}
+					</ul>
+				</div>
+			</section>
+
+			{/* SECTION 5 — Ritual + comparison */}
+			<section className="bg-white py-14 sm:py-20">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
+						<div className="overflow-hidden rounded-2xl">
+							<SoftImage
+								image={c.routine.image}
+								sizes="(max-width: 1024px) 100vw, 50vw"
+								className="aspect-[4/3]"
+							/>
+						</div>
+						<div>
+							<SectionHeading eyebrow={c.routine.eyebrow} title={c.routine.title} />
+							<ol className="mt-8 grid gap-3 sm:grid-cols-2">
+								{c.routine.steps.map((step) => (
+									<li key={step.n} className="rounded-2xl border border-border bg-[#F7F7F7] p-4">
+										<span className={cn("text-sm font-bold", accent)}>{step.n}</span>
+										<h3 className={cn("mt-1 text-base font-semibold", forest)}>{step.title}</h3>
+										<p className="text-foreground/70 mt-1 text-sm leading-relaxed">{step.body}</p>
+									</li>
+								))}
+							</ol>
+						</div>
+					</div>
+
+					<div className="mt-16">
+						<SectionHeading
+							eyebrow={c.comparison.eyebrow}
+							title={c.comparison.title}
+							intro={c.comparison.intro}
+							align="center"
+						/>
+						<div className="mt-8 overflow-x-auto rounded-2xl border border-border">
+							<table className="w-full min-w-[720px] border-collapse text-left text-sm">
+								<thead>
+									<tr className="bg-[#F0F0F0]">
+										{c.comparison.headers.map((header, i) => (
+											<th
+												key={header}
+												className={cn(
+													"px-4 py-3 font-semibold",
+													i === 1 ? "bg-[#F8E7DC] text-[#C46A3A]" : forest,
+												)}
+											>
+												{header}
+											</th>
+										))}
+									</tr>
+								</thead>
+								<tbody>
+									{c.comparison.rows.map((row) => (
+										<tr key={row[0]} className="border-t border-border">
+											{row.map((cell, i) => (
+												<td
+													key={`${row[0]}-${i}`}
+													className={cn(
+														"text-foreground/80 px-4 py-3 align-top",
+														i === 0 && "font-medium text-foreground",
+														i === 1 && "bg-[#FBF3ED] font-medium text-[#0B3D36]",
+													)}
+												>
+													{cell}
+												</td>
+											))}
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* SECTION 6 — Social proof */}
+			<section className="bg-[#F7F7F7] py-14 sm:py-20">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+						<SectionHeading eyebrow={c.social.eyebrow} title={c.social.title} />
+						<div className="rounded-2xl border border-border bg-white px-5 py-4">
+							<p className={cn("text-2xl font-bold", forest)}>
+								{c.social.rating} <span className="text-foreground/50 text-base font-medium">/ 5.0</span>
+							</p>
+							<p className="text-[#C46A3A]" aria-hidden>
+								★★★★★
+							</p>
+							<p className="text-foreground/60 mt-1 text-xs">{c.social.ratingLabel}</p>
+						</div>
+					</div>
+
+					<div className="mt-10">
+						<Carousel opts={{ align: "start", loop: true }} className="relative w-full">
+							<CarouselContent className="-ml-4">
+								{c.social.clips.map((clip) => (
+									<CarouselItem key={clip.id} className="basis-[78%] pl-4 sm:basis-[48%] lg:basis-1/3">
+										<div className="overflow-hidden rounded-2xl bg-[#0B3D36]">
+											<SocialClipVideo clip={clip} />
+										</div>
+									</CarouselItem>
+								))}
+							</CarouselContent>
+							<div className="mt-6 flex items-center justify-center gap-4">
+								<CarouselPrevious variant="ghost" className={socialCarouselArrowClassName} />
+								<SocialGalleryDots clipIds={c.social.clips.map((clip) => clip.id)} />
+								<CarouselNext variant="ghost" className={socialCarouselArrowClassName} />
+							</div>
+						</Carousel>
+					</div>
+
+					<div className="mt-8 grid items-stretch gap-4 overflow-hidden rounded-2xl border border-border bg-white lg:grid-cols-[0.9fr_1.1fr]">
+						<div className="bg-[#0B3D36]">
+							<SoftImage
+								image={c.social.featured.visual}
+								sizes="(max-width: 1024px) 100vw, 40vw"
+								className="h-full min-h-[220px] object-cover"
+							/>
+						</div>
+						<blockquote className="flex flex-col justify-center p-6 sm:p-8">
+							<p className={cn("text-xs font-bold uppercase tracking-[0.18em]", accent)}>Verified buyer</p>
+							<p className={cn("mt-3 text-xl font-semibold leading-snug sm:text-2xl", forest)}>
+								“{c.social.featured.quote}”
+							</p>
+							<footer className="text-foreground/70 mt-5 text-sm">
+								<span className="font-semibold text-foreground">{c.social.featured.author}</span>
+								{" · "}
+								{c.social.featured.meta}
+							</footer>
+						</blockquote>
+					</div>
+				</div>
+			</section>
+
+			{/* SECTION 7 — FAQ */}
+			<section className="bg-white py-14 sm:py-20">
+				<div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+					<div>
+						<div className="overflow-hidden rounded-2xl">
+							<SoftImage
+								image={c.faq.image}
+								sizes="(max-width: 1024px) 100vw, 40vw"
+								className="aspect-[3/4] object-cover"
+							/>
+						</div>
+						<div className="mt-4 rounded-2xl bg-[#F0F0F0] p-5">
+							<h3 className={cn("text-lg font-semibold", forest)}>{c.faq.asideTitle}</h3>
+							<p className="text-foreground/70 mt-2 text-sm leading-relaxed">{c.faq.asideBody}</p>
+						</div>
+					</div>
+					<div>
+						<SectionHeading eyebrow={c.faq.eyebrow} title={c.faq.title} intro={c.faq.intro} />
+						<div className="mt-8">
+							<FaqAccordion />
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Trust + final CTA */}
+			<section className="border-t border-border bg-[#0B3D36] py-12 text-white sm:py-14">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<ul className="grid gap-6 sm:grid-cols-3">
+						{c.trust.map((item) => (
+							<li key={item.title} className="text-center sm:text-left">
+								<p className="text-lg font-semibold">{item.title}</p>
+								<p className="mt-1 text-sm text-white/70">{item.body}</p>
+							</li>
+						))}
+					</ul>
+					<div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl bg-white/5 px-6 py-6 sm:flex-row">
+						<div className="flex items-start gap-3 text-center sm:text-left">
+							<Shield className="mt-0.5 h-5 w-5 shrink-0 text-[#F0A070]" />
+							<div>
+								<p className="font-semibold">Ready for a simpler daily ritual?</p>
+								<p className="mt-1 text-sm text-white/70">
+									Start your 30-day supply of Pure Himalayan Shilajit 7-in-1 Gummies.
+								</p>
+							</div>
+						</div>
+						<a
+							href="#offer"
+							className="inline-flex h-12 items-center justify-center rounded-xl bg-[#C46A3A] px-7 text-sm font-semibold text-white transition hover:bg-[#b55c30]"
+						>
+							Add to bag
+						</a>
+					</div>
+					<p className="mt-8 text-center text-xs leading-relaxed text-white/45">{c.disclaimer}</p>
+				</div>
+			</section>
+		</div>
+	);
+}

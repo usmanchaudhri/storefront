@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { formatMoney, formatMoneyRange } from "@/lib/utils";
 import { getDiscountInfo } from "@/lib/pricing";
 import { AddToCart } from "./add-to-cart";
@@ -11,13 +12,21 @@ import { usePdpVariant } from "./pdp-variant-provider";
 
 interface VariantBuyBoxProps {
 	addToCartAction: (formData: FormData) => Promise<void>;
+	/** Forwarded to AddToCart — set false on landings that render a custom trust matrix. */
+	showDisclaimers?: boolean;
+	/** Rendered under Add to Cart inside the buy-box card (e.g. Figma trust matrix). */
+	afterAddToCart?: ReactNode;
 }
 
 /**
  * Client buy box — price, stock, and selection update instantly from
  * preloaded variant data. URL is soft-synced without blocking navigation.
  */
-export function VariantBuyBox({ addToCartAction }: VariantBuyBoxProps) {
+export function VariantBuyBox({
+	addToCartAction,
+	showDisclaimers = true,
+	afterAddToCart,
+}: VariantBuyBoxProps) {
 	const { product, channel, selectedVariantId, selectedVariant } = usePdpVariant();
 	const variants = product.variants || [];
 
@@ -77,13 +86,17 @@ export function VariantBuyBox({ addToCartAction }: VariantBuyBoxProps) {
 						channel={channel}
 					/>
 
-					<AddToCart
-						price={price}
-						compareAtPrice={compareAtPrice}
-						discountPercent={discountPercent}
-						disabled={isAddToCartDisabled}
-						disabledReason={disabledReason}
-					/>
+					<div className="space-y-4">
+						<AddToCart
+							price={price}
+							compareAtPrice={compareAtPrice}
+							discountPercent={discountPercent}
+							disabled={isAddToCartDisabled}
+							disabledReason={disabledReason}
+							showDisclaimers={showDisclaimers}
+						/>
+						{afterAddToCart}
+					</div>
 				</div>
 
 				<StickyBar productName={product.name} price={price} show={!isAddToCartDisabled} />

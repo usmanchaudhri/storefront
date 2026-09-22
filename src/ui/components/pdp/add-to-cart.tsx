@@ -12,6 +12,8 @@ interface AddToCartProps {
 	discountPercent?: number | null;
 	disabled?: boolean;
 	disabledReason?: "no-selection" | "out-of-stock";
+	/** When false, hides the default 3-column disclaimer under the button. */
+	showDisclaimers?: boolean;
 }
 
 function AddToCartButton({
@@ -55,6 +57,7 @@ export function AddToCart({
 	discountPercent,
 	disabled = false,
 	disabledReason,
+	showDisclaimers = true,
 }: AddToCartProps) {
 	return (
 		<div className="space-y-4">
@@ -70,30 +73,31 @@ export function AddToCart({
 
 			<AddToCartButton disabled={disabled} disabledReason={disabledReason} />
 
-			{/* Figma 2435:1336 — buy-box disclaimers */}
-			<div className="grid grid-cols-3 gap-2 pt-2 text-center text-[11px] leading-snug text-[#313131] sm:gap-4 sm:text-sm sm:leading-normal">
-				<p>
-					Free
-					<br />
-					Shipping For
-					<br />
-					Subscribers
-				</p>
-				<p>
-					60-Day
-					<br />
-					Satisfaction
-					<br />
-					Guarantee
-				</p>
-				<p>
-					Save 20%
-					<br />
-					When You
-					<br />
-					Subscribe
-				</p>
-			</div>
+			{showDisclaimers ? (
+				<div className="grid grid-cols-3 gap-2 pt-2 text-center text-[11px] leading-snug text-[#313131] sm:gap-4 sm:text-sm sm:leading-normal">
+					<p>
+						Free
+						<br />
+						Shipping For
+						<br />
+						Subscribers
+					</p>
+					<p>
+						60-Day
+						<br />
+						Satisfaction
+						<br />
+						Guarantee
+					</p>
+					<p>
+						Save 20%
+						<br />
+						When You
+						<br />
+						Subscribe
+					</p>
+				</div>
+			) : null}
 		</div>
 	);
 }
