@@ -9,6 +9,7 @@ import {
 } from "@/ui/components/ui/accordion";
 import { Badge } from "@/ui/components/ui/badge";
 import type { PolicyLabelValues } from "@/lib/content/policy-format";
+import { cn } from "@/lib/utils";
 import { type ReactNode } from "react";
 
 interface Attribute {
@@ -21,6 +22,8 @@ interface ProductAttributesProps {
 	careInstructions?: string | null;
 	policyLabels: PolicyLabelValues;
 	className?: string;
+	/** Larger body text for accordion content (e.g. conversion landing). */
+	largeContent?: boolean;
 }
 
 const attributeIcons: Record<string, ReactNode> = {
@@ -47,6 +50,7 @@ export function ProductAttributes({
 	careInstructions,
 	policyLabels,
 	className,
+	largeContent = false,
 }: ProductAttributesProps) {
 	const formatValue = (value: string | boolean | string[]): ReactNode => {
 		if (typeof value === "boolean") return value ? "Yes" : "No";
@@ -76,17 +80,21 @@ export function ProductAttributes({
 		return null;
 	}
 
+	const bodyText = largeContent ? "text-lg leading-relaxed sm:text-xl" : "text-base leading-relaxed";
+	const rowText = largeContent ? "text-lg sm:text-xl" : "text-base";
+	const triggerText = largeContent
+		? "py-4 text-lg font-medium hover:no-underline sm:text-xl"
+		: "py-4 text-base font-medium hover:no-underline sm:text-lg";
+
 	return (
 		<Accordion type="multiple" className={className}>
 			{displayAttributes.length > 0 && (
 				<AccordionItemWithContext value="details" className="border-border">
-					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
-						Product Details
-					</AccordionTrigger>
+					<AccordionTrigger className={triggerText}>Product Details</AccordionTrigger>
 					<AccordionContent>
 						<div className="grid gap-3">
 							{displayAttributes.map((attr) => (
-								<div key={attr.name} className="flex items-start justify-between gap-4 text-base">
+								<div key={attr.name} className={cn("flex items-start justify-between gap-4", rowText)}>
 									<span className="text-foreground/80 flex items-center gap-2">
 										{attributeIcons[attr.name]}
 										{attr.name}
@@ -101,20 +109,16 @@ export function ProductAttributes({
 
 			{careInstructions && (
 				<AccordionItemWithContext value="care" className="border-border">
-					<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
-						Care Instructions
-					</AccordionTrigger>
-					<AccordionContent className="text-foreground/80 text-base leading-relaxed">
+					<AccordionTrigger className={triggerText}>Care Instructions</AccordionTrigger>
+					<AccordionContent className={cn("text-foreground/80", bodyText)}>
 						{careInstructions}
 					</AccordionContent>
 				</AccordionItemWithContext>
 			)}
 
 			<AccordionItemWithContext value="shipping" className="border-border">
-				<AccordionTrigger className="py-4 text-base font-medium hover:no-underline sm:text-lg">
-					Shipping & Returns
-				</AccordionTrigger>
-				<AccordionContent className="text-foreground/80 text-base leading-relaxed">
+				<AccordionTrigger className={triggerText}>Shipping & Returns</AccordionTrigger>
+				<AccordionContent className={cn("text-foreground/80", bodyText)}>
 					{policyLabels.freeShippingThreshold ? (
 						<p className="mb-2">{interpolatePolicyCopy(SHIPPING_BODY, policyLabels)}</p>
 					) : null}

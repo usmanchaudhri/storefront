@@ -4,7 +4,11 @@ import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, ChevronDown, Shield } from "lucide-react";
 
-import { shilajit7in1Landing, type LandingImage } from "@/config/landing/shilajit-7in1-new";
+import {
+	shilajit7in1Landing,
+	type ConversionLandingContent,
+	type LandingImage,
+} from "@/config/landing/shilajit-7in1-new";
 import { cn } from "@/lib/utils";
 import {
 	Carousel,
@@ -77,7 +81,7 @@ function SoftImage({
 	);
 }
 
-type SocialClip = (typeof shilajit7in1Landing.social.clips)[number];
+type SocialClip = ConversionLandingContent["social"]["clips"][number];
 
 /** Autoplay muted clip in the new-PDP card size (aspect 9/14). */
 function SocialClipVideo({ clip }: { clip: SocialClip }) {
@@ -193,8 +197,7 @@ function SocialGalleryDots({ clipIds }: { clipIds: readonly string[] }) {
 	);
 }
 
-function FaqAccordion() {
-	const { faq } = shilajit7in1Landing;
+function FaqAccordion({ faq }: { faq: ConversionLandingContent["faq"] }) {
 	const [openId, setOpenId] = useState<string | null>(faq.items[0]?.id ?? null);
 
 	return (
@@ -227,15 +230,19 @@ function FaqAccordion() {
 	);
 }
 
-interface Shilajit7in1LandingViewProps {
+interface ConversionLandingViewProps {
 	buyIsland: ReactNode;
+	content?: ConversionLandingContent;
 }
 
-export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewProps) {
-	const c = shilajit7in1Landing;
+export function ConversionLandingView({
+	buyIsland,
+	content = shilajit7in1Landing,
+}: ConversionLandingViewProps) {
+	const c = content;
 
 	return (
-		<div className="shilajit-landing bg-[#F7F7F7] text-foreground">
+		<div className="conversion-landing bg-[#F7F7F7] text-foreground">
 			{/* SECTION 1 — Hero purchase engine (same gallery size as original PDP) */}
 			<section id="offer" className="scroll-mt-24 bg-white">
 				<div className="container-content py-4 sm:py-6">{buyIsland}</div>
@@ -291,7 +298,12 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 							{c.botanicals.lookInside.intro}
 						</p>
 						<ul
-							className="mt-10 grid grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4"
+							className={cn(
+								"mt-10 grid justify-items-center gap-x-6 gap-y-10",
+								c.botanicals.lookInside.ingredients.length <= 2
+									? "mx-auto max-w-2xl grid-cols-2"
+									: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+							)}
 							role="list"
 						>
 							{c.botanicals.lookInside.ingredients.map((ingredient) => (
@@ -309,9 +321,11 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 									<p className="text-[clamp(1rem,0.95rem+0.15vw,1.25rem)] font-semibold uppercase leading-normal text-[#43E8D1]">
 										{ingredient.name}
 									</p>
-									<p className="text-[clamp(1.125rem,1rem+0.3vw,1.375rem)] font-bold tabular-nums text-white">
-										{ingredient.dose}
-									</p>
+									{ingredient.dose ? (
+										<p className="text-[clamp(1.125rem,1rem+0.3vw,1.375rem)] font-bold tabular-nums text-white">
+											{ingredient.dose}
+										</p>
+									) : null}
 									<p className="max-w-[236px] text-pretty text-[clamp(0.9375rem,0.9rem+0.12vw,1.125rem)] leading-[1.4] text-[#F7F1DF]">
 										{ingredient.benefit}
 									</p>
@@ -464,19 +478,16 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 				</div>
 			</section>
 
-			{/* SECTION 6 — Social proof */}
-			<section className="bg-[#F7F7F7] py-14 sm:py-20">
+			{/* SECTION 6 — Social / customer videos */}
+			<section id="pdp-story-reviews" className="scroll-mt-24 bg-[#F7F7F7] py-14 sm:py-20">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
 						<SectionHeading eyebrow={c.social.eyebrow} title={c.social.title} />
-						<div className="rounded-2xl border border-border bg-white px-5 py-4">
-							<p className={cn("text-2xl font-bold", forest)}>
-								{c.social.rating} <span className="text-foreground/50 text-base font-medium">/ 5.0</span>
+						<div className="max-w-xs rounded-2xl border border-border bg-white px-5 py-4">
+							<p className={cn("text-sm font-bold uppercase tracking-[0.14em]", accent)}>
+								{c.social.asideLabel}
 							</p>
-							<p className="text-[#C46A3A]" aria-hidden>
-								★★★★★
-							</p>
-							<p className="text-foreground/60 mt-1 text-xs">{c.social.ratingLabel}</p>
+							<p className="text-foreground/70 mt-2 text-sm leading-relaxed">{c.social.asideBody}</p>
 						</div>
 					</div>
 
@@ -508,7 +519,7 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 							/>
 						</div>
 						<blockquote className="flex flex-col justify-center p-6 sm:p-8">
-							<p className={cn("text-xs font-bold uppercase tracking-[0.18em]", accent)}>Verified buyer</p>
+							<p className={cn("text-xs font-bold uppercase tracking-[0.18em]", accent)}>Customer note</p>
 							<p className={cn("mt-3 text-xl font-semibold leading-snug sm:text-2xl", forest)}>
 								“{c.social.featured.quote}”
 							</p>
@@ -522,7 +533,31 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 				</div>
 			</section>
 
-			{/* SECTION 7 — FAQ */}
+			{/* SECTION 7 — Formula proof (no heavy-metal claims) */}
+			<section className="bg-white py-14 sm:py-20">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6">
+					<div className="grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+						<div>
+							<SectionHeading eyebrow={c.proof.eyebrow} title={c.proof.title} intro={c.proof.intro} />
+							<ul className="mt-8 space-y-5">
+								{c.proof.items.map((item) => (
+									<li key={item.id} className="rounded-2xl border border-border bg-[#F7F7F7] px-5 py-4">
+										<h3 className={cn("text-base font-semibold sm:text-lg", forest)}>{item.title}</h3>
+										<p className="text-foreground/70 mt-2 text-sm leading-relaxed sm:text-base">
+											{item.body}
+										</p>
+									</li>
+								))}
+							</ul>
+						</div>
+						<div className="overflow-hidden rounded-2xl border border-border bg-[#0B3D36]">
+							<SoftImage image={c.proof.factsImage} sizes="(max-width: 1024px) 100vw, 45vw" />
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* SECTION 8 — FAQ */}
 			<section className="bg-white py-14 sm:py-20">
 				<div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
 					<div>
@@ -541,7 +576,7 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 					<div>
 						<SectionHeading eyebrow={c.faq.eyebrow} title={c.faq.title} intro={c.faq.intro} />
 						<div className="mt-8">
-							<FaqAccordion />
+							<FaqAccordion faq={c.faq} />
 						</div>
 					</div>
 				</div>
@@ -562,17 +597,15 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 						<div className="flex items-start gap-3 text-center sm:text-left">
 							<Shield className="mt-0.5 h-5 w-5 shrink-0 text-[#F0A070]" />
 							<div>
-								<p className="font-semibold">Ready for a simpler daily ritual?</p>
-								<p className="mt-1 text-sm text-white/70">
-									Start your 30-day supply of Pure Himalayan Shilajit 7-in-1 Gummies.
-								</p>
+								<p className="font-semibold">{c.finalCta.title}</p>
+								<p className="mt-1 text-sm text-white/70">{c.finalCta.body}</p>
 							</div>
 						</div>
 						<a
 							href="#offer"
 							className="inline-flex h-12 items-center justify-center rounded-xl bg-[#C46A3A] px-7 text-sm font-semibold text-white transition hover:bg-[#b55c30]"
 						>
-							Add to bag
+							{c.finalCta.buttonLabel}
 						</a>
 					</div>
 					<p className="mt-8 text-center text-xs leading-relaxed text-white/45">{c.disclaimer}</p>
@@ -580,4 +613,9 @@ export function Shilajit7in1LandingView({ buyIsland }: Shilajit7in1LandingViewPr
 			</section>
 		</div>
 	);
+}
+
+/** @deprecated Prefer ConversionLandingView — kept for existing Shilajit page imports. */
+export function Shilajit7in1LandingView({ buyIsland }: { buyIsland: ReactNode }) {
+	return <ConversionLandingView buyIsland={buyIsland} content={shilajit7in1Landing} />;
 }

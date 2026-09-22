@@ -1,4 +1,10 @@
-const TRUST_ITEMS = [
+export type LandingTrustItem = {
+	id: string;
+	label: readonly string[];
+	iconSrc: string;
+};
+
+const DEFAULT_TRUST_ITEMS: readonly LandingTrustItem[] = [
 	{
 		id: "shipping",
 		label: ["Free Shipping for", "Subscribers"],
@@ -19,13 +25,13 @@ const TRUST_ITEMS = [
 		label: ["100% Pectin Base", "(Zero Gelatin)"],
 		iconSrc: "/pdp/7-in-1-shilajit-gummies-new/trust/pectin.svg",
 	},
-] as const;
+];
 
-/** Figma 2991:3105 — Trust Badges & Guarantee Matrix under Add to Bag. */
-export function LandingTrustMatrix() {
+/** Trust Badges & Guarantee Matrix under Add to Bag. */
+export function LandingTrustMatrix({ items = DEFAULT_TRUST_ITEMS }: { items?: readonly LandingTrustItem[] }) {
 	return (
 		<ul className="grid grid-cols-4 gap-3 border-y border-[rgba(193,200,195,0.4)] py-5 sm:gap-4">
-			{TRUST_ITEMS.map((item) => (
+			{items.map((item) => (
 				<li key={item.id} className="flex flex-col items-center gap-2.5 text-center">
 					<span className="flex h-11 w-11 items-center justify-center sm:h-12 sm:w-12">
 						{/* eslint-disable-next-line @next/next/no-img-element -- local SVG trust icons */}

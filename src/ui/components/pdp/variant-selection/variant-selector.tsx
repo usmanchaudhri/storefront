@@ -66,15 +66,15 @@ export function VariantSelector({
 	return (
 		<div className="space-y-3">
 			<div className="flex items-center gap-2">
-				<span id={labelId} className="text-base font-medium">
+				<span id={labelId} className="text-lg font-medium sm:text-xl">
 					{label}
 				</span>
 				{unavailableMessage ? (
-					<span className="text-base text-muted-foreground" role="status">
+					<span className="text-base text-muted-foreground sm:text-lg" role="status">
 						{unavailableMessage}
 					</span>
 				) : selectedOption ? (
-					<span className="text-foreground/80 text-base">{selectedOption.name}</span>
+					<span className="text-foreground/80 text-base sm:text-lg">{selectedOption.name}</span>
 				) : null}
 			</div>
 

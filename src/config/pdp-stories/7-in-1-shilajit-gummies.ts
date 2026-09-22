@@ -139,7 +139,7 @@ export const shilajitGummiesStory: PdpStoryPack = {
 		titlePrefix: "A look ",
 		titleAccent: "inside the gummy",
 		intro:
-			"Seven botanicals in every serving. Amounts match the Supplement Facts panel: two gummies, 15 servings, 30 gummies per jar.",
+			"Seven botanicals in every serving. Amounts match the Supplement Facts panel: 2 gummies per serving, 30 servings, 60 gummies per jar (30-day supply).",
 		ingredients: [
 			{
 				name: "Shilajit",

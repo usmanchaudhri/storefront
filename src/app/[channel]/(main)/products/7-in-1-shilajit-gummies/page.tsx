@@ -56,7 +56,7 @@ export async function generateMetadata(props: { params: Promise<{ channel: strin
 	});
 }
 
-export default async function Shilajit7in1NewLandingPage(props: {
+export default async function Shilajit7in1LandingPage(props: {
 	params: Promise<{ channel: string }>;
 	searchParams: Promise<{ variant?: string }>;
 }) {

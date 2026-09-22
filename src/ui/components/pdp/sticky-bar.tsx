@@ -31,6 +31,8 @@ interface StickyBarProps {
 	productName: string;
 	price: string;
 	show?: boolean;
+	/** Optional second line under the price (e.g. daily use). */
+	detail?: string;
 }
 
 function StickyAddButton() {
@@ -53,7 +55,7 @@ function StickyAddButton() {
 	);
 }
 
-export function StickyBar({ productName, price, show = false }: StickyBarProps) {
+export function StickyBar({ productName, price, show = false, detail }: StickyBarProps) {
 	const scrolledPastThreshold = useSyncExternalStore(
 		subscribeToScroll,
 		getScrollSnapshot,
@@ -73,7 +75,10 @@ export function StickyBar({ productName, price, show = false }: StickyBarProps) 
 			<div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
 				<div className="min-w-0 flex-1">
 					<p className="truncate font-medium">{productName}</p>
-					<p className="text-sm text-muted-foreground">{price}</p>
+					<p className="text-sm text-muted-foreground">
+						{price}
+						{detail ? <span className="text-muted-foreground/80"> · {detail}</span> : null}
+					</p>
 				</div>
 				<StickyAddButton />
 			</div>

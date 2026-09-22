@@ -71,9 +71,9 @@ export function VariantNameSelector({
 		<div className="space-y-3">
 			{label ? (
 				<div className="flex items-center gap-2">
-					<span className="text-base font-medium">{label}</span>
+					<span className="text-lg font-medium sm:text-xl">{label}</span>
 					{selectedVariant && (
-						<span className="text-foreground/80 text-base">
+						<span className="text-foreground/80 text-base sm:text-lg">
 							{parseBottleGummiesLabels(selectedVariant.name).primary}
 						</span>
 					)}

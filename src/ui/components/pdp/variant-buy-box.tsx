@@ -16,6 +16,10 @@ interface VariantBuyBoxProps {
 	showDisclaimers?: boolean;
 	/** Rendered under Add to Cart inside the buy-box card (e.g. Figma trust matrix). */
 	afterAddToCart?: ReactNode;
+	/** Optional sticky-bar detail under price (mobile). */
+	stickyDetail?: string;
+	/** Rendered above variant selection inside the buy-box card (e.g. details accordion). */
+	beforeSelection?: ReactNode;
 }
 
 /**
@@ -26,6 +30,8 @@ export function VariantBuyBox({
 	addToCartAction,
 	showDisclaimers = true,
 	afterAddToCart,
+	stickyDetail,
+	beforeSelection,
 }: VariantBuyBoxProps) {
 	const { product, channel, selectedVariantId, selectedVariant } = usePdpVariant();
 	const variants = product.variants || [];
@@ -76,9 +82,10 @@ export function VariantBuyBox({
 				)}
 			</div>
 
-			<form action={addToCartAction} className="order-3 mt-4 space-y-6">
+			<form action={addToCartAction} className="order-3 mt-2 space-y-4">
 				<input type="hidden" name="variantId" value={selectedVariantId ?? ""} />
-				<div className="space-y-6 rounded-2xl bg-white p-5 sm:p-6">
+				<div className="space-y-4 rounded-2xl bg-white p-5 sm:space-y-5 sm:p-6">
+					{beforeSelection}
 					<VariantSelectionSection
 						variants={variants}
 						selectedVariantId={selectedVariantId}
@@ -99,7 +106,12 @@ export function VariantBuyBox({
 					</div>
 				</div>
 
-				<StickyBar productName={product.name} price={price} show={!isAddToCartDisabled} />
+				<StickyBar
+					productName={product.name}
+					price={price}
+					detail={stickyDetail}
+					show={!isAddToCartDisabled}
+				/>
 			</form>
 		</>
 	);

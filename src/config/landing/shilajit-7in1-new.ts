@@ -1,11 +1,31 @@
 /** Content for the Figma-inspired 7-in-1 Shilajit Gummies conversion landing. */
 
-export const LANDING_SLUG = "7-in-1-shilajit-gummies-new";
-/** Real Saleor product used for price / ATC (existing PDP unchanged). */
+export const LANDING_SLUG = "7-in-1-shilajit-gummies";
+/** Real Saleor product used for price / ATC. */
 export const PRODUCT_SLUG = "7-in-1-shilajit-gummies";
 
+/**
+ * Canonical product facts — use everywhere on this landing.
+ * Do not say “30-day supply” unless it matches this dose math.
+ * Guarantee length is separate from jar duration.
+ */
+export const PRODUCT_FACTS = {
+	gummiesPerJar: 60,
+	gummiesPerServing: 2,
+	servingsPerJar: 30,
+	supplyDays: 30,
+	supplyLabel: "30-day supply",
+	dailyUse: "2 gummies once a day",
+	factLine: "60 gummies · 30 servings · 2 gummies per day",
+	guaranteeDays: 60,
+	guaranteeLabel: "60-day satisfaction guarantee",
+	shippingLabel: "Free shipping for subscribers",
+	mainBenefit: "A simple daily gummy formulated to support everyday energy and stamina.",
+} as const;
+
 const ASSET = "/pdp/7-in-1-shilajit-gummies";
-const CREATIVE = `/pdp/${LANDING_SLUG}`;
+/** Landing creatives live in the dedicated asset folder (kept after route rename). */
+const CREATIVE = "/pdp/7-in-1-shilajit-gummies-new";
 
 export type LandingImage = {
 	src: string;
@@ -26,9 +46,21 @@ export const shilajit7in1Landing = {
 	brand: "KayaPure",
 	productName: "Pure Himalayan Shilajit 7-in-1 Gummies",
 	hero: {
-		subtitle:
-			"Combines pure Shilajit with a 7-in-1 herbal blend in a simple daily gummy — designed for energy, stamina, and an easy wellness ritual.",
-		badges: ["Wild Himalayan", "7 synergistic herbs"],
+		subtitle: PRODUCT_FACTS.mainBenefit,
+		badges: ["Wild Himalayan", "7 botanicals in one"],
+		/** Explicit above-the-fold offer facts (price/variant/ATC come from Saleor buy box). */
+		offerFacts: [
+			{ label: "Quantity", value: "60 gummies / jar" },
+			{ label: "Servings", value: "30 servings" },
+			{ label: "Daily use", value: PRODUCT_FACTS.dailyUse },
+			{ label: "Supply", value: PRODUCT_FACTS.supplyLabel },
+			{ label: "Shipping", value: PRODUCT_FACTS.shippingLabel },
+			{ label: "Guarantee", value: PRODUCT_FACTS.guaranteeLabel },
+		],
+		reviewsCta: {
+			label: "See customer videos",
+			href: "#pdp-story-reviews",
+		},
 	},
 	origin: {
 		title: "Wild-harvested Himalayan origin &",
@@ -54,19 +86,19 @@ export const shilajit7in1Landing = {
 			titlePrefix: "A look ",
 			titleAccent: "inside the gummy",
 			intro:
-				"Seven botanicals in every serving. Amounts match the Supplement Facts panel: two gummies, 15 servings, 30 gummies per jar.",
+				"Seven botanicals in every serving. Amounts match the Supplement Facts panel: 2 gummies per serving, 30 servings, 60 gummies per jar (30-day supply).",
 			ctaLabel: "Shop 7-in-1 Gummies",
 			ingredients: [
 				{
 					name: "Shilajit",
 					dose: "100mg",
-					benefit: "Enhances strength, stamina, and focus.",
+					benefit: "Traditionally used to support strength, stamina, and focus.",
 					image: asset("ingredients/shilajit-circle.png", "Raw Himalayan shilajit resin", 1254, 1254),
 				},
 				{
 					name: "Ashwagandha",
 					dose: "100mg",
-					benefit: "Reduces stress and supports relaxation.",
+					benefit: "An adaptogen formulated to help support relaxation.",
 					image: asset(
 						"ingredients/ashwagandha-circle.png",
 						"Ashwagandha root, powder, and leaves",
@@ -77,37 +109,69 @@ export const shilajit7in1Landing = {
 				{
 					name: "Black Seed",
 					dose: "100mg",
-					benefit: "A traditional botanical for immune-friendly daily support.",
+					benefit: "A traditional botanical included for everyday wellness support.",
 					image: asset("ingredients/black-seed.png", "Black seed in a wooden bowl", 1022, 1024),
 				},
 				{
 					name: "Ginger",
 					dose: "100mg",
-					benefit: "Supports digestion and antioxidant balance.",
+					benefit: "Included to help support digestion.",
 					image: asset("ingredients/ginger.png", "Fresh ginger root and slices", 1024, 1024),
 				},
 				{
 					name: "Black Pepper",
 					dose: "10mg",
-					benefit: "Supports digestion and metabolism.",
+					benefit: "Included to help support digestion and nutrient uptake.",
 					image: asset("ingredients/black-pepper.png", "Black peppercorns with a wooden scoop", 1024, 1024),
 				},
 				{
 					name: "Tongkat Ali",
 					dose: "100mg",
-					benefit: "Stamina and vitality support, paired with maca in the formula.",
+					benefit: "Formulated to help support stamina and vitality, paired with maca.",
 					image: asset("ingredients/tongkat-ali.png", "Tongkat Ali roots", 1024, 1022),
 				},
 				{
 					name: "Maca Root",
 					dose: "100mg",
-					benefit: "Natural energy for daily performance, paired with Tongkat Ali.",
+					benefit: "Formulated to help support everyday energy, paired with Tongkat Ali.",
 					image: asset("ingredients/maca.png", "Maca roots and maca powder", 1024, 1024),
 				},
 			],
 		},
 		cleanBar: "100% pectin-based • Only 3g cane sugar per serving • Zero gelatin • Gluten-free",
 		pills: ["Non-GMO", "Vegan friendly", "Halal-friendly"],
+	},
+	proof: {
+		eyebrow: "Formula transparency",
+		title: "What’s on the label — and what “wild-harvested” means",
+		intro:
+			"Less storytelling, more clarity: serving facts, sourcing language, and how this jar is meant to be used.",
+		items: [
+			{
+				id: "facts",
+				title: "Supplement Facts",
+				body: "Each serving is 2 gummies. A jar contains 60 gummies / 30 servings — a 30-day supply at the suggested use.",
+			},
+			{
+				id: "wild",
+				title: "What “wild-harvested” means here",
+				body: "We use “wild-harvested” to describe Shilajit collected from high-altitude Himalayan geological formations — not cultivated farm crops. It is a sourcing description, not a clinical claim.",
+			},
+			{
+				id: "blend",
+				title: "Ingredient sourcing",
+				body: "The formula pairs Himalayan Shilajit with six botanicals (ashwagandha, tongkat ali, maca, black seed, ginger, and black pepper). Amounts are listed on the Supplement Facts panel.",
+			},
+			{
+				id: "made",
+				title: "Format & standards",
+				body: "Plant pectin gummy base (not gelatin), 3g cane sugar per serving, positioned as vegan- and Halal-friendly and gluten-free. Manufactured as a dietary supplement — not intended to diagnose, treat, cure, or prevent any disease.",
+			},
+		],
+		factsImage: creative(
+			"ingredients-known-for.webp",
+			"Supplement Facts and botanical overview for Shilajit 7-in-1 Gummies",
+		),
 	},
 	lifestyle: {
 		eyebrow: "Unlocking everyday vitality",
@@ -116,10 +180,10 @@ export const shilajit7in1Landing = {
 		cards: [
 			{
 				id: "benefits",
-				eyebrow: "Targeted benefits",
+				eyebrow: "Daily support",
 				title: "Everyday performance",
-				body: "Built for a simple daily habit: natural energy support, stress-friendly adaptogens, and a convenient chewable format.",
-				points: ["Natural energy support", "Stress-friendly botanicals", "Easy daily habit"],
+				body: "Built for a simple daily habit: a chewable format formulated to help support everyday energy and an easy wellness routine.",
+				points: ["Everyday energy support", "Adaptogenic botanicals", "Easy daily habit"],
 				image: creative(
 					"better-daily-support.webp",
 					"Better daily support with Shilajit — vegan, Halal and gluten-free",
@@ -127,7 +191,7 @@ export const shilajit7in1Landing = {
 			},
 			{
 				id: "ritual",
-				eyebrow: "Adaptogenic ritual",
+				eyebrow: "Daily ritual",
 				title: "Fits your daily lifestyle",
 				body: "Keep a bottle on the kitchen counter, desk, or gym bag — no resin spoons, no multi-step prep.",
 				points: ["At home", "At work", "On the go"],
@@ -140,8 +204,8 @@ export const shilajit7in1Landing = {
 				id: "habit",
 				eyebrow: "Daily habit",
 				title: "Pure Himalayan routine",
-				body: "60 gummies = 30-day supply at 2 gummies a day. Designed to make consistency the default.",
-				points: ["2 gummies / day", "30-day supply", "Plant pectin base"],
+				body: "60 gummies · 30 servings · 2 gummies per day = a 30-day supply. Designed to make consistency the default.",
+				points: ["2 gummies / day", "60 gummies / jar", "30-day supply"],
 				image: creative("why-it-matters.webp", "Why Shilajit 7-in-1 Gummies matter — easy daily use"),
 			},
 		],
@@ -174,29 +238,30 @@ export const shilajit7in1Landing = {
 			{
 				n: "04",
 				title: "Consistency wins",
-				body: "Adaptogenic habits build with daily use — stick with the 30-day supply.",
+				body: "Daily habits compound — stick with the 30-day supply and our separate 60-day satisfaction guarantee.",
 			},
 		],
 	},
 	comparison: {
-		eyebrow: "Clear differentiation",
-		title: "How KayaPure is different",
-		intro: "An objective look at format, blend, and daily convenience.",
-		headers: ["Key feature", "KayaPure 7-in-1", "Traditional resin", "Standard capsules"],
+		eyebrow: "Format comparison",
+		title: "How the formats differ",
+		intro: "A neutral look at convenience — not a claim that one format is medically superior.",
+		headers: ["Key feature", "KayaPure 7-in-1 gummy", "Resin format", "Capsule format"],
 		rows: [
-			["Format", "Delicious pectin gummy", "Sticky bitter resin", "Dry powder capsule"],
-			["7 botanicals in 1", "Yes — synergistic blend", "Usually Shilajit only", "Often single ingredient"],
-			["Preparation", "Chew & go", "Often needs hot water", "Swallow with water"],
-			["Sugar", "Only 3g cane sugar", "Zero (but hard to take)", "Fillers vary"],
-			["Black pepper", "Included in the blend", "Unassisted", "Varies"],
-			["60-day guarantee", "Included", "Rarely offered", "Rarely offered"],
+			["Format", "Pectin gummy", "Resin", "Capsule"],
+			["Botanicals in this SKU", "Shilajit + 6 botanicals", "Often Shilajit only", "Varies by product"],
+			["How you take it", "Chew 2 gummies", "Typically dissolved or measured", "Swallow with water"],
+			["Sugar in this SKU", "3g cane sugar / serving", "Typically none", "Varies by product"],
+			["Black pepper in this SKU", "Included (10mg)", "Varies", "Varies"],
+			["Purchase guarantee", "60-day satisfaction guarantee", "Varies by brand", "Varies by brand"],
 		],
 	},
 	social: {
-		eyebrow: "Community reactions",
-		title: "Real daily rituals. Real results.",
-		rating: "4.9",
-		ratingLabel: "Based on KayaPure customer experiences",
+		eyebrow: "Community",
+		title: "Real daily rituals.",
+		/** Honest framing — no fabricated star rating or review volume. */
+		asideLabel: "Customer videos",
+		asideBody: "Clips from people using KayaPure in their routines — not a substitute for clinical evidence.",
 		clips: [
 			{
 				id: "clip-1",
@@ -205,7 +270,7 @@ export const shilajit7in1Landing = {
 			},
 			{
 				id: "clip-2",
-				poster: asset("social/clip-2.png", "Customer sharing stress relief gummy routine", 450, 800),
+				poster: asset("social/clip-2.png", "Customer sharing their gummy routine", 450, 800),
 				mp4Url: "/videos/section-video-3-1.mp4",
 			},
 			{
@@ -227,7 +292,7 @@ export const shilajit7in1Landing = {
 		featured: {
 			quote:
 				"Easy to take daily and simple to stick to. A convenient gummy format that fits into my routine.",
-			author: "Verified customer",
+			author: "Customer",
 			meta: "7-in-1 Shilajit Gummies",
 			visual: creative(
 				"consistency-testimonial.webp",
@@ -245,19 +310,20 @@ export const shilajit7in1Landing = {
 			1024,
 			1536,
 		),
-		asideTitle: "Authentic Ayurvedic standards",
-		asideBody: "Every jar is built around Himalayan Shilajit plus a multi-herb botanical blend.",
+		asideTitle: "Built around a multi-herb blend",
+		asideBody: "Every jar centers Himalayan Shilajit plus six supportive botanicals in a pectin gummy.",
 		items: [
 			{
 				id: "what-is",
 				question: "What is KayaPure 7-in-1 Shilajit Gummies?",
 				answer:
-					"A convenient pectin gummy format built around Himalayan Shilajit and six supportive botanicals: ashwagandha, tongkat ali, maca root, black seed, ginger, and black pepper.",
+					"A pectin gummy dietary supplement with Himalayan Shilajit and six botanicals: ashwagandha, tongkat ali, maca root, black seed, ginger, and black pepper.",
 			},
 			{
 				id: "how-to-use",
 				question: "How should I use it?",
-				answer: "Suggested use: chew 2 gummies once a day. 60 gummies equals a 30-day supply.",
+				answer:
+					"Suggested use: chew 2 gummies once a day. Each jar has 60 gummies (30 servings) — a 30-day supply. Our 60-day satisfaction guarantee is separate from jar duration.",
 			},
 			{
 				id: "sugar",
@@ -277,10 +343,18 @@ export const shilajit7in1Landing = {
 		],
 	},
 	trust: [
-		{ title: "Easy daily format", body: "2 gummies • 30-day supply" },
+		{ title: "Easy daily format", body: "60 gummies · 2/day · 30-day supply" },
 		{ title: "7-in-1 herbal blend", body: "Shilajit + 6 botanicals" },
 		{ title: "60-day guarantee", body: "info@kayapure.com" },
 	],
+	finalCta: {
+		title: "Ready for a simpler daily ritual?",
+		body: "Start your 60-gummy, 30-day supply of Pure Himalayan Shilajit 7-in-1 Gummies.",
+		buttonLabel: "Add to bag",
+	},
 	disclaimer:
 		"These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",
 } as const;
+
+/** Shared shape for conversion PDP landings (Shilajit, Apple Cider, etc.). */
+export type ConversionLandingContent = typeof shilajit7in1Landing;
