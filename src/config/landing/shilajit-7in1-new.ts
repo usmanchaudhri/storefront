@@ -274,27 +274,27 @@ export const shilajit7in1Landing = {
 		clips: [
 			{
 				id: "clip-1",
-				poster: asset("social/clip-1.png", "Customer sharing Kaya Pure gummy experience", 450, 800),
+				poster: asset("social/clip-1.png", "Customer sharing Kaya Pure gummy experience", 720, 720),
 				mp4Url: "/videos/section-video-2.mp4",
 			},
 			{
 				id: "clip-2",
-				poster: asset("social/clip-2.png", "Customer sharing their gummy routine", 450, 800),
+				poster: asset("social/clip-2.png", "Customer sharing their gummy routine", 718, 1280),
 				mp4Url: "/videos/section-video-3-1.mp4",
 			},
 			{
 				id: "clip-3",
-				poster: asset("social/clip-3.png", "Customer testimonial video", 450, 800),
+				poster: asset("social/clip-3.png", "Customer testimonial video", 480, 854),
 				mp4Url: "/videos/section-video-4-1.mp4",
 			},
 			{
 				id: "clip-4",
-				poster: asset("social/clip-1.png", "Kaya Pure in action", 450, 800),
+				poster: asset("social/clip-4.png", "Kaya Pure in action", 480, 854),
 				mp4Url: "/videos/Video-9-1-1.mp4",
 			},
 			{
 				id: "clip-5",
-				poster: asset("social/clip-2.png", "Morning wellness routine", 450, 800),
+				poster: asset("social/clip-5.png", "Morning wellness routine", 720, 1280),
 				mp4Url: "/videos/WhatsApp-Video-2025-06-12-at-12.34.25-AM-1.mp4",
 			},
 		],

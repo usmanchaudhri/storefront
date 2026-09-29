@@ -83,14 +83,11 @@ function SoftImage({
 
 type SocialClip = ConversionLandingContent["social"]["clips"][number];
 
-/** Autoplay muted clip in the new-PDP card size (aspect 9/14). */
-function SocialClipVideo({ clip }: { clip: SocialClip }) {
+/** Autoplay muted clip when the slide is on screen. */
+function SocialClipVideo({ clip, index }: { clip: SocialClip; index: number }) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const videoRef = useRef<HTMLVideoElement>(null);
-	const [{ isVisible, isActivated }, setPlayback] = useState({
-		isVisible: false,
-		isActivated: false,
-	});
+	const [isInView, setIsInView] = useState(false);
+	const [showVideo, setShowVideo] = useState(false);
 
 	useEffect(() => {
 		const container = containerRef.current;
@@ -100,66 +97,46 @@ function SocialClipVideo({ clip }: { clip: SocialClip }) {
 
 		const observer = new IntersectionObserver(
 			([entry]) => {
-				setPlayback((prev) => ({
-					isVisible: entry.isIntersecting,
-					isActivated: prev.isActivated || entry.isIntersecting,
-				}));
+				const inView = entry.isIntersecting;
+				setIsInView(inView);
+				if (!inView) {
+					setShowVideo(false);
+				}
 			},
-			{ rootMargin: "80px", threshold: 0.25 },
+			{ rootMargin: "40px", threshold: 0.25 },
 		);
 
 		observer.observe(container);
 		return () => observer.disconnect();
 	}, []);
 
-	const videoSrc = isActivated ? clip.mp4Url : null;
-
-	useEffect(() => {
-		const video = videoRef.current;
-		if (!video || !videoSrc) {
-			return;
-		}
-
-		if (!isVisible) {
-			video.pause();
-			return;
-		}
-
-		const play = () => {
-			void video.play().catch(() => undefined);
-		};
-
-		video.addEventListener("loadeddata", play);
-		if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-			play();
-		}
-
-		return () => video.removeEventListener("loadeddata", play);
-	}, [isVisible, videoSrc]);
-
 	return (
-		<div ref={containerRef} className="relative aspect-[9/14]">
+		<div ref={containerRef} className="relative aspect-[9/14] overflow-hidden bg-[#0B3D36]">
+			{/* Poster covers until playback is past the first keyframe (~150ms). */}
 			<Image
 				src={clip.poster.src}
 				alt={clip.poster.alt}
 				width={clip.poster.width}
 				height={clip.poster.height}
 				sizes="(max-width: 640px) 100vw, 33vw"
-				className={cn(
-					"absolute inset-0 h-full w-full object-cover transition-opacity",
-					videoSrc ? "opacity-0" : "opacity-100",
-				)}
+				priority={index === 0}
+				className={cn("absolute inset-0 z-20 h-full w-full object-cover", showVideo && "invisible")}
 			/>
-			{videoSrc ? (
+			{isInView ? (
 				<video
-					ref={videoRef}
-					className="absolute inset-0 size-full object-cover"
-					poster={clip.poster.src}
+					key={clip.mp4Url}
+					className={cn("absolute inset-0 z-10 size-full object-cover", !showVideo && "invisible")}
 					muted
 					playsInline
 					loop
-					preload={isVisible ? "metadata" : "none"}
-					src={videoSrc}
+					autoPlay
+					preload="auto"
+					src={clip.mp4Url}
+					onTimeUpdate={(event) => {
+						if (!showVideo && event.currentTarget.currentTime >= 0.15) {
+							setShowVideo(true);
+						}
+					}}
 					aria-label={clip.poster.alt}
 				/>
 			) : null}
@@ -174,14 +151,20 @@ const socialCarouselArrowClassName = cn(
 	"[&_svg]:size-5",
 );
 
-function SocialGalleryDots({ clipIds }: { clipIds: readonly string[] }) {
-	const { selectedIndex, scrollTo } = useCarousel();
+function SocialGalleryDots() {
+	const { selectedIndex, scrollTo, slideCount } = useCarousel();
+
+	// Dot count = Embla scroll snaps (how many arrow/dot steps to reach the end),
+	// not clip count — with 3 slides visible you only need ~3 snaps for 5 clips.
+	if (slideCount <= 1) {
+		return null;
+	}
 
 	return (
 		<div className="flex justify-center gap-2" role="tablist" aria-label="Social video slides">
-			{clipIds.map((id, index) => (
+			{Array.from({ length: slideCount }).map((_, index) => (
 				<button
-					key={id}
+					key={index}
 					type="button"
 					role="tab"
 					aria-selected={selectedIndex === index}
@@ -558,19 +541,21 @@ export function ConversionLandingView({
 					</div>
 
 					<div className="mt-10">
-						<Carousel opts={{ align: "start", loop: true }} className="relative w-full">
+						{/* No Embla `loop` — cloning slides duplicates live <video> nodes and
+						    flashes another clip's decoded frame at the loop seam. */}
+						<Carousel opts={{ align: "start", loop: false }} className="relative w-full">
 							<CarouselContent className="-ml-4">
-								{c.social.clips.map((clip) => (
+								{c.social.clips.map((clip, index) => (
 									<CarouselItem key={clip.id} className="basis-[78%] pl-4 sm:basis-[48%] lg:basis-1/3">
 										<div className="overflow-hidden rounded-2xl bg-[#0B3D36]">
-											<SocialClipVideo clip={clip} />
+											<SocialClipVideo clip={clip} index={index} />
 										</div>
 									</CarouselItem>
 								))}
 							</CarouselContent>
 							<div className="mt-6 flex items-center justify-center gap-4">
 								<CarouselPrevious variant="ghost" className={socialCarouselArrowClassName} />
-								<SocialGalleryDots clipIds={c.social.clips.map((clip) => clip.id)} />
+								<SocialGalleryDots />
 								<CarouselNext variant="ghost" className={socialCarouselArrowClassName} />
 							</div>
 						</Carousel>

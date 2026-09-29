@@ -184,23 +184,29 @@ CarouselItem.displayName = "CarouselItem";
 
 const CarouselPrevious = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
 	({ className, variant = "outline-solid", size = "icon", ...props }, ref) => {
-		const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+		const { orientation, scrollPrev, canScrollPrev, opts } = useCarousel();
+		// Never hydrate-gate `disabled` off Embla `canScroll*` — that attribute
+		// disagrees between SSR and the first client paint and blanks the tree.
+		// Loop (or unknown): keep enabled. Non-loop: still enabled; Embla no-ops
+		// at the ends. Visual hint via aria + opacity only after paint is fine.
+		const atStart = !opts?.loop && !canScrollPrev;
 
 		return (
 			<Button
 				ref={ref}
+				{...props}
 				variant={variant}
 				size={size}
+				aria-disabled={atStart || undefined}
 				className={cn(
 					"absolute h-8 w-8 rounded-full",
 					orientation === "horizontal"
 						? "-left-12 top-1/2 -translate-y-1/2"
 						: "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+					atStart && "pointer-events-none opacity-40",
 					className,
 				)}
-				disabled={!canScrollPrev}
 				onClick={scrollPrev}
-				{...props}
 			>
 				<ChevronLeft className="h-4 w-4" />
 				<span className="sr-only">Previous slide</span>
@@ -212,23 +218,25 @@ CarouselPrevious.displayName = "CarouselPrevious";
 
 const CarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
 	({ className, variant = "outline-solid", size = "icon", ...props }, ref) => {
-		const { orientation, scrollNext, canScrollNext } = useCarousel();
+		const { orientation, scrollNext, canScrollNext, opts } = useCarousel();
+		const atEnd = !opts?.loop && !canScrollNext;
 
 		return (
 			<Button
 				ref={ref}
+				{...props}
 				variant={variant}
 				size={size}
+				aria-disabled={atEnd || undefined}
 				className={cn(
 					"absolute h-8 w-8 rounded-full",
 					orientation === "horizontal"
 						? "-right-12 top-1/2 -translate-y-1/2"
 						: "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+					atEnd && "pointer-events-none opacity-40",
 					className,
 				)}
-				disabled={!canScrollNext}
 				onClick={scrollNext}
-				{...props}
 			>
 				<ChevronRight className="h-4 w-4" />
 				<span className="sr-only">Next slide</span>

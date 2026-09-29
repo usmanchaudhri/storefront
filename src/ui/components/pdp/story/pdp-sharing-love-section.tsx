@@ -30,13 +30,10 @@ const carouselArrowClassName = cn(
 	"[&_svg]:size-[18px]",
 );
 
-function SocialVideoSlide({ clip }: { clip: PdpStorySharingLove["clips"][number] }) {
+function SocialVideoSlide({ clip, index }: { clip: PdpStorySharingLove["clips"][number]; index: number }) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const videoRef = useRef<HTMLVideoElement>(null);
-	const [{ isVisible, isActivated }, setPlayback] = useState({
-		isVisible: false,
-		isActivated: false,
-	});
+	const [isInView, setIsInView] = useState(false);
+	const [showVideo, setShowVideo] = useState(false);
 
 	useEffect(() => {
 		const container = containerRef.current;
@@ -46,43 +43,19 @@ function SocialVideoSlide({ clip }: { clip: PdpStorySharingLove["clips"][number]
 
 		const observer = new IntersectionObserver(
 			([entry]) => {
-				setPlayback((prev) => ({
-					isVisible: entry.isIntersecting,
-					isActivated: prev.isActivated || entry.isIntersecting,
-				}));
+				const inView = entry.isIntersecting;
+				setIsInView(inView);
+				if (!inView) {
+					setShowVideo(false);
+				}
 			},
-			{ rootMargin: "80px", threshold: 0.25 },
+			{ rootMargin: "40px", threshold: 0.25 },
 		);
 
 		observer.observe(container);
 
 		return () => observer.disconnect();
 	}, []);
-
-	const videoSrc = isActivated ? clip.mp4Url : null;
-
-	useEffect(() => {
-		const video = videoRef.current;
-		if (!video || !videoSrc) {
-			return;
-		}
-
-		if (!isVisible) {
-			video.pause();
-			return;
-		}
-
-		const play = () => {
-			void video.play().catch(() => undefined);
-		};
-
-		video.addEventListener("loadeddata", play);
-		if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-			play();
-		}
-
-		return () => video.removeEventListener("loadeddata", play);
-	}, [isVisible, videoSrc]);
 
 	return (
 		<div
@@ -93,22 +66,25 @@ function SocialVideoSlide({ clip }: { clip: PdpStorySharingLove["clips"][number]
 				src={clip.poster.src}
 				alt={clip.poster.alt}
 				fill
-				className={cn(
-					"object-cover object-center transition-opacity",
-					videoSrc ? "opacity-0" : "opacity-100",
-				)}
+				priority={index === 0}
+				className={cn("z-20 object-cover object-center", showVideo && "invisible")}
 				sizes="(max-width: 768px) 85vw, 320px"
 			/>
-			{videoSrc ? (
+			{isInView ? (
 				<video
-					ref={videoRef}
-					className="absolute inset-0 size-full object-cover"
-					poster={clip.poster.src}
+					key={clip.mp4Url}
+					className={cn("absolute inset-0 z-10 size-full object-cover", !showVideo && "invisible")}
 					muted
 					playsInline
 					loop
-					preload={isVisible ? "metadata" : "none"}
-					src={videoSrc}
+					autoPlay
+					preload="auto"
+					src={clip.mp4Url}
+					onTimeUpdate={(event) => {
+						if (!showVideo && event.currentTarget.currentTime >= 0.15) {
+							setShowVideo(true);
+						}
+					}}
 					aria-label={clip.poster.alt}
 				/>
 			) : null}
@@ -156,17 +132,19 @@ export function PdpSharingLoveSection({ story }: { story: PdpStorySharingLove })
 				</h2>
 
 				<div className="mt-10 sm:mt-12">
-					<Carousel opts={{ align: "start", loop: true }} className="w-full">
+					{/* No Embla `loop` — cloning slides duplicates live <video> nodes and
+					    flashes another clip's decoded frame at the loop seam. */}
+					<Carousel opts={{ align: "start", loop: false }} className="w-full">
 						<div className="flex items-center gap-4 sm:gap-8 lg:gap-14">
 							<CarouselPrevious variant="ghost" className={carouselArrowClassName} />
 							<div className="min-w-0 flex-1">
 								<CarouselContent className="-ml-4 md:-ml-11">
-									{story.clips.map((clip) => (
+									{story.clips.map((clip, index) => (
 										<CarouselItem
 											key={clip.id}
 											className="basis-[85%] pl-4 sm:basis-[55%] md:basis-[44%] md:pl-11 lg:basis-[31.5%]"
 										>
-											<SocialVideoSlide clip={clip} />
+											<SocialVideoSlide clip={clip} index={index} />
 										</CarouselItem>
 									))}
 								</CarouselContent>

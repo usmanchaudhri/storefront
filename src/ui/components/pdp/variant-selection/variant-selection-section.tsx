@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import type { VariantSelectionSectionProps } from "./types";
 import { VariantSelector } from "./variant-selector";
 import { VariantNameSelector } from "./variant-name-selector";
@@ -27,17 +27,14 @@ import {
 	isSizeLikeAttribute,
 } from "./option-display-meta";
 
-/** No-op subscribe — client snapshot is constant `true` after hydration. */
-const subscribeNoop = () => () => {};
-
 /**
  * Main container for variant selection with multiple attributes.
  *
  * Selection is client-owned via {@link usePdpVariant}: clicks update local state
  * and soft-sync the URL with `history.replaceState` (no App Router RSC round-trip).
  *
- * Renders a stable placeholder until mount so SSR HTML always matches the client's
- * first paint (avoids hydration mismatches when attribute grouping differs).
+ * Always render selectors on the server too — a mount-gated placeholder left
+ * `aria-busy` HTML that stayed forever when hydration failed (blank PDP).
  */
 export function VariantSelectionSection({
 	variants,
@@ -47,12 +44,6 @@ export function VariantSelectionSection({
 	children,
 }: VariantSelectionSectionProps) {
 	const { selections, setSelections, setVariantId, selectedVariantId: contextVariantId } = usePdpVariant();
-	// Client-only gate without setState-in-effect (eslint react-hooks/set-state-in-effect).
-	const hasMounted = useSyncExternalStore(
-		subscribeNoop,
-		() => true,
-		() => false,
-	);
 
 	const selectedVariantId = contextVariantId ?? selectedVariantIdProp;
 
@@ -135,12 +126,6 @@ export function VariantSelectionSection({
 
 	if (variants.length <= 1) {
 		return null;
-	}
-
-	// Identical on server + client's first paint — prevents hydration mismatch when
-	// attribute grouping / renderer registry disagree across the RSC boundary.
-	if (!hasMounted) {
-		return <div className="min-h-[300px] space-y-5 py-2" aria-busy="true" />;
 	}
 
 	if (attributeGroups.length === 0) {
