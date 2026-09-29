@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo, useEffect, useSyncExternalStore } from "react";
 import type { VariantSelectionSectionProps } from "./types";
 import { VariantSelector } from "./variant-selector";
 import { VariantNameSelector } from "./variant-name-selector";
@@ -14,16 +14,30 @@ import {
 	getUnavailableAttributeInfo,
 	type SaleorVariant,
 } from "./utils";
-import { defaultRenderers } from "./renderers";
+import { defaultRenderers } from "./renderers/registry";
+import { SizeCardOption } from "./renderers/size-card-option";
+import { BundleRadioOption } from "./renderers/bundle-radio-option";
 import type { RendererRegistry } from "./types";
 import { VariantAttributeBadges, extractOptionalAttributes } from "./optional-attributes";
 import { usePdpVariant } from "../pdp-variant-provider";
+import {
+	BUNDLE_ASIDE_LABEL,
+	SIZE_ASIDE_LABEL,
+	isBundleAttribute,
+	isSizeLikeAttribute,
+} from "./option-display-meta";
+
+/** No-op subscribe — client snapshot is constant `true` after hydration. */
+const subscribeNoop = () => () => {};
 
 /**
  * Main container for variant selection with multiple attributes.
  *
  * Selection is client-owned via {@link usePdpVariant}: clicks update local state
  * and soft-sync the URL with `history.replaceState` (no App Router RSC round-trip).
+ *
+ * Renders a stable placeholder until mount so SSR HTML always matches the client's
+ * first paint (avoids hydration mismatches when attribute grouping differs).
  */
 export function VariantSelectionSection({
 	variants,
@@ -33,15 +47,27 @@ export function VariantSelectionSection({
 	children,
 }: VariantSelectionSectionProps) {
 	const { selections, setSelections, setVariantId, selectedVariantId: contextVariantId } = usePdpVariant();
+	// Client-only gate without setState-in-effect (eslint react-hooks/set-state-in-effect).
+	const hasMounted = useSyncExternalStore(
+		subscribeNoop,
+		() => true,
+		() => false,
+	);
 
 	const selectedVariantId = contextVariantId ?? selectedVariantIdProp;
 
-	const attributeGroups = useMemo(() => groupVariantsByAttributes(variants as SaleorVariant[]), [variants]);
-	const interactiveGroups = useMemo(() => getInteractiveAttributeGroups(attributeGroups), [attributeGroups]);
-	const rendererRegistry = useMemo(
-		() => ({ ...defaultRenderers, ...customRenderers }) as RendererRegistry,
-		[customRenderers],
+	const normalizedVariants = useMemo(
+		() =>
+			(variants as SaleorVariant[]).map((variant) => ({
+				...variant,
+				selectionAttributes: variant.selectionAttributes ?? [],
+			})),
+		[variants],
 	);
+
+	const attributeGroups = useMemo(() => groupVariantsByAttributes(normalizedVariants), [normalizedVariants]);
+	const interactiveGroups = useMemo(() => getInteractiveAttributeGroups(attributeGroups), [attributeGroups]);
+	const rendererRegistry = { ...defaultRenderers, ...customRenderers } as RendererRegistry;
 
 	// Prefer context selections; fall back to deriving from the selected variant.
 	const currentSelections = useMemo(() => {
@@ -49,14 +75,14 @@ export function VariantSelectionSection({
 			return selections;
 		}
 		if (selectedVariantId) {
-			return getSelectionsFromVariant(variants as SaleorVariant[], selectedVariantId);
+			return getSelectionsFromVariant(normalizedVariants, selectedVariantId);
 		}
 		return {};
-	}, [selections, selectedVariantId, variants]);
+	}, [selections, selectedVariantId, normalizedVariants]);
 
 	const currentVariantId = useMemo(
-		() => findMatchingVariant(variants as SaleorVariant[], currentSelections, attributeGroups),
-		[variants, currentSelections, attributeGroups],
+		() => findMatchingVariant(normalizedVariants, currentSelections, attributeGroups),
+		[normalizedVariants, currentSelections, attributeGroups],
 	);
 
 	const optionalAttributes = useMemo(
@@ -67,27 +93,23 @@ export function VariantSelectionSection({
 	const handleSelect = useCallback(
 		(attributeSlug: string, optionId: string) => {
 			const newSelections = getAdjustedSelections(
-				variants as SaleorVariant[],
+				normalizedVariants,
 				currentSelections,
 				attributeSlug,
 				optionId,
 				attributeGroups,
 			);
 
-			const matchingVariantId = findMatchingVariant(
-				variants as SaleorVariant[],
-				newSelections,
-				attributeGroups,
-			);
+			const matchingVariantId = findMatchingVariant(normalizedVariants, newSelections, attributeGroups);
 
 			setSelections(newSelections, matchingVariantId);
 		},
-		[currentSelections, variants, attributeGroups, setSelections],
+		[currentSelections, normalizedVariants, attributeGroups, setSelections],
 	);
 
 	const unavailableInfo = useMemo(
-		() => getUnavailableAttributeInfo(variants as SaleorVariant[], attributeGroups, currentSelections),
-		[variants, attributeGroups, currentSelections],
+		() => getUnavailableAttributeInfo(normalizedVariants, attributeGroups, currentSelections),
+		[normalizedVariants, attributeGroups, currentSelections],
 	);
 
 	useEffect(() => {
@@ -115,9 +137,15 @@ export function VariantSelectionSection({
 		return null;
 	}
 
+	// Identical on server + client's first paint — prevents hydration mismatch when
+	// attribute grouping / renderer registry disagree across the RSC boundary.
+	if (!hasMounted) {
+		return <div className="min-h-[300px] space-y-5 py-2" aria-busy="true" />;
+	}
+
 	if (attributeGroups.length === 0) {
 		return (
-			<div className="space-y-6 py-2">
+			<div className="space-y-5 py-2">
 				<VariantNameSelector
 					variants={variants}
 					selectedVariantId={selectedVariantId}
@@ -128,10 +156,10 @@ export function VariantSelectionSection({
 	}
 
 	return (
-		<div className="space-y-6 py-2">
+		<div className="space-y-5 py-2">
 			{interactiveGroups.map((group) => {
 				const options = getOptionsForAttribute(
-					variants as SaleorVariant[],
+					normalizedVariants,
 					attributeGroups,
 					currentSelections,
 					group.slug,
@@ -142,6 +170,9 @@ export function VariantSelectionSection({
 					? `No ${group.name.toLowerCase()} available in ${unavailableInfo.blockedBy}`
 					: undefined;
 
+				const sizeLike = isSizeLikeAttribute(group.slug);
+				const bundleLike = isBundleAttribute(group.slug);
+
 				return (
 					<VariantSelector
 						key={group.slug}
@@ -151,7 +182,10 @@ export function VariantSelectionSection({
 						attributeSlug={group.slug}
 						onSelect={handleSelect}
 						renderers={rendererRegistry}
+						renderer={sizeLike ? SizeCardOption : bundleLike ? BundleRadioOption : undefined}
 						unavailableMessage={unavailableMessage}
+						asideLabel={sizeLike ? SIZE_ASIDE_LABEL : bundleLike ? BUNDLE_ASIDE_LABEL : undefined}
+						layout={bundleLike ? "stack" : sizeLike ? "row" : undefined}
 					/>
 				);
 			})}

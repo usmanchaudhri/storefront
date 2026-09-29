@@ -33,36 +33,6 @@
 export { ColorSwatchOption } from "./color-swatch-option";
 export { ImageSwatchPillOption } from "./image-swatch-pill-option";
 export { ButtonOption, SizeButtonOption, TextOption, type ButtonOptionProps } from "./button-option";
-
-import type { RendererRegistry } from "../types";
-import { ColorSwatchOption } from "./color-swatch-option";
-import { ImageSwatchPillOption } from "./image-swatch-pill-option";
-import { SizeButtonOption, TextOption } from "./button-option";
-
-/**
- * Default renderer registry.
- *
- * Special keys:
- * - `_imageSwatch`: Used when an option has a swatchImageUrl value
- * - `_color`: Used when an option has a colorHex value (regardless of attribute)
- * - `_default`: Fallback for any unmatched options
- *
- * Attribute slugs (like "size", "color") can also be used as keys.
- */
-export const defaultRenderers: RendererRegistry = {
-	// Special: image swatches as labeled pills, hex swatches as circles
-	_imageSwatch: ImageSwatchPillOption,
-	_color: ColorSwatchOption,
-
-	// Size-related attributes
-	size: SizeButtonOption,
-	"shoe-size": SizeButtonOption,
-	"clothing-size": SizeButtonOption,
-
-	// Color attributes (when no hex is available, falls back to text)
-	color: TextOption,
-	colour: TextOption,
-
-	// Default fallback
-	_default: TextOption,
-};
+export { SizeCardOption } from "./size-card-option";
+export { BundleRadioOption } from "./bundle-radio-option";
+export { defaultRenderers } from "./registry";

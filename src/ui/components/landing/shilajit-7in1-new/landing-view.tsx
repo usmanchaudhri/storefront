@@ -248,29 +248,58 @@ export function ConversionLandingView({
 				<div className="container-content py-4 sm:py-6">{buyIsland}</div>
 			</section>
 
-			{/* SECTION 2 — Origin banner */}
-			<section className="relative overflow-hidden bg-[#0B3D36] text-white">
-				<div
-					aria-hidden
-					className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_50%,rgba(196,106,58,0.18),transparent_55%)]"
-				/>
-				<div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:py-16">
-					<div>
-						<h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
-							{c.origin.title} <span className="text-[#F0A070]">{c.origin.titleAccent}</span>
-						</h2>
-						<p className="mt-4 max-w-xl text-base leading-relaxed text-white/80">{c.origin.body}</p>
-						<dl className="mt-8 grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
-							{c.origin.stats.map((stat) => (
-								<div key={stat.label}>
-									<dt className="text-2xl font-bold text-[#F0A070] sm:text-3xl">{stat.value}</dt>
-									<dd className="mt-1 text-xs text-white/70 sm:text-sm">{stat.label}</dd>
-								</div>
-							))}
-						</dl>
-					</div>
-					<div className="overflow-hidden rounded-2xl ring-1 ring-white/10">
-						<SoftImage image={c.origin.image} sizes="(max-width: 1024px) 100vw, 42vw" />
+			{/* SECTION 2 — Potency & supply metrics (Figma 3150:308) */}
+			<section className="bg-white">
+				<div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-14 lg:px-11 lg:py-16">
+					<div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+						<div className="flex flex-col gap-6 lg:col-span-7">
+							{c.origin.eyebrow ? (
+								<p className="text-[14px] font-semibold uppercase tracking-[0.05em] text-[#107357]">
+									{c.origin.eyebrow}
+								</p>
+							) : null}
+							<h2 className="text-balance text-[clamp(1.75rem,1.2rem+1.5vw,2.375rem)] font-bold leading-[1.25] tracking-[-0.015em] text-[#0f2d24]">
+								{c.origin.title}
+								{c.origin.titleAccent ? (
+									<>
+										{" "}
+										<span className="text-[#107357]">{c.origin.titleAccent}</span>
+									</>
+								) : null}
+							</h2>
+							<p className="max-w-xl text-lg leading-7 text-[#4b5b54]">{c.origin.body}</p>
+							<dl className="grid grid-cols-3 gap-3 pt-2 sm:gap-4">
+								{c.origin.stats.map((stat, index) => {
+									const valueClass =
+										index === 0 ? "text-[#107357]" : index === 2 ? "text-[#d9953b]" : "text-[#0f2d24]";
+									return (
+										<div
+											key={stat.label}
+											className="flex flex-col items-center gap-1 rounded-2xl border border-[#e2eae5] bg-[#f4f7f5] px-3 py-5 shadow-sm sm:px-5 sm:pb-6 sm:pt-5"
+										>
+											<dt
+												className={cn(
+													"text-[clamp(1.75rem,1.25rem+1.5vw,2.75rem)] font-bold tracking-[-0.02em]",
+													valueClass,
+												)}
+											>
+												{stat.value}
+											</dt>
+											<dd className="text-center text-[11px] font-semibold uppercase tracking-[0.05em] text-[#0f2d24] sm:text-xs">
+												{stat.label}
+											</dd>
+										</div>
+									);
+								})}
+							</dl>
+						</div>
+						<div className="overflow-hidden rounded-2xl border border-[#e2eae5] bg-[#f4f7f5] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] lg:col-span-5">
+							<SoftImage
+								image={c.origin.image}
+								className="aspect-square object-cover"
+								sizes="(max-width: 1024px) 100vw, 38vw"
+							/>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -405,7 +434,7 @@ export function ConversionLandingView({
 				</div>
 			</section>
 
-			{/* SECTION 5 — Ritual + comparison */}
+			{/* SECTION 5 — Ritual */}
 			<section className="bg-white py-14 sm:py-20">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6">
 					<div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
@@ -429,24 +458,56 @@ export function ConversionLandingView({
 							</ol>
 						</div>
 					</div>
+				</div>
+			</section>
 
-					<div className="mt-16">
-						<SectionHeading
-							eyebrow={c.comparison.eyebrow}
-							title={c.comparison.title}
-							intro={c.comparison.intro}
-							align="center"
-						/>
-						<div className="mt-8 overflow-x-auto rounded-2xl border border-border">
-							<table className="w-full min-w-[720px] border-collapse text-left text-sm">
+			{/* SECTION 5b — Format comparison matrix (Figma 3150:410) */}
+			<section className="border-y border-[#e2eae5] bg-[#f8faf9] py-14 sm:pb-24 sm:pt-16">
+				<div className="mx-auto max-w-[1240px] px-5 sm:px-6 lg:px-12">
+					<div className="mx-auto flex max-w-[672px] flex-col items-center gap-2.5 text-center">
+						<p className="text-[14px] font-semibold uppercase tracking-[0.05em] text-[#107357]">
+							{c.comparison.eyebrow}
+						</p>
+						<h2 className="text-balance text-[clamp(1.75rem,1.2rem+1.5vw,2.375rem)] font-bold leading-[1.2] tracking-[-0.015em] text-[#0f2d24]">
+							{c.comparison.title}
+						</h2>
+						<p className="mt-1.5 max-w-xl text-[15px] leading-6 text-[#4b5b54]">{c.comparison.intro}</p>
+					</div>
+
+					<div
+						className={cn(
+							"mt-12 grid items-stretch gap-8",
+							"image" in c.comparison && c.comparison.image ? "lg:grid-cols-12 lg:gap-8" : "lg:grid-cols-1",
+						)}
+					>
+						{"image" in c.comparison && c.comparison.image ? (
+							<div className="overflow-hidden rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] lg:col-span-5">
+								<SoftImage
+									image={c.comparison.image}
+									className="aspect-square object-cover"
+									sizes="(max-width: 1024px) 100vw, 40vw"
+								/>
+							</div>
+						) : null}
+
+						<div
+							className={cn(
+								"overflow-x-auto rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)]",
+								"image" in c.comparison && c.comparison.image ? "lg:col-span-7" : "w-full",
+							)}
+						>
+							<table className="w-full min-w-[640px] border-collapse text-left">
 								<thead>
-									<tr className="bg-[#F0F0F0]">
+									<tr className="border-b border-[#e2eae5] bg-[#f4f7f5]">
 										{c.comparison.headers.map((header, i) => (
 											<th
 												key={header}
 												className={cn(
-													"px-4 py-3 font-semibold",
-													i === 1 ? "bg-[#F8E7DC] text-[#C46A3A]" : forest,
+													"px-4 py-4 align-top text-[14px] font-medium",
+													i === 0 && "text-[#0f2d24]",
+													i === 1 &&
+														"border-x border-[#e2eae5] bg-[rgba(234,243,239,0.6)] font-bold text-[#107357]",
+													i > 1 && "font-medium text-[#4b5b54]",
 												)}
 											>
 												{header}
@@ -455,15 +516,20 @@ export function ConversionLandingView({
 									</tr>
 								</thead>
 								<tbody>
-									{c.comparison.rows.map((row) => (
-										<tr key={row[0]} className="border-t border-border">
+									{c.comparison.rows.map((row, rowIndex) => (
+										<tr
+											key={row[0]}
+											className={cn("border-t border-[#e2eae5]", rowIndex % 2 === 1 && "bg-[#fafdfb]")}
+										>
 											{row.map((cell, i) => (
 												<td
 													key={`${row[0]}-${i}`}
 													className={cn(
-														"text-foreground/80 px-4 py-3 align-top",
-														i === 0 && "font-medium text-foreground",
-														i === 1 && "bg-[#FBF3ED] font-medium text-[#0B3D36]",
+														"px-4 py-4 align-top text-[13px] leading-5",
+														i === 0 && "font-medium text-[#4b5b54]",
+														i === 1 &&
+															"border-x border-[#e2eae5] bg-[rgba(234,243,239,0.3)] font-semibold text-[#107357]",
+														i > 1 && "font-normal text-[#4b5b54]",
 													)}
 												>
 													{cell}

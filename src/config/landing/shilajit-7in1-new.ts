@@ -38,8 +38,8 @@ function asset(file: string, alt: string, width: number, height: number): Landin
 	return { src: `${ASSET}/${file}`, alt, width, height };
 }
 
-function creative(file: string, alt: string): LandingImage {
-	return { src: `${CREATIVE}/${file}`, alt, width: 1024, height: 1024 };
+function creative(file: string, alt: string, width = 1024, height = 1024): LandingImage {
+	return { src: `${CREATIVE}/${file}`, alt, width, height };
 }
 
 export const shilajit7in1Landing = {
@@ -63,17 +63,20 @@ export const shilajit7in1Landing = {
 		},
 	},
 	origin: {
-		title: "Wild-harvested Himalayan origin &",
-		titleAccent: "7 power botanicals",
-		body: "Sourced from high-altitude geological formations and paired with six supportive herbs in a pectin-based gummy — no sticky resin ritual required.",
+		eyebrow: "Known for potency",
+		title: "Daily Wellness Support: 3000mg Total Shilajit",
+		titleAccent: "",
+		body: "Every jar is formulated with 3,000 mg of genuine Himalayan Shilajit across 60 gummies, infused alongside six adaptogenic allies.",
 		stats: [
-			{ value: "16,000+", label: "Elevation in feet" },
-			{ value: "7", label: "Herbs in one formula" },
-			{ value: "100%", label: "Plant pectin base" },
+			{ value: "60", label: "Gummies" },
+			{ value: "100%", label: "Vegan" },
+			{ value: "30", label: "Day supply" },
 		],
 		image: creative(
-			"origin-himalayan-performance.webp",
-			"Your solution to everyday performance — KayaPure Shilajit 7-in-1 Gummies with Himalayan backdrop",
+			"shilajit-potency-metrics.jpg",
+			"Known for daily wellness support — 3000mg total Shilajit per bottle with 60 gummies, 100% vegan, 30-day supply",
+			986,
+			986,
 		),
 	},
 	botanicals: {
@@ -244,16 +247,22 @@ export const shilajit7in1Landing = {
 	},
 	comparison: {
 		eyebrow: "Format comparison",
-		title: "How the formats differ",
-		intro: "A neutral look at convenience — not a claim that one format is medically superior.",
-		headers: ["Key feature", "KayaPure 7-in-1 gummy", "Resin format", "Capsule format"],
+		title: "How The Formats Differ",
+		intro: "A neutral comparison of convenience and composition — why people switch to our 7-in-1 gummy.",
+		image: creative(
+			"format-comparison-graphic.jpg",
+			"Why customers choose Kaya — clean thoughtful formula vs generic supplements",
+			976,
+			976,
+		),
+		headers: ["Key Feature", "Kaya Pure 7-in-1 Gummy", "Raw Resin Format", "Standard Capsules"],
 		rows: [
-			["Format", "Pectin gummy", "Resin", "Capsule"],
-			["Botanicals in this SKU", "Shilajit + 6 botanicals", "Often Shilajit only", "Varies by product"],
-			["How you take it", "Chew 2 gummies", "Typically dissolved or measured", "Swallow with water"],
-			["Sugar in this SKU", "3g cane sugar / serving", "Typically none", "Varies by product"],
-			["Black pepper in this SKU", "Included (10mg)", "Varies", "Varies"],
-			["Purchase guarantee", "60-day satisfaction guarantee", "Varies by brand", "Varies by brand"],
+			["Format", "Plant Pectin Gummy", "Sticky Tar Resin", "Gelatin / Veggie Pill"],
+			["Botanicals", "Shilajit + 6 Botanicals", "Shilajit Only", "Varies / Single Herb"],
+			["How You Take It", "Chew 2 Fruit Gummies", "Dissolve in warm water", "Swallow with water"],
+			["Taste Experience", "Pleasant & Smooth", "Pungent & Bitter", "Neutral pill taste"],
+			["Black Pepper Absorption", "Included (10mg)", "None", "Rarely Included"],
+			["Purchase Guarantee", "60-Day Full Refund", "Varies by vendor", "Typically 14-30 days"],
 		],
 	},
 	social: {

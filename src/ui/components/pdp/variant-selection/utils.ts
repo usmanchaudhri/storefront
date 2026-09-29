@@ -17,6 +17,7 @@ import {
 import { getMaxDiscountInfo as getMaxDiscountInfoBase } from "@/lib/pricing";
 import { pickTranslatedName } from "@/lib/saleor-translations";
 import { sortBySizeProperty } from "@/lib/sizes";
+import { isBundleAttribute, parseBottleCount } from "./option-display-meta";
 
 // Re-export for backwards compatibility
 export { COLOR_NAME_TO_HEX };
@@ -210,7 +211,7 @@ export function groupVariantsByAttributes(variants: SaleorVariant[]): AttributeG
 
 	// Process each variant
 	for (const variant of variants) {
-		for (const attr of variant.selectionAttributes) {
+		for (const attr of variant.selectionAttributes ?? []) {
 			const slug = attr.attribute.slug ?? "";
 			const name = getAttributeDisplayName(attr.attribute);
 
@@ -383,6 +384,30 @@ export function getOptionsForAttribute(
 		([slug, value]) => slug !== targetAttributeSlug && value,
 	);
 
+	const isBundleTarget = isBundleAttribute(targetAttributeSlug);
+
+	/** Single-bottle list price — used to show bundle compare-at when Saleor has no discount. */
+	let singleBottlePrice: { amount: number; currency: string } | undefined;
+	if (isBundleTarget) {
+		for (const opt of targetGroup.options) {
+			if (parseBottleCount(opt.name) !== 1) continue;
+			const candidates = variants.filter((variant) => {
+				const attr = variant.selectionAttributes.find(
+					(a) => (a.attribute.slug ?? "").toLowerCase() === targetAttributeSlug.toLowerCase(),
+				);
+				return attr?.values.some((v) => getAttributeValueSelectionId(v) === opt.id);
+			});
+			const match =
+				candidates.find((variant) => variantMatchesOtherSelections(variant, otherSelections)) ??
+				candidates[0];
+			const gross = match?.pricing?.price?.gross;
+			if (gross && typeof gross.amount === "number") {
+				singleBottlePrice = { amount: gross.amount, currency: gross.currency };
+			}
+			break;
+		}
+	}
+
 	return targetGroup.options.map((option) => {
 		// Find ALL variants that have this option value
 		const variantsWithOption = variants.filter((variant) => {
@@ -408,12 +433,47 @@ export function getOptionsForAttribute(
 			otherSelections.length === 0 ||
 			variantsWithOption.some((variant) => variantMatchesOtherSelections(variant, otherSelections));
 
+		// Prefer a variant that matches other selections for price display (bundle cards).
+		const pricedVariant =
+			variantsWithOption.find((variant) => variantMatchesOtherSelections(variant, otherSelections)) ??
+			variantsWithOption.find((v) => (v.quantityAvailable ?? 0) > 0) ??
+			variantsWithOption[0];
+		const priceGross = pricedVariant?.pricing?.price?.gross;
+		const undiscountedGross = pricedVariant?.pricing?.priceUndiscounted?.gross;
+
+		const price =
+			priceGross && typeof priceGross.amount === "number"
+				? { amount: priceGross.amount, currency: priceGross.currency }
+				: undefined;
+
+		let priceUndiscounted =
+			undiscountedGross && typeof undiscountedGross.amount === "number"
+				? { amount: undiscountedGross.amount, currency: undiscountedGross.currency }
+				: undefined;
+
+		// Bundle cards: synthesize compare-at as bottles × single-bottle price when needed.
+		const bottles = isBundleTarget ? parseBottleCount(option.name) : null;
+		if (
+			price &&
+			singleBottlePrice &&
+			bottles != null &&
+			bottles > 1 &&
+			(!priceUndiscounted || priceUndiscounted.amount <= price.amount)
+		) {
+			const synthetic = singleBottlePrice.amount * bottles;
+			if (synthetic > price.amount) {
+				priceUndiscounted = { amount: synthetic, currency: singleBottlePrice.currency };
+			}
+		}
+
 		return {
 			...option,
 			available,
 			hasDiscount,
 			discountPercent: maxPercent > 0 ? maxPercent : undefined,
 			existsWithCurrentSelection,
+			price,
+			priceUndiscounted,
 		};
 	});
 }

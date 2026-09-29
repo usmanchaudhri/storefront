@@ -27,6 +27,10 @@ export interface VariantOption {
 	hasDiscount?: boolean;
 	/** Maximum discount percentage for variants with this option (e.g., 20 for 20% off) */
 	discountPercent?: number;
+	/** Selling price for the matching variant (used by bundle cards) */
+	price?: { amount: number; currency: string };
+	/** Compare-at / undiscounted price for the matching variant */
+	priceUndiscounted?: { amount: number; currency: string };
 	/** Additional metadata from Saleor attributes */
 	metadata?: Record<string, unknown>;
 }
@@ -95,6 +99,10 @@ export interface VariantSelectorProps {
 	unavailableMessage?: string;
 	/** Whether a transition is in progress */
 	isPending?: boolean;
+	/** Optional aside text on the right of the label (e.g. "30-Day Supply") */
+	asideLabel?: string;
+	/** Layout for option buttons: row (default) or stacked full-width cards */
+	layout?: "row" | "stack";
 }
 
 /**

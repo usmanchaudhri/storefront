@@ -161,5 +161,11 @@ export function isColorAttribute(slug: string): boolean {
  */
 export function isSizeAttribute(slug: string): boolean {
 	const normalizedSlug = slug.toLowerCase();
-	return normalizedSlug === "size" || normalizedSlug === "shoe-size" || normalizedSlug === "clothing-size";
+	return (
+		normalizedSlug === "size" ||
+		normalizedSlug === "shoe-size" ||
+		normalizedSlug === "clothing-size" ||
+		normalizedSlug === "gummy-size" ||
+		normalizedSlug.endsWith("-size")
+	);
 }
