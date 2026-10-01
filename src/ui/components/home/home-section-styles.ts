@@ -33,7 +33,8 @@ export const homeSectionHeadlineClass =
 
 export const homeSectionIntroClass = "text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg";
 
-export const homeSectionSubheadingClass = "text-base font-semibold tracking-tight text-foreground sm:text-lg";
+/** Category titles (Shots / Gummies / Drops) — matches header nav link font, keeps section color. */
+export const homeSectionSubheadingClass = "text-[18px] font-medium uppercase tracking-tight text-foreground";
 
 export const homeSectionBodyClass =
 	"text-pretty text-sm leading-relaxed text-muted-foreground sm:text-[15px]";

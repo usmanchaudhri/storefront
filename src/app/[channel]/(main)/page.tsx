@@ -1,9 +1,13 @@
+import { Suspense } from "react";
+
 import { HomeHeroCarousel } from "@/ui/components/home/home-hero-carousel";
-import { HomePositioningDivider } from "@/ui/components/home/home-positioning-divider";
-import { HomeSignatureProductBanner } from "@/ui/components/home/home-signature-product-banner";
 import { HomeFaq } from "@/ui/components/home/home-faq";
 import { HomeVideoGallery } from "@/ui/components/home/home-video-gallery";
-import { HomeFeaturedCategories } from "@/ui/components/home/home-featured-categories";
+import {
+	HomeFeaturedCategories,
+	HomeFeaturedCategoriesSkeleton,
+} from "@/ui/components/home/home-featured-categories";
+import { HomeShopByCategory, HomeShopByCategorySkeleton } from "@/ui/components/home/home-shop-by-category";
 
 export const metadata = {
 	title: "Kpure",
@@ -16,9 +20,12 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 	return (
 		<>
 			<HomeHeroCarousel channel={channel} />
-			<HomePositioningDivider />
-			<HomeSignatureProductBanner />
-			<HomeFeaturedCategories channel={channel} />
+			<Suspense fallback={<HomeShopByCategorySkeleton />}>
+				<HomeShopByCategory channel={channel} />
+			</Suspense>
+			<Suspense fallback={<HomeFeaturedCategoriesSkeleton />}>
+				<HomeFeaturedCategories channel={channel} />
+			</Suspense>
 			<HomeVideoGallery channel={channel} />
 			<HomeFaq />
 		</>
