@@ -60,7 +60,7 @@
 
 	/* --- Layout --- */
 	--radius: 0.5rem; /* Base border radius (8px) */
-	--container-content: 80rem; /* 1280px — default storefront body width */
+	--container-content: 87.5rem; /* 1400px — matches Known Nutrition --max-width */
 	--container-super-wide: 160rem; /* immersive PDP / editorial bands */
 	--header-height: 4rem; /* matches header h-16 */
 	--announcement-bar-height: 0rem; /* no announcement bar in Kayapure */

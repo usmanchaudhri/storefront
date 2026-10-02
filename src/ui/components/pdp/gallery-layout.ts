@@ -19,9 +19,9 @@
  * `"immersive"`; to restore the classic split layout, set it to `"standard"`; for
  * an editorial grid where every image is visible at once, set it to `"mosaic"`.
  * All layouts use `container-content` — the same body width as the landing page
- * (home sections use `max-w-7xl` = 80rem) and PLP/cart/search. To make the immersive
- * PDP full-bleed instead, change its `main` to `container-super-wide` (up to 2560px)
- * or `container-full` for true edge-to-edge.
+ * (`--container-content` = 1400px, matching Known Nutrition) and PLP/cart/search. To make
+ * the immersive PDP full-bleed instead, change its `main` to `container-super-wide`
+ * (up to 2560px) or `container-full` for true edge-to-edge.
  */
 export type PdpGalleryLayout = "standard" | "immersive" | "mosaic";
 
@@ -107,12 +107,11 @@ export const PDP_LAYOUT_CLASSES: Record<PdpGalleryLayout, PdpLayoutClasses> = {
 		attributesPlacement: "info",
 	},
 	immersive: {
-		// container-content (80rem/1280px) matches the landing page body width
-		// (home sections use max-w-7xl = 80rem). Use container-super-wide here for
-		// a full-bleed editorial PDP instead.
+		// container-content (87.5rem/1400px) matches Known Nutrition page width.
+		// Use container-super-wide here for a full-bleed editorial PDP instead.
 		main: "container-content flex-1 py-4 sm:py-6",
-		// MoonBrew product-v4 grid: 605fr gallery / 540fr buy box, 61px gap, ~1255px inner max
-		grid: "flex flex-col gap-8 lg:mx-auto lg:grid lg:max-w-[1255px] lg:grid-cols-[minmax(0,605fr)_minmax(0,540fr)] lg:items-start lg:gap-[61px]",
+		// Gallery / buy-box split fills the content container (1400px).
+		grid: "flex flex-col gap-8 lg:mx-auto lg:grid lg:w-full lg:grid-cols-[minmax(0,605fr)_minmax(0,540fr)] lg:items-start lg:gap-[61px]",
 		galleryColumn: "order-1 min-w-0 lg:col-start-1 lg:row-start-1",
 		infoColumn: `order-2 flex flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky ${STICKY_BELOW_HEADER} lg:self-start`,
 		attributesPlacement: "gallery",

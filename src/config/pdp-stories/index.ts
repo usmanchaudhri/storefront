@@ -5,7 +5,7 @@ import { weightLossSlimmingGummiesStory } from "./weight-loss-slimming-gummies";
 import { pureShilajitLiquidDropsStory } from "./pure-shilajit-liquid-drops";
 import type { PdpStoryPack } from "./types";
 
-export type { PdpStoryPack, PdpStoryImage } from "./types";
+export type { PdpStoryPack, PdpStoryImage, PdpStoryComparison } from "./types";
 export {
 	shilajitGummiesStory,
 	appleCiderAshwagandhaGummiesStory,

@@ -134,6 +134,18 @@ export default async function AppleCiderLandingPage(props: {
 			<script {...jsonLdScriptProps(productJsonLd)} />
 			<ConversionLandingView
 				content={landingContent}
+				breadcrumbs={[
+					{ label: "Home", href: channelHref(params.channel, "/") },
+					...(product.category
+						? [
+								{
+									label: product.category.name,
+									href: channelHref(params.channel, `/categories/${product.category.slug}`),
+								},
+							]
+						: []),
+					{ label: product.name },
+				]}
 				buyIsland={
 					<Suspense fallback={<VariantSectionSkeleton />}>
 						<LandingBuyIsland

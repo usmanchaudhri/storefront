@@ -37,11 +37,11 @@ export function SizeCardOption({ option, isSelected, onSelect, isPending }: Opti
 						: undefined
 			}
 			className={cn(
-				"relative flex min-h-[72px] flex-1 flex-col items-center justify-center rounded-xl px-[17px] py-3.5 text-center transition-colors",
+				"group relative flex min-h-[72px] flex-1 flex-col items-center justify-center rounded-xl px-[17px] py-3.5 text-center transition-colors",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 				isSelected
 					? "border-2 border-[#107357] bg-[#eaf3ef] text-[#107357] shadow-sm"
-					: "border border-[#e2eae5] bg-white text-[#0f2d24] hover:border-[#107357]/40",
+					: "border border-[#e2eae5] bg-white text-[#0f2d24] hover:border-[#107357] hover:bg-[#eaf3ef]",
 				isIncompatible && !isSelected && "text-[#71827a]",
 				isOutOfStock && "cursor-not-allowed opacity-60",
 				isPending && "pointer-events-none opacity-60",
@@ -55,8 +55,8 @@ export function SizeCardOption({ option, isSelected, onSelect, isPending }: Opti
 			) : null}
 			<span
 				className={cn(
-					"text-sm font-semibold leading-5",
-					isSelected ? "text-[#107357]" : "text-[#0f2d24]",
+					"text-[15px] font-semibold leading-5",
+					isSelected ? "text-[#107357]" : "text-[#0f2d24] group-hover:text-[#107357]",
 					isOutOfStock && "line-through",
 				)}
 			>
@@ -65,8 +65,10 @@ export function SizeCardOption({ option, isSelected, onSelect, isPending }: Opti
 			{subtitle ? (
 				<span
 					className={cn(
-						"mt-0.5 text-xs leading-4",
-						isSelected ? "font-medium text-[rgba(16,115,87,0.8)]" : "font-normal text-[#71827a]",
+						"mt-0.5 text-[13px] leading-4",
+						isSelected
+							? "font-medium text-[rgba(16,115,87,0.8)]"
+							: "font-normal text-[#71827a] group-hover:text-[rgba(16,115,87,0.8)]",
 					)}
 				>
 					{subtitle}

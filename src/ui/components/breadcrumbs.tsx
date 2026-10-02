@@ -29,7 +29,7 @@ export function Breadcrumbs({
 }: BreadcrumbsProps) {
 	const isPill = surface === "pill";
 	const crumbClass = isPill ? "text-foreground" : "text-muted-foreground";
-	const currentClass = "font-medium text-foreground";
+	const currentClass = "font-bold text-foreground";
 	const linkClass = isPill
 		? "text-foreground transition-opacity hover:opacity-70"
 		: "text-muted-foreground transition-colors hover:text-foreground";
@@ -38,7 +38,7 @@ export function Breadcrumbs({
 		<nav
 			aria-label={ariaLabel}
 			className={cn(
-				"text-sm",
+				"text-[16px] font-bold",
 				isPill && "bg-background/85 inline-flex w-fit items-center rounded-full px-3 py-1.5 shadow-sm",
 				className,
 			)}

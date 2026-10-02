@@ -47,7 +47,8 @@ export const shilajit7in1Landing = {
 	productName: "Pure Himalayan Shilajit 7-in-1 Gummies",
 	hero: {
 		subtitle: PRODUCT_FACTS.mainBenefit,
-		badges: ["Wild Himalayan", "7 botanicals in one"],
+		badges: ["30 Day Supply", "2 gummies per day"],
+		galleryPromoBadge: "Best Seller",
 		/** Explicit above-the-fold offer facts (price/variant/ATC come from Saleor buy box). */
 		offerFacts: [
 			{ label: "Quantity", value: "60 gummies / jar" },

@@ -99,6 +99,18 @@ export default async function Shilajit7in1LandingPage(props: {
 		<>
 			<script {...jsonLdScriptProps(productJsonLd)} />
 			<Shilajit7in1LandingView
+				breadcrumbs={[
+					{ label: "Home", href: channelHref(params.channel, "/") },
+					...(product.category
+						? [
+								{
+									label: product.category.name,
+									href: channelHref(params.channel, `/categories/${product.category.slug}`),
+								},
+							]
+						: []),
+					{ label: product.name },
+				]}
 				buyIsland={
 					<Suspense fallback={<VariantSectionSkeleton />}>
 						<LandingBuyIsland product={product} channel={params.channel} searchParams={props.searchParams} />

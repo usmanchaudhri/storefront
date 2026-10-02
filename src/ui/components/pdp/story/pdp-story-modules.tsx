@@ -253,7 +253,7 @@ function LookInsideSection({ story, disclaimer }: { story: PdpStoryPack["lookIns
  * - Traditional bottle 2435:1135 at x=1210, 109×132, above Traditional column
  * - Table at y offset 152 below protrusion top, rounded 31.64, border rgba(0,163,140,0.5)
  */
-function ComparisonSection({ story }: { story: PdpStoryPack["comparison"] }) {
+export function PdpComparisonSection({ story }: { story: PdpStoryPack["comparison"] }) {
 	return (
 		<section
 			className={cn(comparisonFont.className, "bg-[#F7F7F7]")}
@@ -643,7 +643,7 @@ export function PdpStoryModules({ story }: { story: PdpStoryPack }) {
 			<RoutineSection story={story.routine} />
 			<PdpSharingLoveSection story={story.sharingLove} />
 			<LookInsideSection story={story.lookInside} disclaimer={story.disclaimer} />
-			<ComparisonSection story={story.comparison} />
+			<PdpComparisonSection story={story.comparison} />
 			{story.lifestyleBanner ? <LifestyleBannerSection story={story.lifestyleBanner} /> : null}
 			{story.lifestyleGallery ? <LifestyleGallerySection images={story.lifestyleGallery} /> : null}
 			{story.lifestyleCarousel ? <PdpLifestyleBannerCarousel slides={story.lifestyleCarousel} /> : null}

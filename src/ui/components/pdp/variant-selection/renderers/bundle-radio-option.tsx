@@ -55,11 +55,11 @@ export function BundleRadioOption({ option, isSelected, onSelect, isPending }: O
 						: undefined
 			}
 			className={cn(
-				"flex w-full items-center justify-between gap-3 rounded-xl text-left transition-colors",
+				"group flex w-full items-center justify-between gap-3 rounded-xl text-left transition-colors",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 				isSelected
 					? "border-2 border-[#107357] bg-[rgba(234,243,239,0.6)] py-4 pl-[15px] pr-4 shadow-sm"
-					: "border border-[#e2eae5] bg-white p-[15px] hover:border-[#107357]/40",
+					: "border border-[#e2eae5] bg-white p-[15px] hover:border-[#107357] hover:bg-[#eaf3ef]",
 				isOutOfStock && "cursor-not-allowed opacity-60",
 				isPending && "pointer-events-none opacity-60",
 			)}
@@ -70,7 +70,9 @@ export function BundleRadioOption({ option, isSelected, onSelect, isPending }: O
 					aria-hidden
 					className={cn(
 						"flex size-4 shrink-0 items-center justify-center rounded-full border",
-						isSelected ? "size-[18px] border-transparent bg-[#107357]" : "border-[#e2eae5] bg-white",
+						isSelected
+							? "size-[18px] border-transparent bg-[#107357]"
+							: "border-[#e2eae5] bg-white group-hover:border-[#107357]",
 					)}
 				>
 					{isSelected ? <span className="size-2 rounded-full bg-white" /> : null}
@@ -80,8 +82,8 @@ export function BundleRadioOption({ option, isSelected, onSelect, isPending }: O
 					<span className="flex flex-wrap items-center gap-2">
 						<span
 							className={cn(
-								"text-sm leading-5 text-[#0f2d24]",
-								isSelected ? "font-bold" : "font-semibold",
+								"text-[15px] leading-5 text-[#0f2d24]",
+								isSelected ? "font-bold" : "font-semibold group-hover:text-[#107357]",
 								isOutOfStock && "line-through",
 							)}
 						>
@@ -99,7 +101,12 @@ export function BundleRadioOption({ option, isSelected, onSelect, isPending }: O
 						) : null}
 					</span>
 					{subtitle ? (
-						<span className={cn("text-xs leading-4", isSelected ? "text-[#4b5b54]" : "text-[#71827a]")}>
+						<span
+							className={cn(
+								"text-[13px] leading-4",
+								isSelected ? "text-[#4b5b54]" : "text-[#71827a] group-hover:text-[#4b5b54]",
+							)}
+						>
 							{subtitle}
 						</span>
 					) : null}
@@ -110,14 +117,14 @@ export function BundleRadioOption({ option, isSelected, onSelect, isPending }: O
 				<span className="flex shrink-0 flex-col items-end gap-1">
 					<span
 						className={cn(
-							"text-sm font-bold tabular-nums leading-5",
-							isSelected ? "text-[#107357]" : "text-[#0f2d24]",
+							"text-[15px] font-bold tabular-nums leading-5",
+							isSelected ? "text-[#107357]" : "text-[#0f2d24] group-hover:text-[#107357]",
 						)}
 					>
 						{formatMoney(price.amount, price.currency)}
 					</span>
 					{showWas ? (
-						<span className="text-xs tabular-nums leading-4 text-[#71827a] line-through">
+						<span className="text-[13px] tabular-nums leading-4 text-[#71827a] line-through">
 							{formatMoney(undiscounted!.amount, undiscounted!.currency)}
 						</span>
 					) : null}

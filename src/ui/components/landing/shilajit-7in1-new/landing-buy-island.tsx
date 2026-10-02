@@ -146,6 +146,9 @@ export async function LandingBuyIsland({
 	}
 
 	const layout = PDP_LAYOUT_CLASSES[PDP_GALLERY_LAYOUT];
+	/** Light green translucent pill — shared by Best Seller + hero tags. */
+	const heroTagClass =
+		"rounded-full border border-[#107357]/25 bg-[#107357]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#0B3D36]";
 	const productAttributesNode = (
 		<ProductAttributes
 			attributes={productAttributes}
@@ -166,30 +169,32 @@ export async function LandingBuyIsland({
 				<div className={layout.galleryColumn}>
 					<div className="mb-3 flex flex-wrap gap-2 lg:hidden">
 						{content.hero.badges.map((badge) => (
-							<span
-								key={badge}
-								className="rounded-full bg-[#0B3D36] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white"
-							>
+							<span key={badge} className={heroTagClass}>
 								{badge}
 							</span>
 						))}
 					</div>
-					<VariantGalleryClient />
+					<div className="relative">
+						{"galleryPromoBadge" in content.hero && content.hero.galleryPromoBadge ? (
+							<span
+								className={cn(
+									heroTagClass,
+									"pointer-events-none absolute left-3 top-3 z-30 py-1.5 sm:left-4 sm:top-4 sm:px-3.5 sm:text-xs",
+								)}
+							>
+								{content.hero.galleryPromoBadge}
+							</span>
+						) : null}
+						<VariantGalleryClient />
+					</div>
 				</div>
 
 				<div className={cn(layout.infoColumn, "gap-2")}>
 					{/* order-2 title block — VariantBuyBox category is order-1 (same as original PDP) */}
 					<div className="order-2">
 						<div className="mb-3 hidden flex-wrap gap-2 lg:flex">
-							{content.hero.badges.map((badge, i) => (
-								<span
-									key={badge}
-									className={
-										i === 0
-											? "rounded-full bg-[#0B3D36] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white"
-											: "rounded-full bg-[#C46A3A] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white"
-									}
-								>
+							{content.hero.badges.map((badge) => (
+								<span key={badge} className={heroTagClass}>
 									{badge}
 								</span>
 							))}
