@@ -405,5 +405,25 @@ export const shilajit7in1Landing = {
 		"These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.",
 } as const;
 
-/** Shared shape for conversion PDP landings (Shilajit, Apple Cider, etc.). */
-export type ConversionLandingContent = typeof shilajit7in1Landing;
+/**
+ * Shared shape for conversion PDP landings (Shilajit, Apple Cider, drops, etc.).
+ * Extra optional fields cover product-specific variants that omit or extend the 7-in-1 baseline.
+ */
+export type ConversionLandingContent = Omit<
+	typeof shilajit7in1Landing,
+	"hero" | "whyItMatters" | "comparison"
+> & {
+	hero: (typeof shilajit7in1Landing)["hero"] & {
+		galleryPromoBadge?: string;
+	};
+	whyItMatters: (typeof shilajit7in1Landing)["whyItMatters"] & {
+		imageObjectFit?: "contain" | "cover";
+		imageObjectPosition?: string;
+	};
+	comparison: Omit<(typeof shilajit7in1Landing)["comparison"], "eyebrow" | "intro" | "image"> & {
+		eyebrow?: string;
+		intro?: string;
+		titleAccent?: string;
+		image?: (typeof shilajit7in1Landing)["comparison"]["image"];
+	};
+};

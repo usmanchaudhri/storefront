@@ -100,13 +100,11 @@ const WHY_IT_MATTERS_ICONS: Record<
  * Reference: “Feel the benefits every day.” on knownnutrition.co.uk PDPs.
  */
 function WhyItMattersSection({ story }: { story: ConversionLandingContent["whyItMatters"] }) {
-	const imageBg = "imageBg" in story && story.imageBg ? story.imageBg : "#00675b";
-	const iconBg = "iconBg" in story && story.iconBg ? story.iconBg : "#E8A47D";
-	const iconColor = "iconColor" in story && story.iconColor ? story.iconColor : "#0B3D36";
-	const imageObjectPosition =
-		"imageObjectPosition" in story && story.imageObjectPosition ? story.imageObjectPosition : "center 18%";
-	const imageObjectFit =
-		"imageObjectFit" in story && story.imageObjectFit === "contain" ? "contain" : "cover";
+	const imageBg = story.imageBg || "#00675b";
+	const iconBg = story.iconBg || "#E8A47D";
+	const iconColor = story.iconColor || "#0B3D36";
+	const imageObjectPosition = story.imageObjectPosition ?? "center 18%";
+	const imageObjectFit = story.imageObjectFit === "contain" ? "contain" : "cover";
 
 	return (
 		<section className="bg-white" aria-labelledby="why-it-matters-heading">
@@ -411,21 +409,21 @@ export function ConversionLandingView({
 				<section className="border-y border-[#e2eae5] bg-[#f8faf9] py-14 sm:pb-24 sm:pt-16">
 					<div className="mx-auto max-w-content px-5 sm:px-6 lg:px-12">
 						<div className="mx-auto flex max-w-4xl flex-col items-center gap-2.5 text-center">
-							{"eyebrow" in c.comparison && c.comparison.eyebrow ? (
+							{c.comparison.eyebrow ? (
 								<p className="text-[14px] font-semibold uppercase tracking-[0.05em] text-[#107357]">
 									{c.comparison.eyebrow}
 								</p>
 							) : null}
 							<h2 className="text-balance text-center text-[clamp(1.875rem,1.2rem+2.2vw,3.5rem)] font-bold uppercase leading-[1.05] tracking-[0.025em]">
 								<span className="text-[#0B554B]">{c.comparison.title}</span>
-								{"titleAccent" in c.comparison && c.comparison.titleAccent ? (
+								{c.comparison.titleAccent ? (
 									<>
 										{" "}
 										<span className="text-[#29C7C0]">{c.comparison.titleAccent}</span>
 									</>
 								) : null}
 							</h2>
-							{"intro" in c.comparison && c.comparison.intro ? (
+							{c.comparison.intro ? (
 								<p className="mt-1.5 max-w-xl text-[15px] leading-6 text-[#4b5b54]">{c.comparison.intro}</p>
 							) : null}
 						</div>
@@ -433,10 +431,10 @@ export function ConversionLandingView({
 						<div
 							className={cn(
 								"mt-12 grid items-stretch gap-8 sm:mt-14",
-								"image" in c.comparison && c.comparison.image ? "lg:grid-cols-12 lg:gap-8" : "lg:grid-cols-1",
+								c.comparison.image ? "lg:grid-cols-12 lg:gap-8" : "lg:grid-cols-1",
 							)}
 						>
-							{"image" in c.comparison && c.comparison.image ? (
+							{c.comparison.image ? (
 								<div className="overflow-hidden rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] lg:col-span-5">
 									<SoftImage
 										image={c.comparison.image}
@@ -449,7 +447,7 @@ export function ConversionLandingView({
 							<div
 								className={cn(
 									"overflow-x-auto rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)]",
-									"image" in c.comparison && c.comparison.image ? "lg:col-span-7" : "w-full",
+									c.comparison.image ? "lg:col-span-7" : "w-full",
 								)}
 							>
 								<table className="w-full min-w-[760px] border-collapse text-left">
@@ -598,7 +596,7 @@ export function ConversionLandingView({
 			</section>
 
 			{/* Figma 3269:12 — Why Shilajit 7 in 1 Gummies Matter (below look-inside) */}
-			{"whyItMatters" in c && c.whyItMatters ? <WhyItMattersSection story={c.whyItMatters} /> : null}
+			{c.whyItMatters ? <WhyItMattersSection story={c.whyItMatters} /> : null}
 
 			{/* SECTION 4 — Lifestyle cards */}
 			{!hide.lifestyle ? (

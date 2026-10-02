@@ -175,7 +175,7 @@ export async function LandingBuyIsland({
 						))}
 					</div>
 					<div className="relative">
-						{"galleryPromoBadge" in content.hero && content.hero.galleryPromoBadge ? (
+						{content.hero.galleryPromoBadge ? (
 							<span
 								className={cn(
 									heroTagClass,
