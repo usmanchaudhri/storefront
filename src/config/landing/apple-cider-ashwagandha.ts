@@ -118,6 +118,46 @@ export const appleCiderLanding = {
 		cleanBar: "100% pectin-based • Only 3g cane sugar per serving • Zero gelatin • Gluten-free",
 		pills: ["Non-GMO", "Vegan friendly", "Halal-friendly"],
 	},
+	/** Figma 3269:25 — Known-style “Feel the benefits” split under look-inside. */
+	whyItMatters: {
+		title: "Feel the benefits every day.",
+		image: creative(
+			"why-matters-lifestyle.jpg",
+			"Athlete holding Kaya Pure Apple Cider and Ashwagandha Gummies",
+			560,
+			1100,
+		),
+		imageBg: "#8F0015",
+		imageObjectPosition: "68% 48%",
+		iconBg: "#F5E547",
+		iconColor: "#8F0015",
+		benefits: [
+			{
+				id: "calm",
+				title: "Supports calm daily balance",
+				body: "Apple cider vinegar paired with ashwagandha — formulated to help support everyday calm and balance.",
+				icon: "wellness" as const,
+			},
+			{
+				id: "routine",
+				title: "Helps you stay on routine",
+				body: "A simple 2-gummy habit designed to fit mornings, desks, and on-the-go days.",
+				icon: "active" as const,
+			},
+			{
+				id: "wellness",
+				title: "Supports simple wellness support",
+				body: "A dual-action botanical blend positioned for straightforward daily wellness support.",
+				icon: "focus" as const,
+			},
+			{
+				id: "easy",
+				title: "Easy daily use",
+				body: "Chew 2 gummies once a day — no vinegar shots, no complicated prep.",
+				icon: "energy" as const,
+			},
+		],
+	},
 	proof: {
 		eyebrow: "Formula transparency",
 		title: "What’s on the label — and how to use this jar",

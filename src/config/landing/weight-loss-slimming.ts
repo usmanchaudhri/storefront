@@ -122,6 +122,47 @@ export const weightLossLanding = {
 		cleanBar: "100% pectin-based • Only 3g cane sugar per serving • Zero gelatin • Gluten-free",
 		pills: ["Non-GMO", "Vegan friendly", "Halal-friendly"],
 	},
+	/** Figma 3269:61 — Known-style “Feel the benefits” split under look-inside. */
+	whyItMatters: {
+		title: "Feel the benefits every day.",
+		image: creative(
+			"why-matters-full.png",
+			"Why KayaPure Weight Loss Slimming Gummies Matter — athlete holding product with daily benefits",
+			1254,
+			1254,
+		),
+		imageBg: "#E8F2EA",
+		imageObjectFit: "contain" as const,
+		imageObjectPosition: "center center",
+		iconBg: "#D4AF37",
+		iconColor: "#0B3D36",
+		benefits: [
+			{
+				id: "routine",
+				title: "Supports your routine",
+				body: "A simple 2-gummy habit designed to sit alongside meals, movement, and everyday wellness goals.",
+				icon: "wellness" as const,
+			},
+			{
+				id: "active",
+				title: "Helps you stay active",
+				body: "Formulated with botanicals positioned to support an active lifestyle — at home, at work, or on the go.",
+				icon: "active" as const,
+			},
+			{
+				id: "balance",
+				title: "Supports daily balance",
+				body: "Garcinia with supportive botanicals — a dual-action blend for everyday metabolic and wellness support.",
+				icon: "focus" as const,
+			},
+			{
+				id: "easy",
+				title: "Easy daily use",
+				body: "Chew 2 gummies once a day — a convenient pectin format that makes consistency easy.",
+				icon: "energy" as const,
+			},
+		],
+	},
 	proof: {
 		eyebrow: "Formula transparency",
 		title: "What’s on the label — and how to use this jar",

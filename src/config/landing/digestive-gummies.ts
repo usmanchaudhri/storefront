@@ -142,6 +142,47 @@ export const digestiveLanding = {
 		cleanBar: "100% pectin-based • Only 3g cane sugar per serving • Zero gelatin • Gluten-free",
 		pills: ["Non-GMO", "Vegan friendly", "Halal-friendly"],
 	},
+	/** Figma 3338:23 — Known-style “Feel the benefits” split under look-inside. */
+	whyItMatters: {
+		title: "Feel the benefits every day.",
+		image: creative(
+			"why-matters-full.png",
+			"Why Digestive Gummies Matter — athlete holding Kaya Pure Digestive Gummies with daily benefits",
+			1254,
+			1254,
+		),
+		imageBg: "#F5F7F4",
+		imageObjectFit: "contain" as const,
+		imageObjectPosition: "center center",
+		iconBg: "#D4AF37",
+		iconColor: "#0B3D36",
+		benefits: [
+			{
+				id: "comfort",
+				title: "Supports digestive comfort",
+				body: "Ginger with supportive botanicals — formulated to help support everyday digestive comfort and balance.",
+				icon: "wellness" as const,
+			},
+			{
+				id: "lighter",
+				title: "Helps your routine feel lighter",
+				body: "A simple 2-gummy habit designed to sit alongside meals without complicated prep.",
+				icon: "active" as const,
+			},
+			{
+				id: "balance",
+				title: "Supports daily balance",
+				body: "An herbal digestive blend positioned for straightforward daily wellness support.",
+				icon: "focus" as const,
+			},
+			{
+				id: "easy",
+				title: "Easy daily wellness support",
+				body: "Chew 2 gummies once a day — a convenient pectin format that makes consistency easy.",
+				icon: "energy" as const,
+			},
+		],
+	},
 	proof: {
 		eyebrow: "Formula transparency",
 		title: "What’s on the label — and how to use this jar",

@@ -145,6 +145,45 @@ export const shilajit7in1Landing = {
 		cleanBar: "100% pectin-based • Only 3g cane sugar per serving • Zero gelatin • Gluten-free",
 		pills: ["Non-GMO", "Vegan friendly", "Halal-friendly"],
 	},
+	/** Figma 3269:12 — Known-style “Feel the benefits” split under look-inside. */
+	whyItMatters: {
+		title: "Feel the benefits every day.",
+		image: creative(
+			"why-shilajit-matters-lifestyle.jpg",
+			"Athlete holding Kaya Pure 7-in-1 Shilajit Gummies",
+			960,
+			1999,
+		),
+		imageBg: "#00675b",
+		iconBg: "#E8A47D",
+		iconColor: "#0B3D36",
+		benefits: [
+			{
+				id: "energy",
+				title: "Supports daily energy",
+				body: "Formulated to help support everyday energy so you can keep pace with a full day.",
+				icon: "energy" as const,
+			},
+			{
+				id: "active",
+				title: "Helps you stay active",
+				body: "A simple daily gummy designed to fit an active lifestyle — at home, at work, or on the go.",
+				icon: "active" as const,
+			},
+			{
+				id: "focus",
+				title: "Supports focus & balance",
+				body: "A multi-herb blend positioned to help support focus and everyday balance.",
+				icon: "focus" as const,
+			},
+			{
+				id: "wellness",
+				title: "Easy daily wellness support",
+				body: "Chew 2 gummies once a day — a convenient format that makes consistency easy.",
+				icon: "wellness" as const,
+			},
+		],
+	},
 	proof: {
 		eyebrow: "Formula transparency",
 		title: "What’s on the label — and what “wild-harvested” means",

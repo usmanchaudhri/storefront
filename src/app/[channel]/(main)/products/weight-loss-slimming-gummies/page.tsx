@@ -13,6 +13,7 @@ import {
 	PRODUCT_SLUG,
 	weightLossLanding,
 } from "@/config/landing/weight-loss-slimming";
+import { getPdpStory } from "@/config/pdp-stories";
 import { LandingBuyIsland } from "@/ui/components/landing/shilajit-7in1-new/landing-buy-island";
 import { ConversionLandingView } from "@/ui/components/landing/shilajit-7in1-new/landing-view";
 import type { ConversionLandingContent } from "@/config/landing/shilajit-7in1-new";
@@ -128,12 +129,23 @@ export default async function WeightLossLandingPage(props: {
 	});
 
 	const landingContent = weightLossLanding as unknown as ConversionLandingContent;
+	const comparison = getPdpStory(LANDING_SLUG)?.comparison;
 
 	return (
 		<>
 			<script {...jsonLdScriptProps(productJsonLd)} />
 			<ConversionLandingView
 				content={landingContent}
+				comparison={comparison}
+				hideSections={{
+					origin: true,
+					botanicalsDiagram: true,
+					cleanBar: true,
+					lifestyle: true,
+					routine: true,
+					formatsDiffer: true,
+					proof: true,
+				}}
 				breadcrumbs={[
 					{ label: "Home", href: channelHref(params.channel, "/") },
 					...(product.category

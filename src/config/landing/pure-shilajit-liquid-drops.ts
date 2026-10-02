@@ -105,6 +105,47 @@ export const shilajitDropsLanding = {
 		cleanBar: "Liquid drop format • Shake well before use • Mix with water or tea • No gelatin",
 		pills: ["30ml bottle", "Easy daily ritual", "Portable dropper"],
 	},
+	/** Figma 2991:1739 — Known-style “Feel the benefits” split under look-inside. */
+	whyItMatters: {
+		title: "Feel the benefits every day.",
+		image: creative(
+			"why-matters-full.png",
+			"Energy, stamina, focus — athlete with Kaya Pure Pure Shilajit Liquid Drops",
+			512,
+			512,
+		),
+		imageBg: "#0b2e24",
+		imageObjectFit: "contain" as const,
+		imageObjectPosition: "center center",
+		iconBg: "#9d4317",
+		iconColor: "#FBF9F4",
+		benefits: [
+			{
+				id: "oxygenation",
+				title: "Pre-Workout Aerobic Oxygenation",
+				body: "Supports healthy red blood cell capability and oxygen consumption during high-intensity training cycles.",
+				icon: "energy" as const,
+			},
+			{
+				id: "focus",
+				title: "Neuro-Clarity & Sustained Focus",
+				body: "Encourages neuroprotective pathways without the jittery adrenaline spike common with synthetic stimulants.",
+				icon: "focus" as const,
+			},
+			{
+				id: "stamina",
+				title: "Stamina & Vitality",
+				body: "A liquid shilajit ritual positioned to support everyday stamina alongside training and work days.",
+				icon: "active" as const,
+			},
+			{
+				id: "easy",
+				title: "Easy daily use",
+				body: "Take 3–6 drops once a day — plain, or mixed with water or tea.",
+				icon: "wellness" as const,
+			},
+		],
+	},
 	proof: {
 		eyebrow: "Formula transparency",
 		title: "What’s on the label — and how to use this bottle",
@@ -200,9 +241,8 @@ export const shilajitDropsLanding = {
 		],
 	},
 	comparison: {
-		eyebrow: "Format comparison",
-		title: "How the formats differ",
-		intro: "A neutral look at convenience — not a claim that one format is medically superior.",
+		title: "How Kaya Pure",
+		titleAccent: "is different",
 		headers: ["Key feature", "KayaPure liquid drops", "Resin format", "Capsule format"],
 		rows: [
 			["Format", "Liquid dropper", "Resin", "Capsule"],

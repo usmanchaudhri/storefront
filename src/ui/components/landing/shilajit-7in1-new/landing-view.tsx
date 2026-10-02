@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown, Shield } from "lucide-react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { Activity, Brain, Check, ChevronDown, Shield, Sprout, Zap, type LucideIcon } from "lucide-react";
 
 import {
 	shilajit7in1Landing,
@@ -82,6 +82,88 @@ function SoftImage({
 			sizes={sizes}
 			className={cn("h-auto w-full object-cover", className)}
 		/>
+	);
+}
+
+const WHY_IT_MATTERS_ICONS: Record<
+	ConversionLandingContent["whyItMatters"]["benefits"][number]["icon"],
+	LucideIcon
+> = {
+	energy: Zap,
+	active: Activity,
+	focus: Brain,
+	wellness: Sprout,
+};
+
+/**
+ * Known Nutrition–style benefits split (image + vertical benefit list).
+ * Reference: “Feel the benefits every day.” on knownnutrition.co.uk PDPs.
+ */
+function WhyItMattersSection({ story }: { story: ConversionLandingContent["whyItMatters"] }) {
+	const imageBg = "imageBg" in story && story.imageBg ? story.imageBg : "#00675b";
+	const iconBg = "iconBg" in story && story.iconBg ? story.iconBg : "#E8A47D";
+	const iconColor = "iconColor" in story && story.iconColor ? story.iconColor : "#0B3D36";
+	const imageObjectPosition =
+		"imageObjectPosition" in story && story.imageObjectPosition ? story.imageObjectPosition : "center 18%";
+	const imageObjectFit =
+		"imageObjectFit" in story && story.imageObjectFit === "contain" ? "contain" : "cover";
+
+	return (
+		<section className="bg-white" aria-labelledby="why-it-matters-heading">
+			<div className="mx-auto grid w-full max-w-content items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-20">
+				<div
+					className="relative aspect-square w-full overflow-hidden rounded-2xl lg:aspect-[1/1.05]"
+					style={{ backgroundColor: imageBg }}
+				>
+					<Image
+						src={story.image.src}
+						alt={story.image.alt}
+						width={story.image.width}
+						height={story.image.height}
+						className="absolute inset-0 size-full"
+						style={{ objectFit: imageObjectFit, objectPosition: imageObjectPosition }}
+						sizes="(max-width: 1024px) 100vw, 50vw"
+					/>
+				</div>
+
+				<div className="flex flex-col justify-center lg:py-2">
+					<h2
+						id="why-it-matters-heading"
+						className="text-balance text-[clamp(1.75rem,1.3rem+1.5vw,2.5rem)] font-bold leading-[1.2] tracking-[-0.02em] text-[#0f2d24]"
+					>
+						{story.title}
+					</h2>
+
+					<ul className="mt-6 divide-y divide-[#e2eae5] sm:mt-8" role="list">
+						{story.benefits.map((benefit) => {
+							const Icon = WHY_IT_MATTERS_ICONS[benefit.icon];
+							return (
+								<li
+									key={benefit.id}
+									className="flex items-start gap-4 py-5 first:pt-2 last:pb-0 sm:gap-5 sm:py-6"
+								>
+									<span
+										className="flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20"
+										style={{ backgroundColor: iconBg, color: iconColor }}
+										aria-hidden
+									>
+										<Icon className="size-7 sm:size-8" strokeWidth={2} />
+									</span>
+									<div className="min-w-0 pt-0.5">
+										<h3 className="text-[clamp(1.0625rem,1rem+0.2vw,1.25rem)] font-semibold leading-snug text-[#0f2d24]">
+											{benefit.title}
+										</h3>
+										<p className="mt-1.5 text-[15px] font-normal leading-[1.5] text-[#4b5b54]">
+											{benefit.body}
+										</p>
+									</div>
+								</li>
+							);
+						})}
+					</ul>
+				</div>
+			</div>
+		</section>
 	);
 }
 
@@ -258,7 +340,8 @@ export function ConversionLandingView({
 							<Breadcrumbs items={breadcrumbs} ariaLabel="Breadcrumb" />
 						</div>
 					) : null}
-					{buyIsland}
+					{/* Key required: buyIsland is created by the page (different owner) among sibling children. */}
+					<Fragment key="landing-buy-island">{buyIsland}</Fragment>
 				</div>
 			</section>
 
@@ -323,8 +406,103 @@ export function ConversionLandingView({
 			{/* Figma 2611:20 — How Kaya Pure is different (above look-inside) */}
 			{comparison ? <PdpComparisonSection story={comparison} /> : null}
 
+			{/* SECTION 5b — Format comparison matrix (above look-inside when shown) */}
+			{!hide.formatsDiffer ? (
+				<section className="border-y border-[#e2eae5] bg-[#f8faf9] py-14 sm:pb-24 sm:pt-16">
+					<div className="mx-auto max-w-content px-5 sm:px-6 lg:px-12">
+						<div className="mx-auto flex max-w-4xl flex-col items-center gap-2.5 text-center">
+							{"eyebrow" in c.comparison && c.comparison.eyebrow ? (
+								<p className="text-[14px] font-semibold uppercase tracking-[0.05em] text-[#107357]">
+									{c.comparison.eyebrow}
+								</p>
+							) : null}
+							<h2 className="text-balance text-center text-[clamp(1.875rem,1.2rem+2.2vw,3.5rem)] font-bold uppercase leading-[1.05] tracking-[0.025em]">
+								<span className="text-[#0B554B]">{c.comparison.title}</span>
+								{"titleAccent" in c.comparison && c.comparison.titleAccent ? (
+									<>
+										{" "}
+										<span className="text-[#29C7C0]">{c.comparison.titleAccent}</span>
+									</>
+								) : null}
+							</h2>
+							{"intro" in c.comparison && c.comparison.intro ? (
+								<p className="mt-1.5 max-w-xl text-[15px] leading-6 text-[#4b5b54]">{c.comparison.intro}</p>
+							) : null}
+						</div>
+
+						<div
+							className={cn(
+								"mt-12 grid items-stretch gap-8 sm:mt-14",
+								"image" in c.comparison && c.comparison.image ? "lg:grid-cols-12 lg:gap-8" : "lg:grid-cols-1",
+							)}
+						>
+							{"image" in c.comparison && c.comparison.image ? (
+								<div className="overflow-hidden rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] lg:col-span-5">
+									<SoftImage
+										image={c.comparison.image}
+										className="aspect-square object-cover"
+										sizes="(max-width: 1024px) 100vw, 40vw"
+									/>
+								</div>
+							) : null}
+
+							<div
+								className={cn(
+									"overflow-x-auto rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)]",
+									"image" in c.comparison && c.comparison.image ? "lg:col-span-7" : "w-full",
+								)}
+							>
+								<table className="w-full min-w-[760px] border-collapse text-left">
+									<thead>
+										<tr className="border-b border-[#e2eae5] bg-[#f4f7f5]">
+											{c.comparison.headers.map((header, i) => (
+												<th
+													key={header}
+													className={cn(
+														"px-5 py-5 align-top text-[16px] font-medium leading-snug sm:px-6 sm:py-6 sm:text-[17px]",
+														i === 0 && "text-[#0f2d24]",
+														i === 1 &&
+															"border-x border-[#e2eae5] bg-[rgba(234,243,239,0.6)] font-bold text-[#107357]",
+														i > 1 && "font-medium text-[#4b5b54]",
+													)}
+												>
+													{header}
+												</th>
+											))}
+										</tr>
+									</thead>
+									<tbody>
+										{c.comparison.rows.map((row, rowIndex) => (
+											<tr
+												key={row[0]}
+												className={cn("border-t border-[#e2eae5]", rowIndex % 2 === 1 && "bg-[#fafdfb]")}
+											>
+												{row.map((cell, i) => (
+													<td
+														key={`${row[0]}-${i}`}
+														className={cn(
+															"px-5 py-5 align-top text-[15px] leading-6 sm:px-6 sm:text-[16px]",
+															i === 0 && "font-medium text-[#4b5b54]",
+															i === 1 &&
+																"border-x border-[#e2eae5] bg-[rgba(234,243,239,0.3)] font-semibold text-[#107357]",
+															i > 1 && "font-normal text-[#4b5b54]",
+														)}
+													>
+														{cell}
+													</td>
+												))}
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</section>
+			) : null}
+
 			{/* SECTION 3 — Botanicals + look inside the gummy */}
-			<section className={cn("bg-white", !comparison && "py-14 sm:py-16")}>
+			<section className="bg-white py-14 sm:py-16">
 				{!hide.botanicalsDiagram ? (
 					<div className="mx-auto max-w-content px-4 sm:px-6">
 						<div className="grid gap-4 lg:grid-cols-2">
@@ -419,6 +597,9 @@ export function ConversionLandingView({
 				) : null}
 			</section>
 
+			{/* Figma 3269:12 — Why Shilajit 7 in 1 Gummies Matter (below look-inside) */}
+			{"whyItMatters" in c && c.whyItMatters ? <WhyItMattersSection story={c.whyItMatters} /> : null}
+
 			{/* SECTION 4 — Lifestyle cards */}
 			{!hide.lifestyle ? (
 				<section className="bg-[#F7F7F7] py-14 sm:py-20">
@@ -487,91 +668,6 @@ export function ConversionLandingView({
 										</li>
 									))}
 								</ol>
-							</div>
-						</div>
-					</div>
-				</section>
-			) : null}
-
-			{/* SECTION 5b — Format comparison matrix (Figma 3150:410) */}
-			{!hide.formatsDiffer ? (
-				<section className="border-y border-[#e2eae5] bg-[#f8faf9] py-14 sm:pb-24 sm:pt-16">
-					<div className="mx-auto max-w-content px-5 sm:px-6 lg:px-12">
-						<div className="mx-auto flex max-w-[672px] flex-col items-center gap-2.5 text-center">
-							<p className="text-[14px] font-semibold uppercase tracking-[0.05em] text-[#107357]">
-								{c.comparison.eyebrow}
-							</p>
-							<h2 className="text-balance text-[clamp(1.75rem,1.2rem+1.5vw,2.375rem)] font-bold leading-[1.2] tracking-[-0.015em] text-[#0f2d24]">
-								{c.comparison.title}
-							</h2>
-							<p className="mt-1.5 max-w-xl text-[15px] leading-6 text-[#4b5b54]">{c.comparison.intro}</p>
-						</div>
-
-						<div
-							className={cn(
-								"mt-12 grid items-stretch gap-8",
-								"image" in c.comparison && c.comparison.image ? "lg:grid-cols-12 lg:gap-8" : "lg:grid-cols-1",
-							)}
-						>
-							{"image" in c.comparison && c.comparison.image ? (
-								<div className="overflow-hidden rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] lg:col-span-5">
-									<SoftImage
-										image={c.comparison.image}
-										className="aspect-square object-cover"
-										sizes="(max-width: 1024px) 100vw, 40vw"
-									/>
-								</div>
-							) : null}
-
-							<div
-								className={cn(
-									"overflow-x-auto rounded-2xl border border-[#e2eae5] bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)]",
-									"image" in c.comparison && c.comparison.image ? "lg:col-span-7" : "w-full",
-								)}
-							>
-								<table className="w-full min-w-[640px] border-collapse text-left">
-									<thead>
-										<tr className="border-b border-[#e2eae5] bg-[#f4f7f5]">
-											{c.comparison.headers.map((header, i) => (
-												<th
-													key={header}
-													className={cn(
-														"px-4 py-4 align-top text-[14px] font-medium",
-														i === 0 && "text-[#0f2d24]",
-														i === 1 &&
-															"border-x border-[#e2eae5] bg-[rgba(234,243,239,0.6)] font-bold text-[#107357]",
-														i > 1 && "font-medium text-[#4b5b54]",
-													)}
-												>
-													{header}
-												</th>
-											))}
-										</tr>
-									</thead>
-									<tbody>
-										{c.comparison.rows.map((row, rowIndex) => (
-											<tr
-												key={row[0]}
-												className={cn("border-t border-[#e2eae5]", rowIndex % 2 === 1 && "bg-[#fafdfb]")}
-											>
-												{row.map((cell, i) => (
-													<td
-														key={`${row[0]}-${i}`}
-														className={cn(
-															"px-4 py-4 align-top text-[13px] leading-5",
-															i === 0 && "font-medium text-[#4b5b54]",
-															i === 1 &&
-																"border-x border-[#e2eae5] bg-[rgba(234,243,239,0.3)] font-semibold text-[#107357]",
-															i > 1 && "font-normal text-[#4b5b54]",
-														)}
-													>
-														{cell}
-													</td>
-												))}
-											</tr>
-										))}
-									</tbody>
-								</table>
 							</div>
 						</div>
 					</div>

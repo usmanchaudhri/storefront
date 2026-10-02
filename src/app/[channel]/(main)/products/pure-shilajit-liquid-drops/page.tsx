@@ -134,6 +134,14 @@ export default async function ShilajitDropsLandingPage(props: {
 			<script {...jsonLdScriptProps(productJsonLd)} />
 			<ConversionLandingView
 				content={landingContent}
+				hideSections={{
+					origin: true,
+					botanicalsDiagram: true,
+					lifestyle: true,
+					routine: true,
+					proof: true,
+					// Keep formatsDiffer visible — rendered above look-inside
+				}}
 				breadcrumbs={[
 					{ label: "Home", href: channelHref(params.channel, "/") },
 					...(product.category
