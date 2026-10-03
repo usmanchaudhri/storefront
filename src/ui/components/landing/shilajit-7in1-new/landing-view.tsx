@@ -22,6 +22,8 @@ import {
 } from "@/ui/components/ui/carousel";
 import { Breadcrumbs, type BreadcrumbItem } from "@/ui/components/breadcrumbs";
 import { PdpComparisonSection } from "@/ui/components/pdp/story/pdp-story-modules";
+import { LandingDailyNutrients } from "@/ui/components/landing/shilajit-7in1-new/landing-daily-nutrients";
+import { LandingNaturalFlavors } from "@/ui/components/landing/shilajit-7in1-new/landing-natural-flavors";
 
 const accent = "text-[#C46A3A]";
 const forest = "text-[#0B3D36]";
@@ -307,6 +309,10 @@ type HiddenLandingSections = {
 	/** “How The Formats Differ” matrix (landing content.comparison). */
 	formatsDiffer?: boolean;
 	proof?: boolean;
+	/** Figma 3413:4391 — 18 Daily Nutrients. */
+	dailyNutrients?: boolean;
+	/** Figma 3413:4466 — Natural Flavors. */
+	naturalFlavors?: boolean;
 };
 
 interface ConversionLandingViewProps {
@@ -400,6 +406,12 @@ export function ConversionLandingView({
 					</div>
 				</section>
 			) : null}
+
+			{/* Figma 3413:4391 — 18 Daily Nutrients (below purchase, above How different) */}
+			{!hide.dailyNutrients ? <LandingDailyNutrients /> : null}
+
+			{/* Figma 3413:4466 — Natural Flavors (below nutrients, above How different) */}
+			{!hide.naturalFlavors ? <LandingNaturalFlavors /> : null}
 
 			{/* Figma 2611:20 — How Kaya Pure is different (above look-inside) */}
 			{comparison ? <PdpComparisonSection story={comparison} /> : null}

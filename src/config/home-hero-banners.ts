@@ -1,47 +1,28 @@
-/** Homepage hero — Figma New-Banners Apple Cider (landscape 3358:7, portrait 3337:19). */
-export type HomeHeroBannerSlide = {
-	id: string;
-	/** Desktop / landscape (Figma 3358:7) */
-	imageSrc: string;
-	imageWidth: number;
-	imageHeight: number;
-	/** Mobile / portrait (Figma 3337:19) */
-	mobileImageSrc: string;
-	mobileImageWidth: number;
-	mobileImageHeight: number;
-	alt: string;
-	/** Saleor product slug — links to `/products/{slug}` */
-	productSlug: string;
-};
+/** Homepage hero — Figma 3413:3984 “WELLNESS, YOUR WAY / KAYA PURE. Live fully.” */
 
-/** Figma frame 3358:7 — landscape asset pixels. */
-export const HOME_HERO_BANNER_WIDTH = 3803;
-export const HOME_HERO_BANNER_HEIGHT = 1327;
+export const HOME_HERO_IMAGE = {
+	src: "/images/home-hero-banners/wellness-your-way-hero.webp",
+	/** Source export from Figma node 3413:3985 */
+	width: 4096,
+	height: 1508,
+	alt: "Woman smiling while holding a Kaya Pure capsule against a mint green background",
+} as const;
 
-/** Figma frame 3337:19 — portrait asset pixels. */
-export const HOME_HERO_MOBILE_WIDTH = 1596;
-export const HOME_HERO_MOBILE_HEIGHT = 2835;
+export const HOME_HERO_ARROW_SRC = "/images/home-hero-banners/explore-arrow.svg";
 
-/**
- * Display band sized to match Known Nutrition’s homepage hero
- * (measured ~1440×563 desktop, ~721×473 mobile — full-bleed).
- * @see https://knownnutrition.co.uk/
- */
-export const HOME_HERO_DESKTOP_ASPECT_W = 1440;
-export const HOME_HERO_DESKTOP_ASPECT_H = 563;
-export const HOME_HERO_MOBILE_ASPECT_W = 721;
-export const HOME_HERO_MOBILE_ASPECT_H = 473;
+/** Figma Tea Green wash behind the lifestyle photo. */
+export const HOME_HERO_BG = "#DCF4D2";
+export const HOME_HERO_INK = "#022113";
+export const HOME_HERO_ACCENT = "#00A38C";
+export const HOME_HERO_CTA_BG = "#0A584C";
+export const HOME_HERO_CTA_FG = "#FCFCF8";
 
-export const homeHeroBannerSlides: readonly HomeHeroBannerSlide[] = [
-	{
-		id: "apple-cider-ashwagandha",
-		imageSrc: "/images/home-hero-banners/apple-cider-ashwagandha-gummies.webp",
-		imageWidth: HOME_HERO_BANNER_WIDTH,
-		imageHeight: HOME_HERO_BANNER_HEIGHT,
-		mobileImageSrc: "/images/home-hero-banners/apple-cider-ashwagandha-gummies-mobile.webp",
-		mobileImageWidth: HOME_HERO_MOBILE_WIDTH,
-		mobileImageHeight: HOME_HERO_MOBILE_HEIGHT,
-		alt: "Kaya Pure Apple Cider & Ashwagandha Gummies — Daily Balance Support.",
-		productSlug: "apple-cider-ashwagandha-gummies",
-	},
-] as const;
+export const HOME_HERO_COPY = {
+	eyebrow: "Wellness, your way",
+	titleLine1: "KAYA PURE.",
+	titleLine2: "Live fully.",
+	body: "Thoughtfully chosen everyday essentials for the beautifully imperfect, wonderfully everyday you.",
+	ctaLabel: "Explore the shop",
+	footer: "Your wellness, your way",
+	ctaHref: "/products",
+} as const;

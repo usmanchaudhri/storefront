@@ -140,6 +140,8 @@ export default async function ShilajitDropsLandingPage(props: {
 					lifestyle: true,
 					routine: true,
 					proof: true,
+					dailyNutrients: true,
+					naturalFlavors: true,
 					// Keep formatsDiffer visible — rendered above look-inside
 				}}
 				breadcrumbs={[

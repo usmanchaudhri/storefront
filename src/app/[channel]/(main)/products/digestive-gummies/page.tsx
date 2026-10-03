@@ -145,6 +145,8 @@ export default async function DigestiveLandingPage(props: {
 					routine: true,
 					formatsDiffer: true,
 					proof: true,
+					dailyNutrients: true,
+					naturalFlavors: true,
 				}}
 				breadcrumbs={[
 					{ label: "Home", href: channelHref(params.channel, "/") },
