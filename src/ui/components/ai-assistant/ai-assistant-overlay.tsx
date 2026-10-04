@@ -1,29 +1,34 @@
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ArrowRight, Loader2, Search, Sparkles, X } from "lucide-react";
+import { ArrowUp, Loader2, ShoppingBagIcon, Sparkles, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useId, useRef } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
+import type { AssistantCollection } from "@/app/[channel]/(main)/chat/collections";
 import type { AiAssistantConfig } from "@/app/[channel]/(main)/chat/config";
-import { cn } from "@/lib/utils";
 import { channelHref } from "@/lib/channel-path";
-import { SearchResults } from "@/ui/components/search-results";
+import type { SearchProduct } from "@/lib/search";
+import { cn } from "@/lib/utils";
 
+import { getCartItemCount } from "./add-product-to-cart";
+import { AiAssistantCollections } from "./ai-assistant-collections";
+import { AiAssistantProductDetailView } from "./ai-assistant-product-detail";
+import { AiAssistantProductList } from "./ai-assistant-product-list";
 import type { useAiAssist } from "./use-ai-assist";
-import type { useAiSearch } from "./use-ai-search";
 
 type AiAssistantOverlayProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	config: AiAssistantConfig;
 	channel: string;
+	collections: AssistantCollection[];
 	query: string;
 	onQueryChange: (value: string) => void;
 	onSubmit: () => void;
 	onStarterSelect: (value: string) => void;
 	onSuggestionSelect: (value: string) => void;
-	searchState: ReturnType<typeof useAiSearch>;
+	onCollectionSelect: (collection: AssistantCollection) => void;
 	assistState: ReturnType<typeof useAiAssist>;
 };
 
@@ -32,31 +37,33 @@ export function AiAssistantOverlay({
 	onOpenChange,
 	config,
 	channel,
+	collections,
 	query,
 	onQueryChange,
 	onSubmit,
 	onStarterSelect,
 	onSuggestionSelect,
-	searchState,
+	onCollectionSelect,
 	assistState,
 }: AiAssistantOverlayProps) {
 	const inputId = useId();
-	const inputRef = useRef<HTMLInputElement>(null);
-	const {
-		products: searchProducts,
-		totalCount,
-		loading: searchLoading,
-		error: searchError,
-		submittedQuery,
-	} = searchState;
-	const {
-		reply,
-		products: assistProducts,
-		suggestions,
-		loading: assistLoading,
-		error: assistError,
-		submittedQuery: assistSubmittedQuery,
-	} = assistState;
+	const inputRef = useRef<HTMLTextAreaElement>(null);
+	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const { messages, loading, error } = assistState;
+	const [cartItemCount, setCartItemCount] = useState(0);
+	const [selectedProduct, setSelectedProduct] = useState<SearchProduct | null>(null);
+
+	const handleCartItemCountChange = useCallback((count: number) => {
+		setCartItemCount(count);
+	}, []);
+
+	const handleProductSelect = useCallback((product: SearchProduct) => {
+		setSelectedProduct(product);
+	}, []);
+
+	const handleProductDetailBack = useCallback(() => {
+		setSelectedProduct(null);
+	}, []);
 
 	useEffect(() => {
 		if (!open) {
@@ -70,25 +77,64 @@ export function AiAssistantOverlay({
 		return () => window.cancelAnimationFrame(frameId);
 	}, [open]);
 
+	useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		let cancelled = false;
+
+		void getCartItemCount(channel).then((count) => {
+			if (!cancelled) {
+				setCartItemCount(count);
+			}
+		});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [open, channel]);
+
+	useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+	}, [open, messages, loading, error]);
+
+	useEffect(() => {
+		if (query) {
+			return;
+		}
+
+		const el = inputRef.current;
+		if (el) {
+			el.style.height = "auto";
+		}
+	}, [query]);
+
 	const handleOpenChange = (nextOpen: boolean) => {
 		if (!nextOpen) {
 			onQueryChange("");
+			setSelectedProduct(null);
 		}
 
 		onOpenChange(nextOpen);
 	};
 
-	const hasSubmitted = Boolean(submittedQuery || assistSubmittedQuery);
-	const showStarters = !query.trim() && !hasSubmitted;
-	const showMinLengthHint = query.trim().length > 0 && query.trim().length < 2;
-	const showEmptySearchResults =
-		submittedQuery && !searchLoading && !searchError && searchProducts.length === 0;
-	const viewAllHref =
-		submittedQuery && totalCount > searchProducts.length
-			? `${channelHref(channel, "/search")}?query=${encodeURIComponent(submittedQuery)}`
-			: submittedQuery && totalCount > 0
-				? `${channelHref(channel, "/search")}?query=${encodeURIComponent(submittedQuery)}`
-				: null;
+	const showStarters = messages.length === 0 && !loading;
+	const canSubmit = Boolean(query.trim()) && !loading;
+
+	const resizeComposer = () => {
+		const el = inputRef.current;
+		if (!el) {
+			return;
+		}
+
+		el.style.height = "auto";
+		el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+	};
 
 	return (
 		<DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
@@ -107,206 +153,248 @@ export function AiAssistantOverlay({
 						"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
 						"data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
 						"inset-0 sm:inset-4 sm:rounded-2xl sm:border sm:border-border",
-						"md:inset-x-auto md:left-1/2 md:top-1/2 md:h-[min(90dvh,52rem)] md:w-full md:max-w-4xl md:-translate-x-1/2 md:-translate-y-1/2",
+						"md:inset-x-auto md:left-1/2 md:top-1/2 md:h-[min(90dvh,52rem)] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2",
 					)}
 					aria-describedby={undefined}
 				>
-					<header className="flex items-start justify-between gap-4 border-b border-border px-4 py-4 sm:px-6">
+					<header className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 py-4 sm:gap-4 sm:px-5">
 						<div className="min-w-0">
-							<DialogPrimitive.Title className="text-lg font-semibold text-foreground sm:text-xl">
+							<DialogPrimitive.Title className="flex items-center gap-2 text-lg font-semibold text-foreground">
+								<Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
 								{config.assistantName}
 							</DialogPrimitive.Title>
 							<DialogPrimitive.Description className="mt-1 text-sm text-muted-foreground">
-								Search products instantly, then get AI recommendations from Kaya Pure.
+								Ask what you need — AI recommends products from the catalog.
 							</DialogPrimitive.Description>
 						</div>
-						<DialogPrimitive.Close
-							className={cn(
-								"shrink-0 rounded-md p-2 text-muted-foreground transition-colors",
-								"hover:bg-muted hover:text-foreground",
-								"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-							)}
-							aria-label="Close assistant"
-						>
-							<X className="h-5 w-5" />
-						</DialogPrimitive.Close>
+						<div className="flex shrink-0 items-center gap-1">
+							<Link
+								href={channelHref(channel, "/cart")}
+								onClick={() => handleOpenChange(false)}
+								data-testid="AssistantCartNavItem"
+								className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-[#09594D] transition-colors duration-200 hover:bg-[#D9F6F1] hover:text-[#00A38C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+							>
+								<ShoppingBagIcon className="h-5 w-5" aria-hidden="true" />
+								{cartItemCount > 0 ? (
+									<span
+										key={cartItemCount}
+										className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-cart-badge-pop items-center justify-center rounded-full bg-[#09594D] text-[10px] font-medium text-white"
+									>
+										{cartItemCount > 9 ? "9+" : cartItemCount}
+									</span>
+								) : null}
+								<span className="sr-only">
+									{cartItemCount} item{cartItemCount !== 1 ? "s" : ""} in cart, view cart
+								</span>
+							</Link>
+							<DialogPrimitive.Close
+								className={cn(
+									"rounded-md p-2 text-muted-foreground transition-colors",
+									"hover:bg-muted hover:text-foreground",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+								)}
+								aria-label="Close assistant"
+							>
+								<X className="h-5 w-5" />
+							</DialogPrimitive.Close>
+						</div>
 					</header>
 
-					<div className="border-b border-border px-4 py-4 sm:px-6">
+					<div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-4 sm:px-5">
+						{selectedProduct ? (
+							<AiAssistantProductDetailView
+								key={selectedProduct.id}
+								channel={channel}
+								product={selectedProduct}
+								onBack={handleProductDetailBack}
+								onCartItemCountChange={handleCartItemCountChange}
+							/>
+						) : (
+							<div className="min-h-0 flex-1 overflow-y-auto">
+								{showStarters ? (
+									<div className="flex h-full min-h-[16rem] flex-col justify-start gap-6">
+										<div className="space-y-2 text-center">
+											<p className="text-xl font-semibold tracking-tight text-foreground">
+												{config.assistantName}
+											</p>
+											<p className="mx-auto max-w-sm text-sm text-muted-foreground">
+												Browse a collection or describe what you&apos;re shopping for.
+											</p>
+										</div>
+
+										<AiAssistantCollections
+											collections={collections}
+											disabled={loading}
+											onCollectionSelect={onCollectionSelect}
+										/>
+
+										<div className="space-y-3">
+											<p className="text-sm font-medium text-foreground">Try asking</p>
+											<div className="flex flex-wrap gap-2">
+												{config.suggestedQueries.map((suggestion) => (
+													<button
+														key={suggestion}
+														type="button"
+														onClick={() => onStarterSelect(suggestion)}
+														className={cn(
+															"bg-muted/40 rounded-full border border-border px-3 py-1.5 text-left text-sm text-foreground",
+															"transition-colors hover:bg-muted",
+														)}
+													>
+														{suggestion}
+													</button>
+												))}
+											</div>
+										</div>
+									</div>
+								) : null}
+
+								{messages.length > 0 ? (
+									<div className="space-y-5">
+										{messages.map((message) => {
+											if (message.role === "user") {
+												return (
+													<div key={message.id} className="flex justify-end">
+														<div className="max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm leading-relaxed text-primary-foreground">
+															{message.content}
+														</div>
+													</div>
+												);
+											}
+
+											return (
+												<div key={message.id} className="flex justify-start">
+													<div className="max-w-full space-y-3 sm:max-w-[95%]">
+														<div className="bg-muted/60 rounded-2xl rounded-bl-md px-4 py-2.5 text-sm leading-relaxed text-foreground">
+															<p className="whitespace-pre-wrap">{message.content}</p>
+														</div>
+
+														{message.products.length > 0 ? (
+															<AiAssistantProductList
+																products={message.products}
+																channel={channel}
+																onProductSelect={handleProductSelect}
+																onCartItemCountChange={handleCartItemCountChange}
+															/>
+														) : null}
+
+														{message.suggestions.length > 0 ? (
+															<div className="flex flex-wrap gap-2">
+																{message.suggestions.map((suggestion) => (
+																	<button
+																		key={suggestion}
+																		type="button"
+																		onClick={() => onSuggestionSelect(suggestion)}
+																		disabled={loading}
+																		className={cn(
+																			"rounded-full border border-border bg-background px-3 py-1.5 text-sm text-foreground",
+																			"transition-colors hover:bg-muted disabled:opacity-50",
+																		)}
+																	>
+																		{suggestion}
+																	</button>
+																))}
+															</div>
+														) : null}
+													</div>
+												</div>
+											);
+										})}
+
+										{loading ? (
+											<div className="flex items-center gap-2 text-sm text-muted-foreground">
+												<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+												<span>Thinking…</span>
+											</div>
+										) : null}
+
+										{error ? <p className="text-sm text-destructive">{error}</p> : null}
+									</div>
+								) : null}
+
+								{messages.length === 0 && loading ? (
+									<div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
+										<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+										<span>Thinking…</span>
+									</div>
+								) : null}
+
+								{messages.length === 0 && error ? (
+									<p className="py-8 text-center text-sm text-destructive">{error}</p>
+								) : null}
+
+								<div ref={messagesEndRef} />
+							</div>
+						)}
+					</div>
+
+					<footer
+						className={cn(
+							"border-border/80 from-muted/40 shrink-0 border-t bg-gradient-to-t to-background px-3 pb-3 pt-3 sm:px-5 sm:pb-4",
+							selectedProduct && "hidden",
+						)}
+					>
 						<label htmlFor={inputId} className="sr-only">
-							Search products
+							Message {config.assistantName}
 						</label>
-						<div className="relative">
-							<Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-							<input
+						<div
+							className={cn(
+								"border-border/70 flex items-end gap-2 rounded-[1.75rem] border bg-background px-3 py-2.5",
+								"shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow",
+								"focus-within:border-primary/40 focus-within:shadow-[0_10px_36px_rgb(0,0,0,0.08)]",
+								"focus-within:ring-primary/15 focus-within:ring-2",
+							)}
+						>
+							<textarea
 								ref={inputRef}
 								id={inputId}
-								type="search"
+								rows={1}
 								value={query}
-								onChange={(event) => onQueryChange(event.target.value)}
+								onChange={(event) => {
+									onQueryChange(event.target.value);
+									resizeComposer();
+								}}
 								onKeyDown={(event) => {
-									if (event.key === "Enter") {
+									if (event.key === "Enter" && !event.shiftKey) {
 										event.preventDefault();
-										onSubmit();
+										if (canSubmit) {
+											onSubmit();
+										}
 									}
 								}}
 								placeholder={config.placeholder}
 								autoComplete="off"
+								disabled={loading}
 								className={cn(
-									"w-full rounded-2xl border border-input bg-background py-4 pl-12 pr-4",
-									"text-base text-foreground placeholder:text-muted-foreground",
-									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+									"max-h-40 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-3",
+									"placeholder:text-muted-foreground/80 text-[15px] leading-relaxed text-foreground",
+									"focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60",
 								)}
 							/>
+							<button
+								type="button"
+								onClick={onSubmit}
+								disabled={!canSubmit}
+								aria-label="Send message"
+								className={cn(
+									"mb-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-all",
+									"bg-teal-600 text-white hover:bg-teal-700",
+									"disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+									canSubmit && "scale-100 shadow-md shadow-teal-600/25",
+								)}
+							>
+								{loading ? (
+									<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+								) : (
+									<ArrowUp className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+								)}
+							</button>
 						</div>
-						{config.chatEnabled ? (
-							<p className="mt-2 text-xs text-muted-foreground">
-								Press Enter to search and get AI recommendations.
-							</p>
-						) : null}
-					</div>
-
-					<div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
-						{showStarters ? (
-							<div className="space-y-3">
-								<p className="text-sm font-medium text-foreground">Try searching for</p>
-								<div className="flex flex-wrap gap-2">
-									{config.suggestedQueries.map((suggestion) => (
-										<button
-											key={suggestion}
-											type="button"
-											onClick={() => onStarterSelect(suggestion)}
-											className={cn(
-												"bg-muted/50 rounded-full border border-border px-3 py-1.5 text-sm text-foreground",
-												"transition-colors hover:bg-muted",
-											)}
-										>
-											{suggestion}
-										</button>
-									))}
-								</div>
-							</div>
-						) : null}
-
-						{showMinLengthHint ? (
-							<p className="text-sm text-muted-foreground">Type at least 2 characters to search.</p>
-						) : null}
-
-						{searchLoading ? (
-							<div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
-								<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-								<span>Searching products…</span>
-							</div>
-						) : null}
-
-						{searchError ? <p className="py-4 text-sm text-destructive">{searchError}</p> : null}
-
-						{showEmptySearchResults && !config.chatEnabled ? (
-							<div className="py-8 text-center">
-								<p className="text-sm font-medium text-foreground">
-									No products found for &quot;{submittedQuery}&quot;
-								</p>
-								<p className="mt-1 text-sm text-muted-foreground">
-									Try a different search term or browse all products.
-								</p>
-								<Link
-									href={channelHref(channel, "/products")}
-									onClick={() => handleOpenChange(false)}
-									className="mt-4 inline-flex text-sm font-medium text-primary hover:underline"
-								>
-									Browse all products
-								</Link>
-							</div>
-						) : null}
-
-						{searchProducts.length > 0 ? (
-							<div className="space-y-4">
-								<div className="flex items-center justify-between gap-3">
-									<p className="text-sm text-muted-foreground">
-										{totalCount} {totalCount === 1 ? "result" : "results"}
-										{submittedQuery ? (
-											<>
-												{" "}
-												for &quot;<span className="text-foreground">{submittedQuery}</span>&quot;
-											</>
-										) : null}
-									</p>
-									{viewAllHref ? (
-										<Link
-											href={viewAllHref}
-											onClick={() => handleOpenChange(false)}
-											className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-										>
-											View all
-											<ArrowRight className="h-4 w-4" aria-hidden="true" />
-										</Link>
-									) : null}
-								</div>
-								<SearchResults
-									products={searchProducts}
-									channel={channel}
-									compact
-									onProductClick={() => handleOpenChange(false)}
-								/>
-							</div>
-						) : null}
-
-						{config.chatEnabled ? (
-							<div className={cn(searchProducts.length > 0 && "mt-8 border-t border-border pt-6")}>
-								<div className="mb-4 flex items-center gap-2">
-									<Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-									<p className="text-sm font-medium text-foreground">AI recommendations</p>
-								</div>
-
-								{assistLoading ? (
-									<div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
-										<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-										<span>Getting recommendations…</span>
-									</div>
-								) : null}
-
-								{assistError ? <p className="py-2 text-sm text-destructive">{assistError}</p> : null}
-
-								{reply ? (
-									<div className="space-y-4">
-										<p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{reply}</p>
-
-										{assistProducts.length > 0 ? (
-											<SearchResults
-												products={assistProducts}
-												channel={channel}
-												compact
-												onProductClick={() => handleOpenChange(false)}
-											/>
-										) : null}
-
-										{suggestions.length > 0 ? (
-											<div className="space-y-2">
-												<p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-													Suggested follow-ups
-												</p>
-												<div className="flex flex-wrap gap-2">
-													{suggestions.map((suggestion) => (
-														<button
-															key={suggestion}
-															type="button"
-															onClick={() => onSuggestionSelect(suggestion)}
-															className={cn(
-																"rounded-full border border-border bg-background px-3 py-1.5 text-sm text-foreground",
-																"transition-colors hover:bg-muted",
-															)}
-														>
-															{suggestion}
-														</button>
-													))}
-												</div>
-											</div>
-										) : null}
-									</div>
-								) : null}
-							</div>
-						) : null}
-					</div>
+						<p className="mt-2.5 px-1 text-center text-[11px] text-muted-foreground">
+							Enter to send · Shift+Enter for a new line
+						</p>
+					</footer>
 				</DialogPrimitive.Content>
 			</DialogPrimitive.Portal>
 		</DialogPrimitive.Root>

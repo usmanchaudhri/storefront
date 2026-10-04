@@ -2,42 +2,73 @@
 
 import { useCallback, useRef, useState } from "react";
 
-import type { AssistApiResponse, AssistPageContext } from "@/app/[channel]/(main)/chat/types";
+import type { AssistApiResponse, AssistPageContext, ChatMessage } from "@/app/[channel]/(main)/chat/types";
 import { getResponseErrorMessage, isIgnorableFetchError, readJsonResponse } from "@/lib/read-json-response";
 import type { SearchProduct } from "@/lib/search";
+
+import { getAssistantCollectionProducts } from "./get-collection-products";
 
 type UseAiAssistOptions = {
 	channel: string;
 	enabled: boolean;
 };
 
-type AiAssistState = {
-	reply: string | null;
+export type AssistChatMessage = {
+	id: string;
+	role: "user" | "assistant";
+	content: string;
 	products: SearchProduct[];
 	suggestions: string[];
+};
+
+type AiAssistState = {
+	messages: AssistChatMessage[];
 	loading: boolean;
 	error: string | null;
-	submittedQuery: string;
 };
 
 const initialState: AiAssistState = {
-	reply: null,
-	products: [],
-	suggestions: [],
+	messages: [],
 	loading: false,
 	error: null,
-	submittedQuery: "",
 };
+
+function createMessageId(): string {
+	return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
 
 export function useAiAssist({ channel, enabled }: UseAiAssistOptions) {
 	const [state, setState] = useState<AiAssistState>(initialState);
 	const abortRef = useRef<AbortController | null>(null);
 	const requestIdRef = useRef(0);
+	const messagesRef = useRef<AssistChatMessage[]>([]);
 
 	const reset = useCallback(() => {
 		abortRef.current?.abort();
 		requestIdRef.current += 1;
+		messagesRef.current = [];
 		setState(initialState);
+	}, []);
+
+	const appendUserMessage = useCallback((content: string) => {
+		const userMessage: AssistChatMessage = {
+			id: createMessageId(),
+			role: "user",
+			content,
+			products: [],
+			suggestions: [],
+		};
+
+		const nextMessages = [...messagesRef.current, userMessage];
+		messagesRef.current = nextMessages;
+
+		setState({
+			messages: nextMessages,
+			loading: true,
+			error: null,
+		});
+
+		return nextMessages;
 	}, []);
 
 	const assist = useCallback(
@@ -48,7 +79,6 @@ export function useAiAssist({ channel, enabled }: UseAiAssistOptions) {
 
 			const trimmed = query.trim();
 			if (!trimmed) {
-				reset();
 				return;
 			}
 
@@ -57,14 +87,12 @@ export function useAiAssist({ channel, enabled }: UseAiAssistOptions) {
 			abortRef.current = controller;
 			const requestId = ++requestIdRef.current;
 
-			setState({
-				reply: null,
-				products: [],
-				suggestions: [],
-				loading: true,
-				error: null,
-				submittedQuery: trimmed,
-			});
+			const nextMessages = appendUserMessage(trimmed);
+
+			const conversation: ChatMessage[] = nextMessages.map((message) => ({
+				role: message.role,
+				content: message.content,
+			}));
 
 			try {
 				const response = await fetch("/api/assist", {
@@ -75,7 +103,7 @@ export function useAiAssist({ channel, enabled }: UseAiAssistOptions) {
 					},
 					body: JSON.stringify({
 						channel,
-						messages: [{ role: "user", content: trimmed }],
+						messages: conversation,
 						context,
 					}),
 					signal: controller.signal,
@@ -95,13 +123,21 @@ export function useAiAssist({ channel, enabled }: UseAiAssistOptions) {
 					throw new Error(getResponseErrorMessage(data, `Assist failed (${response.status})`));
 				}
 
-				setState({
-					reply: data.reply,
+				const assistantMessage: AssistChatMessage = {
+					id: createMessageId(),
+					role: "assistant",
+					content: data.reply,
 					products: data.products ?? [],
 					suggestions: data.suggestions ?? [],
+				};
+
+				const withAssistant = [...messagesRef.current, assistantMessage];
+				messagesRef.current = withAssistant;
+
+				setState({
+					messages: withAssistant,
 					loading: false,
 					error: null,
-					submittedQuery: trimmed,
 				});
 			} catch (assistError) {
 				if (isIgnorableFetchError(assistError, controller.signal)) {
@@ -113,21 +149,90 @@ export function useAiAssist({ channel, enabled }: UseAiAssistOptions) {
 				}
 
 				setState({
-					reply: null,
-					products: [],
-					suggestions: [],
+					messages: messagesRef.current,
 					loading: false,
 					error: assistError instanceof Error ? assistError.message : "Assist failed",
-					submittedQuery: trimmed,
 				});
 			}
 		},
-		[channel, enabled, reset],
+		[appendUserMessage, channel, enabled],
+	);
+
+	const browseCollection = useCallback(
+		async (collection: { name: string; slug: string }) => {
+			if (!enabled) {
+				return;
+			}
+
+			const slug = collection.slug.trim();
+			const name = collection.name.trim() || slug;
+			if (!slug) {
+				return;
+			}
+
+			abortRef.current?.abort();
+			const requestId = ++requestIdRef.current;
+
+			appendUserMessage(`Show me the ${name} collection`);
+
+			try {
+				const result = await getAssistantCollectionProducts(channel, slug);
+
+				if (requestId !== requestIdRef.current) {
+					return;
+				}
+
+				if (!result.ok) {
+					throw new Error(result.error);
+				}
+
+				const productCount = result.products.length;
+				const assistantMessage: AssistChatMessage = {
+					id: createMessageId(),
+					role: "assistant",
+					content:
+						productCount > 0
+							? `Here are products from ${result.collectionName}. Add what you like to your cart, or ask me anything else.`
+							: `I couldn't find products in ${result.collectionName} right now. Try another collection or ask me what you're looking for.`,
+					products: result.products,
+					suggestions:
+						productCount > 0
+							? [
+									`Best sellers in ${result.collectionName}`,
+									"Something under $50",
+									"What pairs well with these?",
+								]
+							: ["What are your best sellers?", "Show me another collection"],
+				};
+
+				const withAssistant = [...messagesRef.current, assistantMessage];
+				messagesRef.current = withAssistant;
+
+				setState({
+					messages: withAssistant,
+					loading: false,
+					error: null,
+				});
+			} catch (collectionError) {
+				if (requestId !== requestIdRef.current) {
+					return;
+				}
+
+				setState({
+					messages: messagesRef.current,
+					loading: false,
+					error:
+						collectionError instanceof Error ? collectionError.message : "Could not load collection products",
+				});
+			}
+		},
+		[appendUserMessage, channel, enabled],
 	);
 
 	return {
 		...state,
 		assist,
+		browseCollection,
 		reset,
 	};
 }

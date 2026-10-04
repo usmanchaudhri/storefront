@@ -7,10 +7,11 @@ import { Button } from "@/ui/components/ui/button";
 
 type AiAssistantTriggerProps = {
 	onOpen: () => void;
+	label: string;
 	className?: string;
 };
 
-export function AiAssistantTrigger({ onOpen, className }: AiAssistantTriggerProps) {
+export function AiAssistantTrigger({ onOpen, label, className }: AiAssistantTriggerProps) {
 	return (
 		<div className={cn("fixed bottom-4 right-4 z-40", className)}>
 			<Button
@@ -19,10 +20,10 @@ export function AiAssistantTrigger({ onOpen, className }: AiAssistantTriggerProp
 				className="h-14 rounded-full bg-teal-600 px-5 text-white shadow-lg hover:bg-teal-700"
 				onClick={onOpen}
 				aria-haspopup="dialog"
-				aria-label="Open Ask Kpure assistant"
+				aria-label={`Open ${label}`}
 			>
 				<MessageCircle className="h-5 w-5" aria-hidden="true" />
-				<span>Ask Kpure</span>
+				<span>{label}</span>
 			</Button>
 		</div>
 	);

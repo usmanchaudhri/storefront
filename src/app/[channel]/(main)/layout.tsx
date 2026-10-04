@@ -3,6 +3,7 @@ import { Footer } from "@/ui/components/footer";
 import { Header } from "@/ui/components/header";
 import { CartProvider, CartDrawerWrapper } from "@/ui/components/cart";
 import { ChatAssistantShell } from "@/app/[channel]/(main)/chat/chat-assistant-shell";
+import { getAssistantCollections } from "@/app/[channel]/(main)/chat/collections";
 import { getChatbotConfig } from "@/app/[channel]/(main)/chat/config";
 import { brandConfig } from "@/config/brand";
 
@@ -32,6 +33,7 @@ async function MainLayout({
 	// Resolve on the server so runtime CHATBOT_API_URL enables chat (client bundles
 	// cannot see non-NEXT_PUBLIC env vars, and Docker does not bake chatbot URLs).
 	const chatbotConfig = getChatbotConfig();
+	const assistantCollections = chatbotConfig.enabled ? await getAssistantCollections(channel) : [];
 
 	return (
 		<>
@@ -47,7 +49,7 @@ async function MainLayout({
 			<Suspense fallback={null}>
 				<CartDrawerWrapper channel={channel} />
 			</Suspense>
-			<ChatAssistantShell channel={channel} config={chatbotConfig} />
+			<ChatAssistantShell channel={channel} config={chatbotConfig} collections={assistantCollections} />
 		</>
 	);
 }

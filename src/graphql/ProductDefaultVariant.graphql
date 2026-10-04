@@ -1,0 +1,14 @@
+query ProductDefaultVariant($slug: String!, $channel: String!) {
+	product(slug: $slug, channel: $channel) {
+		id
+		slug
+		defaultVariant {
+			id
+			quantityAvailable
+		}
+		variants {
+			id
+			quantityAvailable
+		}
+	}
+}

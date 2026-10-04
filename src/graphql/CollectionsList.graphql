@@ -1,0 +1,25 @@
+query CollectionsList($channel: String!, $first: Int!) {
+	collections(first: $first, channel: $channel, sortBy: { field: NAME, direction: ASC }) {
+		edges {
+			node {
+				id
+				name
+				slug
+				backgroundImage(size: 256, format: WEBP) {
+					url
+					alt
+				}
+				products(first: 1) {
+					edges {
+						node {
+							thumbnail(size: 256, format: WEBP) {
+								url
+								alt
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

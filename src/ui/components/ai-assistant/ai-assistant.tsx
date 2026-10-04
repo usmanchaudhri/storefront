@@ -1,28 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
+import type { AssistantCollection } from "@/app/[channel]/(main)/chat/collections";
 import type { AiAssistantConfig } from "@/app/[channel]/(main)/chat/config";
 
 import { AiAssistantOverlay } from "./ai-assistant-overlay";
 import { AiAssistantTrigger } from "./ai-assistant-trigger";
 import { useAiAssist } from "./use-ai-assist";
-import { useAiSearch } from "./use-ai-search";
 import { useOpenAssistantShortcut } from "./use-open-assistant-shortcut";
 
 type AiAssistantProps = {
 	config: AiAssistantConfig;
 	channel: string;
+	collections: AssistantCollection[];
 };
 
-export function AiAssistant({ config, channel }: AiAssistantProps) {
+export function AiAssistant({ config, channel, collections }: AiAssistantProps) {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
-	const searchState = useAiSearch({
-		channel,
-		debounceMs: config.searchDebounceMs,
-		enabled: open,
-	});
 	const assistState = useAiAssist({
 		channel,
 		enabled: open && config.chatEnabled,
@@ -32,32 +28,21 @@ export function AiAssistant({ config, channel }: AiAssistantProps) {
 		setOpen(true);
 	}, []);
 
-	const { searchDebounced, search, reset: resetSearch } = searchState;
-	const { assist, reset: resetAssist } = assistState;
+	const { assist, browseCollection, reset: resetAssist, loading } = assistState;
 
 	useOpenAssistantShortcut({ enabled: config.enabled, onTrigger: openAssistant });
-
-	useEffect(() => {
-		if (!open) {
-			return;
-		}
-
-		return searchDebounced(query);
-	}, [open, query, searchDebounced]);
 
 	const runSubmit = useCallback(
 		(value: string) => {
 			const trimmed = value.trim();
-			if (!trimmed) {
+			if (!trimmed || loading) {
 				return;
 			}
 
-			void search(trimmed);
-			if (config.chatEnabled) {
-				void assist(trimmed);
-			}
+			setQuery("");
+			void assist(trimmed);
 		},
-		[assist, config.chatEnabled, search],
+		[assist, loading],
 	);
 
 	const handleSubmit = useCallback(() => {
@@ -66,7 +51,6 @@ export function AiAssistant({ config, channel }: AiAssistantProps) {
 
 	const handleStarterSelect = useCallback(
 		(value: string) => {
-			setQuery(value);
 			runSubmit(value);
 		},
 		[runSubmit],
@@ -74,22 +58,32 @@ export function AiAssistant({ config, channel }: AiAssistantProps) {
 
 	const handleSuggestionSelect = useCallback(
 		(value: string) => {
-			setQuery(value);
 			runSubmit(value);
 		},
 		[runSubmit],
 	);
 
+	const handleCollectionSelect = useCallback(
+		(collection: AssistantCollection) => {
+			if (loading) {
+				return;
+			}
+
+			setQuery("");
+			void browseCollection({ name: collection.name, slug: collection.slug });
+		},
+		[browseCollection, loading],
+	);
+
 	const handleOpenChange = useCallback(
 		(nextOpen: boolean) => {
 			if (!nextOpen) {
-				resetSearch();
 				resetAssist();
 				setQuery("");
 			}
 			setOpen(nextOpen);
 		},
-		[resetAssist, resetSearch],
+		[resetAssist],
 	);
 
 	if (!config.enabled) {
@@ -98,18 +92,19 @@ export function AiAssistant({ config, channel }: AiAssistantProps) {
 
 	return (
 		<>
-			{!open ? <AiAssistantTrigger onOpen={openAssistant} /> : null}
+			{!open ? <AiAssistantTrigger onOpen={openAssistant} label={config.assistantName} /> : null}
 			<AiAssistantOverlay
 				open={open}
 				onOpenChange={handleOpenChange}
 				config={config}
 				channel={channel}
+				collections={collections}
 				query={query}
 				onQueryChange={setQuery}
 				onSubmit={handleSubmit}
 				onStarterSelect={handleStarterSelect}
 				onSuggestionSelect={handleSuggestionSelect}
-				searchState={searchState}
+				onCollectionSelect={handleCollectionSelect}
 				assistState={assistState}
 			/>
 		</>

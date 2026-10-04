@@ -1,5 +1,3 @@
-import { brandConfig } from "@/config/brand";
-
 export type AiAssistantConfig = {
 	enabled: boolean;
 	chatEnabled: boolean;
@@ -8,13 +6,12 @@ export type AiAssistantConfig = {
 	assistantName: string;
 	placeholder: string;
 	suggestedQueries: string[];
-	searchDebounceMs: number;
 };
 
 const DEFAULT_SUGGESTED_QUERIES = [
-	"Vitamin C serum",
-	"Moisturizer for dry skin",
-	"Best sellers",
+	"What are your best sellers?",
+	"Something for daily energy",
+	"Gummies for wellness",
 	"Gift under $50",
 ];
 
@@ -38,13 +35,13 @@ export function getChatbotConfig(): AiAssistantConfig {
 	const chatEnabled = chatExplicitlyDisabled ? false : chatExplicitlyEnabled || Boolean(apiUrl);
 
 	return {
-		enabled: !searchExplicitlyDisabled,
+		// Assistant is AI-chat only (no keyword search-on-type).
+		enabled: !searchExplicitlyDisabled && chatEnabled,
 		chatEnabled,
 		apiUrl,
 		defaultModel,
-		assistantName: `${brandConfig.organizationName} Assistant`,
-		placeholder: "Search products or ask a question…",
+		assistantName: "Shop Best Seller",
+		placeholder: "Ask about bestsellers, gifts, or what you need…",
 		suggestedQueries: DEFAULT_SUGGESTED_QUERIES,
-		searchDebounceMs: 300,
 	};
 }
