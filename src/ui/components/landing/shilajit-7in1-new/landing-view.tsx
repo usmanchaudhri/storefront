@@ -22,7 +22,10 @@ import {
 } from "@/ui/components/ui/carousel";
 import { Breadcrumbs, type BreadcrumbItem } from "@/ui/components/breadcrumbs";
 import { PdpComparisonSection } from "@/ui/components/pdp/story/pdp-story-modules";
+import { LandingAllergenFree } from "@/ui/components/landing/shilajit-7in1-new/landing-allergen-free";
+import { LandingDailyDose } from "@/ui/components/landing/shilajit-7in1-new/landing-daily-dose";
 import { LandingDailyNutrients } from "@/ui/components/landing/shilajit-7in1-new/landing-daily-nutrients";
+import { LandingLookInsideGallery } from "@/ui/components/landing/shilajit-7in1-new/landing-look-inside-gallery";
 import { LandingNaturalFlavors } from "@/ui/components/landing/shilajit-7in1-new/landing-natural-flavors";
 
 const accent = "text-[#C46A3A]";
@@ -311,8 +314,14 @@ type HiddenLandingSections = {
 	proof?: boolean;
 	/** Figma 3413:4391 — 18 Daily Nutrients. */
 	dailyNutrients?: boolean;
-	/** Figma 3413:4466 — Natural Flavors. */
+	/** Figma 3504:742 — Natural Flavors. */
 	naturalFlavors?: boolean;
+	/** Figma 3504:118 — Take 2 Gummies Daily. */
+	dailyDose?: boolean;
+	/** Figma 3504:135 — Certified Allergen Free. */
+	allergenFree?: boolean;
+	/** Figma 3504:502–505 — horizontal listing tiles below look-inside. */
+	lookInsideGallery?: boolean;
 };
 
 interface ConversionLandingViewProps {
@@ -410,8 +419,14 @@ export function ConversionLandingView({
 			{/* Figma 3413:4391 — 18 Daily Nutrients (below purchase, above How different) */}
 			{!hide.dailyNutrients ? <LandingDailyNutrients /> : null}
 
-			{/* Figma 3413:4466 — Natural Flavors (below nutrients, above How different) */}
+			{/* Figma 3504:742 — Natural Flavors (below nutrients, above How different) */}
 			{!hide.naturalFlavors ? <LandingNaturalFlavors /> : null}
+
+			{/* Figma 3504:118 — Take 2 Gummies Daily (below Natural Flavors) */}
+			{!hide.dailyDose ? <LandingDailyDose /> : null}
+
+			{/* Figma 3504:135 — Certified Allergen Free */}
+			{!hide.allergenFree ? <LandingAllergenFree /> : null}
 
 			{/* Figma 2611:20 — How Kaya Pure is different (above look-inside) */}
 			{comparison ? <PdpComparisonSection story={comparison} /> : null}
@@ -585,6 +600,9 @@ export function ConversionLandingView({
 						</div>
 					</div>
 				</div>
+
+				{/* Figma 3504:502–505 — horizontal listing creatives below look-inside */}
+				{!hide.lookInsideGallery ? <LandingLookInsideGallery /> : null}
 
 				{!hide.cleanBar ? (
 					<div className="mx-auto max-w-content px-4 sm:px-6">

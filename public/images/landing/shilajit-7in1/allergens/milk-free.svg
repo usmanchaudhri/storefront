@@ -1,0 +1,61 @@
+<svg width="103" height="103" viewBox="0 0 103 103" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="103" height="103" fill="#E9E8DE"/>
+<g id="1920w light" clip-path="url(#clip0_0_1)">
+<rect width="1920" height="8881" transform="translate(-1040.93 -3388.03)" fill="white"/>
+<g id="Main">
+<g id="Section">
+<rect width="1920" height="681" transform="translate(-1040 -321.002)" fill="#EFFBF8"/>
+<g id="Container">
+<g id="slider-component">
+<g id="List">
+<g id="Item">
+<g id="Margin">
+<g id="Container_2" clip-path="url(#clip1_0_1)">
+<g id="Milk Free" clip-path="url(#clip2_0_1)">
+<g id="04-milk-free.svg" clip-path="url(#clip3_0_1)">
+<g id="Mask group">
+<mask id="mask0_0_1" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="3" y="3" width="97" height="97">
+<g id="Group">
+<path id="Vector" d="M51.659 99.7928C78.2393 99.7928 99.7869 78.2452 99.7869 51.665C99.7869 25.0847 78.2393 3.53711 51.659 3.53711C25.0788 3.53711 3.53125 25.0847 3.53125 51.665C3.53125 78.2452 25.0788 99.7928 51.659 99.7928Z" fill="white"/>
+</g>
+</mask>
+<g mask="url(#mask0_0_1)">
+<g id="Group_2">
+<path id="Vector_2" d="M63.4336 46.2852H25.6641V106.067H63.4336V46.2852Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+<path id="Vector_3" d="M63.4336 46.2852H25.6641V106.067H63.4336V46.2852Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+<path id="Vector_4" d="M63.4219 106.055H79.4441V46.2734H63.4219V106.055Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+<path id="Vector_5" d="M71.4651 33.7422H33.6956L25.6641 46.2844H63.4336L71.4651 33.7422Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+<path id="Vector_6" d="M71.4648 33.7421H33.6953V28.3129C33.6953 26.6086 35.0832 25.2207 36.7874 25.2207H68.3726C70.0769 25.2207 71.4648 26.6086 71.4648 28.3129V33.7421Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+<path id="Vector_7" d="M79.4519 46.2844H63.4297L71.4612 33.7422L79.4519 46.2844Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+<path id="Vector_8" d="M53.9712 58.6523H34.7854C32.0519 58.6523 29.8359 60.8683 29.8359 63.6019V82.4713C29.8359 85.2049 32.0519 87.4208 34.7854 87.4208H53.9712C56.7048 87.4208 58.9208 85.2049 58.9208 82.4713V63.6019C58.9208 60.8683 56.7048 58.6523 53.9712 58.6523Z" stroke="#064240" stroke-width="1.92" stroke-miterlimit="10"/>
+</g>
+</g>
+</g>
+<path id="Vector_9" d="M51.659 99.7889C78.2393 99.7889 99.7869 78.2413 99.7869 51.6611C99.7869 25.0808 78.2393 3.5332 51.659 3.5332C25.0788 3.5332 3.53125 25.0808 3.53125 51.6611C3.53125 78.2413 25.0788 99.7889 51.659 99.7889Z" stroke="#FFB423" stroke-width="5.76" stroke-miterlimit="10"/>
+<path id="Vector_10" d="M85.4816 85.7355L17.8516 18.1055" stroke="#FFB423" stroke-width="5.76" stroke-miterlimit="10"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_1">
+<rect width="1920" height="8881" fill="white" transform="translate(-1040.93 -3388.03)"/>
+</clipPath>
+<clipPath id="clip1_0_1">
+<rect width="103" height="103" fill="white"/>
+</clipPath>
+<clipPath id="clip2_0_1">
+<rect width="103" height="103" fill="white"/>
+</clipPath>
+<clipPath id="clip3_0_1">
+<rect width="103" height="103" fill="white"/>
+</clipPath>
+</defs>
+</svg>

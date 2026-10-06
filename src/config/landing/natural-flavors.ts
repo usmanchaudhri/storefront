@@ -1,26 +1,33 @@
-/** PDP “Natural Flavors, Delicious Taste” — Figma 3413:4466. */
+/** PDP “Natural Flavors, Delicious Taste” — Figma 3504:742. */
 
 export const NATURAL_FLAVORS = {
 	background: "#048270",
 	curveFill: "#064240",
 	ink: "#064240",
-	title: "Natural Flavors, Delicious Taste",
+	titleLine1: "Natural Flavors,",
+	titleLine2: "Delicious Taste",
 	footnote: "Flavors with Other Natural Flavors",
 	curveSrc: "/images/landing/shilajit-7in1/flavors/curve.svg",
+	lifestyle: {
+		src: "/images/landing/shilajit-7in1/flavors/lifestyle-taste.webp",
+		alt: "Person enjoying a Kaya Pure gummy",
+		width: 1122,
+		height: 1402,
+	},
 	flavors: [
 		{
 			id: "lemon-lime",
 			label: "Lemon Lime",
 			iconSrc: "/images/landing/shilajit-7in1/flavors/lemon-lime.svg",
-			iconWidth: 367,
-			iconHeight: 410,
+			iconWidth: 77,
+			iconHeight: 86,
 		},
 		{
 			id: "grape",
 			label: "Grape",
 			iconSrc: "/images/landing/shilajit-7in1/flavors/grape.svg",
-			iconWidth: 312,
-			iconHeight: 410,
+			iconWidth: 66,
+			iconHeight: 86,
 		},
 	],
 } as const;

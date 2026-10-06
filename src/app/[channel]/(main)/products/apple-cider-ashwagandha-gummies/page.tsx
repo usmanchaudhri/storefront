@@ -147,6 +147,9 @@ export default async function AppleCiderLandingPage(props: {
 					proof: true,
 					dailyNutrients: true,
 					naturalFlavors: true,
+					dailyDose: true,
+					allergenFree: true,
+					lookInsideGallery: true,
 				}}
 				breadcrumbs={[
 					{ label: "Home", href: channelHref(params.channel, "/") },
